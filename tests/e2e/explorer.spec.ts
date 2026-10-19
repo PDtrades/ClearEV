@@ -146,6 +146,29 @@ test.describe("map", () => {
   });
 });
 
+test.describe("county dots", () => {
+  test("each county dot opens its own card and a program in it can be selected", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "WebGL markers are desktop only");
+    await page.goto("/");
+    const dots = page.locator(".hotspot-ring-county");
+    await expect(dots.first()).toBeVisible({ timeout: 20_000 });
+    await page.waitForTimeout(1500);
+    // Click whichever dot is on top at that point, as a person would.
+    const box = (await dots.first().boundingBox())!;
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    const card = page.locator(".county-pop");
+    await expect(card).toBeVisible();
+    await expect(card).toContainText(/County|Parish|Columbia/);
+    await expect(page.locator('.hotspot-ring-county[data-active="true"]')).toHaveCount(1);
+    const first = card.getByRole("listitem").first().getByRole("button");
+    const name = (await first.textContent())!;
+    await first.click();
+    await expect(page).toHaveURL(/sel=/);
+    await expect(page.getByRole("heading", { name: /Programs in / })).toBeVisible();
+    await expect(page.getByText(`Selected: ${name}`, { exact: false })).toBeVisible();
+  });
+});
+
 test.describe("EV-friendliness", () => {
   test("ranks states by chargers per person and home electricity price", async ({ page }, testInfo) => {
     test.skip(testInfo.project.name === "mobile", "covered on desktop and no-webgl");

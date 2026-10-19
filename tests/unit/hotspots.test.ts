@@ -59,6 +59,8 @@ describe("hotspots", () => {
       prog("pge", { coverage: { type: "utility", states: ["CA"], counties: [], zips: [], utilityNames: ["PG&E"], confidence: "source_stated" } }),
     ]);
     expect(d.counties.map((c) => c.key).sort()).toEqual(["36047", "36061"]);
+    expect(d.counties[0].programIds).toEqual(["test:nyc"]);
+    expect(d.counties[0].programNames).toHaveLength(1);
     expect(d.states.map((s) => s.key).sort()).toEqual(["CA", "NY"]);
   });
 

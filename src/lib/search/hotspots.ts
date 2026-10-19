@@ -25,6 +25,8 @@ export interface Hotspot {
   name?: string;
   programs: number;
   programIds: string[];
+  /** Names of the counted programs, in the same order as programIds. */
+  programNames: string[];
   top?: HotspotTop;
 }
 export interface HotspotData {
@@ -59,10 +61,11 @@ export function computeHotspots(programs: HotspotInput[]): HotspotData {
   const counties = new Map<string, Hotspot>();
   let counted = 0;
   const add = (map: Map<string, Hotspot>, key: string, level: Hotspot["level"], state: string, p: HotspotInput, top: HotspotTop | undefined) => {
-    const h = map.get(key) ?? { key, level, state, programs: 0, programIds: [] };
+    const h = map.get(key) ?? { key, level, state, programs: 0, programIds: [], programNames: [] };
     if (h.programIds.includes(p.id)) return;
     h.programs++;
     h.programIds.push(p.id);
+    h.programNames.push(p.name);
     if (top && (!h.top || top.value > h.top.value)) h.top = top;
     map.set(key, h);
   };

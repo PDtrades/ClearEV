@@ -6,7 +6,8 @@ import { PSEUDO_BOUNDS } from "@/lib/geo/projection";
 import { ICON_LABELS, iconForCategory, type IconKind } from "@/lib/domain/program";
 import type { ResultProgram } from "./ResultCard";
 import { fmtDollars, metric, rankCountyGroups, rankHotspots, type HotspotData } from "@/lib/search/hotspots";
-import { hotspotLabel, hotspotSummary, type HotspotView } from "./HotspotPanel";
+import { countyTitle, hotspotLabel, hotspotSummary, type HotspotView } from "./HotspotPanel";
+import { stateByAbbr } from "@/lib/geo/states";
 import { fmtCost, type EvFriendlyData } from "@/lib/geo/ev-friendliness";
 
 export interface UsMapProps {
@@ -19,6 +20,8 @@ export interface UsMapProps {
   localPrograms: ResultProgram[];
   onSelectState: (abbr: string | undefined) => void;
   onSelectProgram: (id: string) => void;
+  /** A program picked from a county dot's list: show its state and select it. */
+  onPickProgram?: (state: string, id: string) => void;
   onHoverProgram?: (id: string | undefined) => void;
   hotspots?: HotspotData;
   hotspotMode?: HotspotView;
@@ -42,6 +45,8 @@ export function iconSvg(kind: IconKind, size = 16) {
 }
 
 const SPREAD_ZOOM = 5.2;
+/** Zoom at which neighbouring county dots stop overlapping. */
+const COUNTY_ZOOM = 6.2;
 /** Vertical exaggeration so mountain ranges read at country scale (the composite is roughly 1:1 horizontally). */
 const TERRAIN_EXAGGERATION = 9;
 const BAR_HALF = 0.2; // pseudo degrees
@@ -114,6 +119,7 @@ export default function UsMap(props: UsMapProps) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const popupRef = useRef<Popup | null>(null);
+  const pinnedRef = useRef<Popup | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const labelsRef = useRef<Marker[]>([]);
   const hotspotMarkersRef = useRef<Marker[]>([]);
@@ -375,6 +381,7 @@ export default function UsMap(props: UsMapProps) {
     const data = props.hotspots;
     for (const m of hotspotMarkersRef.current) m.remove();
     hotspotMarkersRef.current = [];
+    pinnedRef.current?.remove();
     const byState = new Map((data?.states ?? []).map((h) => [h.state, h]));
     const max = mode === "off" ? 0 : Math.max(0, ...(data?.states ?? []).map((h) => metric(h, mode)));
     for (const f of fc.features) {
@@ -391,11 +398,55 @@ export default function UsMap(props: UsMapProps) {
       el.setAttribute("aria-label", `Hotspot ${rank}: ${hotspotLabel(h)}. ${hotspotSummary(h)}.`);
       el.addEventListener("click", (e) => {
         e.stopPropagation();
-        propsRef.current.onSelectState(h.state);
+        if (small) openCounty(h, rank, at, el);
+        else propsRef.current.onSelectState(h.state);
       });
-      el.addEventListener("mouseenter", () => popupRef.current?.setLngLat(at).setHTML(`<strong>#${rank} ${escapeHtml(hotspotLabel(h))}</strong><br>${escapeHtml(hotspotSummary(h))}`).addTo(map));
+      el.addEventListener("mouseenter", () => {
+        if (!pinnedRef.current?.isOpen()) popupRef.current?.setLngLat(at).setHTML(`<strong>#${rank} ${escapeHtml(hotspotLabel(h))}</strong><br>${escapeHtml(hotspotSummary(h))}`).addTo(map);
+      });
       el.addEventListener("mouseleave", () => popupRef.current?.remove());
       hotspotMarkersRef.current.push(new maplibregl.Marker({ element: el, anchor: "center", offset: small ? [0, 0] : [0, -16] }).setLngLat(at).addTo(map));
+    };
+    // A county dot opens its own card: the county, its programs (each selectable) and a link to the whole state.
+    // Zooming in on click pulls neighbouring dots apart so the next one is easy to hit.
+    const openCounty = (h: (typeof data.states)[number], rank: number, at: [number, number], el: HTMLElement) => {
+      popupRef.current?.remove();
+      pinnedRef.current?.remove();
+      for (const m of hotspotMarkersRef.current) m.getElement().removeAttribute("data-active");
+      el.setAttribute("data-active", "true");
+      const box = document.createElement("div");
+      box.className = "county-pop";
+      const title = document.createElement("strong");
+      title.textContent = countyTitle(h);
+      const sub = document.createElement("div");
+      sub.className = "muted";
+      sub.textContent = `County hotspot ${rank} · ${h.programs} open program${h.programs === 1 ? "" : "s"}`;
+      const list = document.createElement("ul");
+      h.programIds.forEach((id, i) => {
+        const li = document.createElement("li");
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "linklike";
+        b.textContent = h.programNames[i] ?? id;
+        b.addEventListener("click", () => {
+          pinnedRef.current?.remove();
+          (propsRef.current.onPickProgram ?? ((s: string) => propsRef.current.onSelectState(s)))(h.state, id);
+        });
+        li.append(b);
+        list.append(li);
+      });
+      const all = document.createElement("button");
+      all.type = "button";
+      all.className = "linklike small";
+      all.textContent = `All ${stateByAbbr(h.state)?.name ?? h.state} programs`;
+      all.addEventListener("click", () => {
+        pinnedRef.current?.remove();
+        propsRef.current.onSelectState(h.state);
+      });
+      box.append(title, sub, list, all);
+      pinnedRef.current = new maplibregl.Popup({ closeButton: true, closeOnClick: true, offset: 12, maxWidth: "280px", focusAfterOpen: true }).setLngLat(at).setDOMContent(box).addTo(map);
+      pinnedRef.current.on("close", () => el.removeAttribute("data-active"));
+      if (map.getZoom() < COUNTY_ZOOM) map.easeTo({ center: at, zoom: COUNTY_ZOOM, duration: prefersReduced() ? 0 : 700 });
     };
     rankHotspots(data.states, mode).forEach((h, i) => {
       const f = fc.features.find((x) => x.properties.abbr === h.state);
@@ -412,7 +463,7 @@ export default function UsMap(props: UsMapProps) {
         );
       if (countyPointsRef.current) place(countyPointsRef.current);
       else
-        fetch("/geo/county-points.json")
+        fetch(geoUrl("county-points.json"))
           .then((r) => r.json())
           .then((pts) => {
             countyPointsRef.current = pts;

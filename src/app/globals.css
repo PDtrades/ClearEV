@@ -193,7 +193,14 @@ table.data th, table.data td { text-align: left; padding: 8px; border-bottom: 1p
 .hotspot-empty, .hotspot-note { margin: 0; }
 .hotspot-ring { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; background: #e8603c; color: #fff; font: 700 12px/1 system-ui, sans-serif; display: grid; place-items: center; cursor: pointer; padding: 0; }
 .hotspot-ring::after { content: ""; position: absolute; inset: -2px; border-radius: 50%; background: rgba(232, 96, 60, 0.45); z-index: -1; will-change: transform, opacity; animation: hotspot-pulse 2.2s ease-out infinite; pointer-events: none; }
-.hotspot-ring-county { width: 12px; height: 12px; background: #fff; border: 3px solid #c2451f; }
+.hotspot-ring-county { width: 14px; height: 14px; background: #fff; border: 3px solid #c2451f; }
+/* A wider invisible hit area so a single county dot is easy to click or tap. */
+.hotspot-ring-county::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; }
+.hotspot-ring-county:hover, .hotspot-ring-county[data-active="true"] { background: #c2451f; z-index: 2; }
+.county-pop { display: grid; gap: 4px; font-size: 13px; line-height: 1.35; }
+.county-pop ul { margin: 4px 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.linklike { background: none; border: 0; padding: 0; color: var(--blue); text-decoration: underline; cursor: pointer; font: inherit; text-align: left; }
+.linklike:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
 .hotspot-ring:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 /* Transform and opacity only, so the pulse runs on the compositor instead of repainting every frame. */
 @keyframes hotspot-pulse { 0% { transform: scale(1); opacity: 1; } 70% { transform: scale(2.1); opacity: 0; } 100% { transform: scale(2.1); opacity: 0; } }

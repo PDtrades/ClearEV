@@ -8,6 +8,12 @@ export function hotspotLabel(h: Hotspot): string {
   return h.level === "county" ? `${h.name ?? `County ${h.key}`}, ${h.state}` : (stateByAbbr(h.state)?.name ?? h.state);
 }
 
+/** "Fresno County, CA"; names that already say what they are (parishes, boroughs, DC) are kept as they are. */
+export function countyTitle(h: Pick<Hotspot, "name" | "key" | "state">): string {
+  const n = h.name ?? `County ${h.key}`;
+  return /(County|Parish|Borough|Census Area|Municipality|city|Columbia)$/.test(n) || !h.name ? `${n}, ${h.state}` : `${n} County, ${h.state}`;
+}
+
 export function hotspotSummary(h: Pick<Hotspot, "programs" | "top">): string {
   const n = `${h.programs} open state or local program${h.programs === 1 ? "" : "s"}`;
   return h.top ? `${n}; largest stated amount ${fmtDollars(h.top.value)} (${h.top.programName})` : `${n}; no dollar amount stated`;
@@ -15,7 +21,7 @@ export function hotspotSummary(h: Pick<Hotspot, "programs" | "top">): string {
 
 export function countyGroupLabel(g: CountyGroup): string {
   const names = g.counties.map((c) => c.name ?? c.key);
-  if (names.length === 1) return `${names[0]} County, ${g.state}`;
+  if (names.length === 1) return countyTitle(g.counties[0]);
   if (names.length === 2) return `${names[0]} and ${names[1]} counties, ${g.state}`;
   return `${names[0]}, ${names[1]} and ${names.length - 2} more counties, ${g.state}`;
 }
