@@ -19,7 +19,8 @@
     "geo:build": "tsx scripts/build-geo.ts",
     "ingest": "tsx scripts/ingest.ts",
     "linkcheck": "tsx scripts/linkcheck.ts",
-    "admin:hash": "tsx scripts/hash-password.ts"
+    "admin:hash": "tsx scripts/hash-password.ts",
+    "preview:build": "node preview/snapshot.mjs && node preview/build.mjs"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.10",

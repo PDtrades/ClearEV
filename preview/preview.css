@@ -1,0 +1,3 @@
+body { background: var(--sky); margin: 0; }
+.preview-banner { position: relative; z-index: 3; background: #fff7e6; color: #6b4300; border-bottom: 1px solid #f1d9a8; font-size: 14px; line-height: 1.45; padding-block: 8px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+main:focus { outline: none; }

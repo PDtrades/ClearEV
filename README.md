@@ -82,3 +82,7 @@ src/lib/eligibility/          eligibility verdicts (relevant / verified / needs 
 src/lib/security/             SSRF-safe fetch, sanitizer
 tests/unit, tests/e2e         tests; tests/fixtures holds clearly labeled synthetic data
 ```
+
+## Static preview (no server)
+
+`npm run preview:build` (with the app running on port 3100, e.g. `node scripts/e2e-server.mjs`) snapshots the published records and server-rendered program, coverage and privacy pages, then bundles the real client components into `preview/dist/`. Search runs in the browser through `preview/browser-search.ts`, which mirrors `src/lib/search/service.ts`; on-demand sources (Rewiring America, OpenEI) are not available there. Use it for demos only, never as the production site.
