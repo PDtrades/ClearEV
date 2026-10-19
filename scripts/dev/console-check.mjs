@@ -1,0 +1,10 @@
+import { chromium } from "@playwright/test";
+const url = process.argv[2] ?? "http://127.0.0.1:3100/";
+const browser = await chromium.launch({ executablePath: process.env.PLAYWRIGHT_CHROMIUM, args: ["--use-gl=angle", "--use-angle=swiftshader", "--enable-unsafe-swiftshader"] });
+const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
+page.on("console", (m) => { if (m.type() === "error" || m.type() === "warning") console.log(`[${m.type()}]`, m.text().slice(0, 600)); });
+page.on("pageerror", (e) => console.log("[pageerror]", e.message.slice(0, 800), "\n", (e.stack ?? "").split("\n").slice(0, 6).join("\n")));
+await page.goto(url, { waitUntil: "networkidle" });
+await page.waitForTimeout(3000);
+await page.screenshot({ path: process.argv[3] ?? "test-results/console-check.png" });
+await browser.close();

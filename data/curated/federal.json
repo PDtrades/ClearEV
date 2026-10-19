@@ -1,0 +1,219 @@
+{
+  "$comment": "Curated federal records. Each value that matters carries a verbatim quote from the official IRS page it was read from, with the retrieval date. The curated adapter re-checks that each quote still appears on the page during ingestion; if a quote disappears the record is queued for review rather than changed silently. This is production data, not a fixture.",
+  "reviewedAt": "2026-10-19",
+  "records": [
+    {
+      "id": "federal_curated:irs-30d",
+      "externalId": "irs-30d",
+      "name": "New Clean Vehicle Credit (IRC Section 30D)",
+      "providerName": "Internal Revenue Service",
+      "providerType": "federal",
+      "categories": ["ev_purchase"],
+      "benefitTypes": ["tax_credit", "pos_rebate"],
+      "summary": "A federal income-tax credit of up to $7,500 for buying a new qualified plug-in EV or fuel-cell vehicle. The credit is no longer available for vehicles acquired after September 30, 2025.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 7500,
+          "label": "Up to $7,500",
+          "evidence": { "quote": "You may qualify for a credit up to $7,500 under Internal Revenue Code Section 30D", "url": "https://www.irs.gov/credits-deductions/credits-for-new-clean-vehicles-purchased-in-2023-or-after", "retrievedAt": "2026-10-19T17:20:00Z" }
+        }
+      ],
+      "stackingNote": "Federal tax credits are generally claimed in addition to state and utility rebates, but each program's own rules decide; ClearEV does not add amounts together.",
+      "coverage": { "type": "national", "states": [], "counties": [], "zips": [], "utilityNames": [], "confidence": "verified", "note": "Federal program; applies nationwide." },
+      "eligibility": {
+        "summary": [
+          "Vehicle must have been acquired on or before September 30, 2025.",
+          "Modified adjusted gross income limits apply.",
+          "Vehicle MSRP must not exceed the cap for its class."
+        ],
+        "income": {
+          "type": "magi_by_filing_status",
+          "limits": { "joint": 300000, "head_of_household": 225000, "other": 150000 },
+          "basis": "IRS modified AGI limits for the year of delivery or the prior year, whichever is lower.",
+          "evidence": { "quote": "$300,000 for married couples filing jointly or a surviving spouse", "url": "https://www.irs.gov/credits-deductions/credits-for-new-clean-vehicles-purchased-in-2023-or-after", "retrievedAt": "2026-10-19T17:20:00Z" }
+        },
+        "applicant": ["residential", "business"],
+        "vehicle": {
+          "condition": ["new"],
+          "acquisition": ["purchase"],
+          "maxPrice": 80000,
+          "maxPriceNote": "$80,000 for vans, SUVs and pickup trucks; $55,000 for other vehicles.",
+          "evidence": { "quote": "$80,000 for vans, sport utility vehicles and pickup trucks", "url": "https://www.irs.gov/credits-deductions/credits-for-new-clean-vehicles-purchased-in-2023-or-after", "retrievedAt": "2026-10-19T17:20:00Z" }
+        },
+        "restrictions": ["Only specific vehicles qualified; the IRS and fueleconomy.gov published the list. Leased vehicles were handled under the commercial credit (45W), not this one."]
+      },
+      "application": {
+        "steps": [
+          "Confirm the vehicle was acquired on or before September 30, 2025 and that the dealer submitted a time-of-sale report.",
+          "If you transferred the credit to the dealer at purchase, keep the dealer's report for your records.",
+          "Otherwise, file Form 8936 with your federal income tax return for the year you took delivery."
+        ],
+        "documents": ["Dealer time-of-sale report", "Form 8936"],
+        "deadlineNote": "Vehicle acquisition deadline passed on September 30, 2025."
+      },
+      "programUrl": "https://www.irs.gov/credits-deductions/credits-for-new-clean-vehicles-purchased-in-2023-or-after",
+      "applicationUrl": "https://www.irs.gov/forms-pubs/about-form-8936",
+      "startDate": "2023-01-01",
+      "endDate": "2025-09-30",
+      "status": "closed",
+      "statusBasis": "The IRS states the credit is not available for vehicles acquired after Sept. 30, 2025 (Public Law 119-21).",
+      "statusEvidence": { "quote": "The New Clean Vehicle Credit is not available for vehicles acquired after Sept. 30, 2025.", "url": "https://www.irs.gov/credits-deductions/credits-for-new-clean-vehicles-purchased-in-2023-or-after", "retrievedAt": "2026-10-19T17:20:00Z" },
+      "sourceUrl": "https://www.irs.gov/credits-deductions/credits-for-new-clean-vehicles-purchased-in-2023-or-after",
+      "verificationMethod": "Read from the official IRS page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": []
+    },
+    {
+      "id": "federal_curated:irs-25e",
+      "externalId": "irs-25e",
+      "name": "Used Clean Vehicle Credit (IRC Section 25E)",
+      "providerName": "Internal Revenue Service",
+      "providerType": "federal",
+      "categories": ["ev_purchase"],
+      "benefitTypes": ["tax_credit", "pos_rebate"],
+      "summary": "A federal tax credit of 30% of the sale price, up to $4,000, for buying a qualified used EV from a dealer. The credit is no longer available for vehicles acquired after September 30, 2025.",
+      "amounts": [
+        {
+          "kind": "percent",
+          "value": 30,
+          "maximum": 4000,
+          "label": "30% of the sale price, up to $4,000",
+          "evidence": { "quote": "The credit equals 30% of the sale price up to a maximum credit of $4,000.", "url": "https://www.irs.gov/credits-deductions/used-clean-vehicle-credit", "retrievedAt": "2026-10-19T17:20:00Z" }
+        }
+      ],
+      "stackingNote": "ClearEV does not add amounts together; each program's rules decide what can be combined.",
+      "coverage": { "type": "national", "states": [], "counties": [], "zips": [], "utilityNames": [], "confidence": "verified", "note": "Federal program; applies nationwide." },
+      "eligibility": {
+        "summary": [
+          "Vehicle must have been acquired on or before September 30, 2025.",
+          "Sale price of $25,000 or less, bought from a licensed dealer.",
+          "Modified adjusted gross income limits apply."
+        ],
+        "income": {
+          "type": "magi_by_filing_status",
+          "limits": { "joint": 150000, "head_of_household": 112500, "other": 75000 },
+          "basis": "IRS modified AGI limits for the year of delivery or the prior year, whichever is lower.",
+          "evidence": { "quote": "$150,000 for married filing jointly or a surviving spouse", "url": "https://www.irs.gov/credits-deductions/used-clean-vehicle-credit", "retrievedAt": "2026-10-19T17:20:00Z" }
+        },
+        "applicant": ["residential"],
+        "vehicle": {
+          "condition": ["used"],
+          "acquisition": ["purchase"],
+          "maxPrice": 25000,
+          "maxPriceNote": "Sale price of $25,000 or less.",
+          "evidence": { "quote": "Have a sale price of $25,000 or less.", "url": "https://www.irs.gov/credits-deductions/used-clean-vehicle-credit", "retrievedAt": "2026-10-19T17:20:00Z" }
+        },
+        "restrictions": ["Model year at least two years earlier than the year of purchase; one claim per vehicle; buyer cannot be the original owner."]
+      },
+      "application": {
+        "steps": [
+          "Confirm the purchase date was on or before September 30, 2025 and that the dealer reported the sale to the IRS.",
+          "File Form 8936 with your federal return for the year of purchase unless you transferred the credit to the dealer."
+        ],
+        "documents": ["Dealer time-of-sale report", "Form 8936"],
+        "deadlineNote": "Vehicle acquisition deadline passed on September 30, 2025."
+      },
+      "programUrl": "https://www.irs.gov/credits-deductions/used-clean-vehicle-credit",
+      "applicationUrl": "https://www.irs.gov/forms-pubs/about-form-8936",
+      "startDate": "2023-01-01",
+      "endDate": "2025-09-30",
+      "status": "closed",
+      "statusBasis": "The IRS states the credit is not available for vehicles acquired after Sept. 30, 2025 (Public Law 119-21).",
+      "statusEvidence": { "quote": "The Previously-Owned Clean Vehicle Credit is not available for vehicles acquired after Sept. 30, 2025.", "url": "https://www.irs.gov/credits-deductions/used-clean-vehicle-credit", "retrievedAt": "2026-10-19T17:20:00Z" },
+      "sourceUrl": "https://www.irs.gov/credits-deductions/used-clean-vehicle-credit",
+      "verificationMethod": "Read from the official IRS page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": []
+    },
+    {
+      "id": "federal_curated:irs-30c",
+      "externalId": "irs-30c",
+      "name": "Alternative Fuel Vehicle Refueling Property Credit (IRC Section 30C) — home charger",
+      "providerName": "Internal Revenue Service",
+      "providerType": "federal",
+      "categories": ["home_charging"],
+      "benefitTypes": ["tax_credit"],
+      "summary": "A federal tax credit of 30% of the cost of home EV charging equipment, up to $1,000 per item, for property in eligible census tracts. Not available for property placed in service after June 30, 2026.",
+      "amounts": [
+        {
+          "kind": "percent",
+          "value": 30,
+          "maximum": 1000,
+          "label": "30% of cost, up to $1,000 per item",
+          "evidence": { "quote": "the credit equals 30% of the cost of the property up to a maximum credit of $1,000 per item", "url": "https://www.irs.gov/credits-deductions/alternative-fuel-vehicle-refueling-property-credit", "retrievedAt": "2026-10-19T17:20:00Z" }
+        }
+      ],
+      "stackingNote": "Utility charger rebates may reduce the cost basis used for the credit; ClearEV does not add amounts together.",
+      "coverage": { "type": "national", "states": [], "counties": [], "zips": [], "utilityNames": [], "confidence": "verified", "note": "Federal program, but only for property installed in a low-income community or non-urban census tract." },
+      "eligibility": {
+        "summary": [
+          "Property placed in service at your main home on or before June 30, 2026.",
+          "Installation address must be in an eligible low-income or non-urban census tract."
+        ],
+        "applicant": ["residential", "business"],
+        "restrictions": ["Eligible census tracts are listed in IRS Notice 2024-20 appendices; check your 11-digit census tract GEOID."]
+      },
+      "application": {
+        "steps": [
+          "Confirm your installation address is in an eligible census tract using the IRS appendix lists.",
+          "Keep receipts for the charger and installation.",
+          "File Form 8911 with your federal income tax return for the year the charger was placed in service."
+        ],
+        "documents": ["Receipts for equipment and installation", "Form 8911"],
+        "deadlineNote": "Property must be placed in service on or before June 30, 2026; claim it on that year's return."
+      },
+      "programUrl": "https://www.irs.gov/credits-deductions/alternative-fuel-vehicle-refueling-property-credit",
+      "applicationUrl": "https://www.irs.gov/forms-pubs/about-form-8911",
+      "startDate": "2023-01-01",
+      "endDate": "2026-06-30",
+      "status": "closed",
+      "statusBasis": "The IRS FAQ states the credit will not be allowed for any property placed in service after June 30, 2026. Owners who installed before that date can still claim it on their 2026 return.",
+      "statusEvidence": { "quote": "The credit will not be allowed for any property placed in service after June 30, 2026.", "url": "https://www.irs.gov/newsroom/faqs-for-modification-of-sections-25c-25d-25e-30c-30d-45l-45w-and-179d-under-public-law-119-21-139-stat-72-july-4-2025-commonly-known-as-the-one-big-beautiful-bill-obbb", "retrievedAt": "2026-10-19T17:20:00Z" },
+      "sourceUrl": "https://www.irs.gov/credits-deductions/alternative-fuel-vehicle-refueling-property-credit",
+      "verificationMethod": "Read from the official IRS page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": []
+    },
+    {
+      "id": "federal_curated:irs-25d",
+      "externalId": "irs-25d",
+      "name": "Residential Clean Energy Credit (IRC Section 25D) — solar and battery storage",
+      "providerName": "Internal Revenue Service",
+      "providerType": "federal",
+      "categories": ["solar", "battery"],
+      "benefitTypes": ["tax_credit"],
+      "summary": "A federal tax credit of 30% of the cost of new solar panels, solar water heaters, and battery storage of at least 3 kWh. Not available for expenditures made after December 31, 2025.",
+      "amounts": [
+        {
+          "kind": "percent",
+          "value": 30,
+          "label": "30% of the cost of qualified property",
+          "evidence": { "quote": "equals 30% of the costs of new, qualified clean energy property", "url": "https://www.irs.gov/credits-deductions/residential-clean-energy-credit", "retrievedAt": "2026-10-19T17:20:00Z" }
+        }
+      ],
+      "stackingNote": "Utility and state solar rebates can reduce the cost basis for this credit; ClearEV does not add amounts together.",
+      "coverage": { "type": "national", "states": [], "counties": [], "zips": [], "utilityNames": [], "confidence": "verified", "note": "Federal program; applies nationwide." },
+      "eligibility": {
+        "summary": ["Qualified property installed at a home you use as a residence.", "Battery storage must have a capacity of at least 3 kilowatt hours."],
+        "applicant": ["residential"],
+        "restrictions": ["No income limit, but the credit is nonrefundable and limited by your tax liability."]
+      },
+      "application": {
+        "steps": [
+          "Keep invoices showing the cost of the system and installation and the date of the expenditure.",
+          "File Form 5695 with your federal income tax return for the year of the expenditure."
+        ],
+        "documents": ["Invoices and proof of payment", "Form 5695"],
+        "deadlineNote": "Expenditures had to be made by December 31, 2025."
+      },
+      "programUrl": "https://www.irs.gov/credits-deductions/residential-clean-energy-credit",
+      "applicationUrl": "https://www.irs.gov/forms-pubs/about-form-5695",
+      "startDate": "2022-01-01",
+      "endDate": "2025-12-31",
+      "status": "closed",
+      "statusBasis": "The IRS states the credit is not available for any property placed in service after December 31, 2025 (Public Law 119-21).",
+      "statusEvidence": { "quote": "The credit is not available for any property placed in service after December 31, 2025.", "url": "https://www.irs.gov/credits-deductions/residential-clean-energy-credit", "retrievedAt": "2026-10-19T17:20:00Z" },
+      "sourceUrl": "https://www.irs.gov/credits-deductions/residential-clean-energy-credit",
+      "verificationMethod": "Read from the official IRS page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": []
+    }
+  ]
+}

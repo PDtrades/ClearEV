@@ -1,0 +1,45 @@
+{
+  "$comment": "TEST FIXTURE. Synthetic records in the shape of the NREL AFDC laws API (v1). Not real programs.",
+  "metadata": { "count": 3 },
+  "result": [
+    {
+      "id": 900001,
+      "state": "CA",
+      "title": "Electric Vehicle (EV) Rebate - Example Utility",
+      "text": "<p>Example Utility offers residential customers a rebate of $500 for the purchase or lease of a new or used EV. Rebates are available on a first-come, first-served basis. Customers must have an income at or below 300% of the federal poverty level. For more information, see the <a href=\"https://example.com/ev-rebate\">Example Utility EV Rebate</a> website.</p>",
+      "plaintext": "Example Utility offers residential customers a rebate of $500 for the purchase or lease of a new or used EV. Rebates are available on a first-come, first-served basis. Customers must have an income at or below 300% of the federal poverty level. For more information, see the [Example Utility EV Rebate](https://example.com/ev-rebate) website.",
+      "type": "Utility/Private Incentives",
+      "agency": null,
+      "categories": [{ "code": "ELEC", "title": "All-Electric Vehicles (EVs)", "category_type": "tech" }, { "code": "RBATE", "title": "Rebates", "category_type": "incentive" }, { "code": "IND", "title": "Personal Vehicle Owner or Driver", "category_type": "user" }],
+      "types": [{ "id": 2, "code": "UPINC", "title": "Utility/Private Incentives" }],
+      "references": [{ "url": "https://example.com/ev-rebate", "description": "Example Utility EV Rebate" }],
+      "enacted_date": null, "amended_date": "2026-01-15T00:00:00Z", "expired_date": null, "archived_date": null, "repealed_date": null, "significant_update_date": "2026-01-15T00:00:00Z"
+    },
+    {
+      "id": 900002,
+      "state": "CA",
+      "title": "Residential Electric Vehicle (EV) Charging Station Rebate - Example Utility",
+      "text": "<p>Example Utility offers residential customers a rebate of up to $1,000 for the purchase and installation of a Level 2 EV charging station at their home.</p>",
+      "plaintext": "Example Utility offers residential customers a rebate of up to $1,000 for the purchase and installation of a Level 2 EV charging station at their home.",
+      "type": "Utility/Private Incentives",
+      "agency": null,
+      "categories": [{ "code": "ELEC", "title": "All-Electric Vehicles (EVs)", "category_type": "tech" }, { "code": "RBATE", "title": "Rebates", "category_type": "incentive" }],
+      "types": [{ "id": 2, "code": "UPINC", "title": "Utility/Private Incentives" }],
+      "references": [],
+      "enacted_date": null, "amended_date": "2025-11-01T00:00:00Z", "expired_date": null, "archived_date": null, "repealed_date": null, "significant_update_date": "2025-11-01T00:00:00Z"
+    },
+    {
+      "id": 900003,
+      "state": "CA",
+      "title": "Plug-In Electric Vehicle (PEV) Time-Of-Use (TOU) Rate - Example Utility",
+      "text": "<p>Example Utility offers a TOU rate to residential customers who own or lease a PEV. The rate expired on June 30, 2026.</p>",
+      "plaintext": "Example Utility offers a TOU rate to residential customers who own or lease a PEV. The rate expired on June 30, 2026.",
+      "type": "Utility/Private Incentives",
+      "agency": null,
+      "categories": [{ "code": "PHEV", "title": "Plug-In Hybrid Electric Vehicles", "category_type": "tech" }, { "code": "TOU", "title": "Time-of-Use Rate", "category_type": "incentive" }],
+      "types": [{ "id": 2, "code": "UPINC", "title": "Utility/Private Incentives" }],
+      "references": [],
+      "enacted_date": null, "amended_date": null, "expired_date": "2026-06-30T00:00:00Z", "archived_date": null, "repealed_date": null, "significant_update_date": null
+    }
+  ]
+}
