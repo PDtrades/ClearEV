@@ -3,6 +3,9 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "tests/e2e",
   timeout: 60_000,
+  // The desktop project draws WebGL on the CPU (no GPU on CI runners), which can stall the page for a few
+  // seconds while the map starts; assertions get that much headroom.
+  expect: { timeout: 10_000 },
   retries: 0,
   use: { baseURL: process.env.E2E_BASE_URL ?? "http://127.0.0.1:3100", trace: "retain-on-failure" },
   webServer: process.env.E2E_BASE_URL

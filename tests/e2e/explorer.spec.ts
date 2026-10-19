@@ -75,6 +75,9 @@ test.describe("explorer", () => {
     await page.getByLabel("State", { exact: true }).focus();
     await page.getByLabel("State", { exact: true }).selectOption("WA");
     await expect(page).toHaveURL(/state=WA/);
+    // Wait for the Washington results to replace the Texas ones before choosing a card.
+    await expect(page.getByRole("heading", { name: /Programs in Washington/ })).toBeVisible();
+    await expect(page.locator(".results-panel")).toHaveAttribute("aria-busy", "false");
     const first = page.getByRole("list", { name: "Program results" }).getByRole("listitem").first().locator("article");
     await first.focus();
     await page.keyboard.press("Enter");
@@ -106,8 +109,10 @@ test.describe("map", () => {
     await expect(page.getByRole("region", { name: /Interactive 3D map/ })).toBeVisible();
     await expect(page.getByText("Legend")).toBeVisible();
     await expect(page.getByRole("button", { name: "Reset view" })).toBeVisible();
+    // CPU-rendered WebGL (this test browser) skips elevation, so there is no 3D terrain toggle.
+    await expect(page.getByRole("button", { name: "3D terrain" })).toHaveCount(0);
     await expect(page.locator(".maplibregl-canvas")).toBeVisible();
-    await expect(page.locator(".maplibregl-marker")).toHaveCount(52, { timeout: 20_000 }); // 51 labels + DC button
+    await expect(page.locator(".maplibregl-marker:not(.hotspot-ring):not(.range-label)")).toHaveCount(52, { timeout: 20_000 }); // 51 labels + DC button
     await page.waitForTimeout(2500); // software GL is slow to paint
 
     const box = await page.locator(".maplibregl-canvas").boundingBox();
@@ -118,6 +123,68 @@ test.describe("map", () => {
     await page.getByRole("button", { name: "District of Columbia" }).click();
     await expect(page).toHaveURL(/state=DC/);
     await page.screenshot({ path: "test-results/desktop-map.png", fullPage: false });
+  });
+
+  test("hotspots rank states from loaded programs and select a state on click", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile", "covered on desktop and no-webgl");
+    await page.goto("/");
+    const strip = page.getByLabel("Hotspots", { exact: true });
+    await expect(strip.getByRole("button", { name: "Most programs" })).toHaveAttribute("aria-pressed", "true");
+    const states = strip.getByRole("list", { name: /Top states/ });
+    await expect(states.getByRole("listitem")).toHaveCount(5);
+    // Nationwide programs never make a state a hotspot, and counts are whole programs.
+    await expect(states.getByRole("listitem").first()).toContainText(/\d+ programs?/);
+    await strip.getByRole("button", { name: "Largest amount" }).click();
+    await expect(states.getByRole("listitem").first()).toContainText(/\$\d/);
+    await expect(strip).toContainText("ClearEV never adds programs together");
+    const first = (await states.getByRole("listitem").first().locator(".hotspot-name").textContent())!;
+    await states.getByRole("listitem").first().getByRole("button").click();
+    await expect(page.getByRole("heading", { name: new RegExp(`Programs in ${first}`) })).toBeVisible();
+    await strip.getByRole("button", { name: "Off" }).click();
+    await expect(states).toHaveCount(0);
+    if (testInfo.project.name === "desktop") await expect(page.locator(".hotspot-ring")).toHaveCount(0);
+  });
+});
+
+test.describe("county dots", () => {
+  test("each county dot opens its own card and a program in it can be selected", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name !== "desktop", "WebGL markers are desktop only");
+    await page.goto("/");
+    const dots = page.locator(".hotspot-ring-county");
+    await expect(dots.first()).toBeVisible({ timeout: 20_000 });
+    await page.waitForTimeout(1500);
+    // Click whichever dot is on top at that point, as a person would.
+    const box = (await dots.first().boundingBox())!;
+    await page.mouse.click(box.x + box.width / 2, box.y + box.height / 2);
+    const card = page.locator(".county-pop");
+    await expect(card).toBeVisible();
+    await expect(card).toContainText(/County|Parish|Columbia/);
+    await expect(page.locator('.hotspot-ring-county[data-active="true"]')).toHaveCount(1);
+    const first = card.getByRole("listitem").first().getByRole("button");
+    const name = (await first.textContent())!;
+    await first.click();
+    await expect(page).toHaveURL(/sel=/);
+    await expect(page.getByRole("heading", { name: /Programs in / })).toBeVisible();
+    await expect(page.getByText(`Selected: ${name}`, { exact: false })).toBeVisible();
+  });
+});
+
+test.describe("EV-friendliness", () => {
+  test("ranks states by chargers per person and home electricity price", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile", "covered on desktop and no-webgl");
+    await page.goto("/");
+    const strip = page.getByLabel("EV-friendliness", { exact: true });
+    await expect(strip.getByRole("button", { name: "Bars on" })).toHaveAttribute("aria-pressed", "true");
+    const best = strip.getByRole("list", { name: "Most EV-friendly states" }).getByRole("listitem");
+    await expect(best).toHaveCount(5);
+    await expect(strip.getByRole("list", { name: "Least EV-friendly states" }).getByRole("listitem")).toHaveCount(3);
+    await expect(strip).toContainText("charging ports per 100,000");
+    const first = (await best.first().getByRole("button").getAttribute("title"))!.split(":")[0];
+    await best.first().getByRole("button").click();
+    await expect(page.getByRole("heading", { name: new RegExp(`Programs in ${first}`) })).toBeVisible();
+    await expect(strip).toContainText(new RegExp(`${first} scores \\d+`));
+    await strip.getByRole("button", { name: "Off" }).click();
+    await expect(strip.getByRole("button", { name: "Off" })).toHaveAttribute("aria-pressed", "true");
   });
 });
 

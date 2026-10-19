@@ -14,6 +14,8 @@ ClearEV shows only what connected, traceable sources publish. This page states w
 | Source | Status without keys | With keys |
 |---|---|---|
 | Federal credits (IRS, curated) | 4 records, nationwide. All four (30D, 25E, 30C, 25D) are **closed** under Public Law 119-21 as of today; they are listed with their termination dates and quotes so users are not misled into expecting them. | Quotes re-verified against irs.gov on each run. |
+| State and regional (curated) | 21 open or status-unknown programs in 15 states, plus one Bay Area air-district program covering 9 counties. A starter set, not every state program. | Quotes re-verified against each official page on every run. |
+| Utility, county and city (curated) | 80 programs (74 active, 6 status unknown) from utilities, municipal utilities, community choice aggregators, NYC, DC and the San Joaquin Valley air district, in 34 states plus DC. | Quotes re-verified against each official page on every run. |
 | AFDC Laws & Incentives | Not connected. | State incentives and utility/private incentives for EVs and charging in all states. Amounts are free text (quoted, not parsed). No solar/battery programs. Coverage boundaries of utility programs not verified. |
 | Rewiring America | Not connected. | Solar, battery, EV charger, new/used EV and plug-in hybrid incentives by ZIP, including many utility and local programs; income screening when the user enters household details. Rewiring America's own `coverage` object reports whether the state and utility are covered, and ClearEV shows that as a coverage note. |
 | OpenEI URDB | Not connected. | EV and time-of-use residential rate plans for utilities whose listed location is within 5 miles of the ZIP point. Enrollment terms must be confirmed with the utility. |
@@ -51,3 +53,11 @@ ClearEV shows only what connected, traceable sources publish. This page states w
 2. A licensed feed of dealer/manufacturer/company offers.
 3. State program APIs with structured amounts (e.g., CA CVRP/CCFR, NY Drive Clean, CO) as curated adapters with quote verification.
 4. Charging-network membership offers (EVgo, Electrify America, ChargePoint) as curated records, if their terms permit.
+
+## Map hotspots
+
+The map highlights the states and counties with the most open state and local programs, or with the largest single dollar figure one program states. Nationwide programs are left out because they apply everywhere. Closed and exhausted programs are left out. Percentages count only through their stated dollar cap, and amounts from different programs are never added together. Hotspots reflect only loaded data, so they change as sources are connected. City and utility programs count toward a county only when their page names that county.
+
+## EV-friendliness bars
+
+Each state gets a bar whose height is a 0–100 score: the average of its rank among states on charging ports per 100,000 residents and on average home electricity price (cheaper is better). It does not include public charging prices, which are not published by state, and the charger count includes every port the DOE station locator lists. Sources and dates are in DATA-SOURCES.md.

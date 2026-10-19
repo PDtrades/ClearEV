@@ -33,7 +33,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <main id="main">{children}</main>
         <footer className="site-footer">
           <p>ClearEV lists programs from official and reputable sources and shows where each value came from and when it was last checked. It does not promise eligibility, approval, or savings; always confirm with the program administrator.</p>
-          <p>Incentive data by <a href="https://www.rewiringamerica.org" rel="noopener noreferrer">Rewiring America</a> where noted · U.S. DOE <a href="https://afdc.energy.gov/laws" rel="noopener noreferrer">Alternative Fuels Data Center</a> · <a href="https://openei.org/wiki/Utility_Rate_Database" rel="noopener noreferrer">OpenEI Utility Rate Database</a> · U.S. Census Bureau geography.</p>
+          <p>Incentive data by <a href="https://www.rewiringamerica.org" rel="noopener noreferrer">Rewiring America</a> where noted · U.S. DOE <a href="https://afdc.energy.gov/laws" rel="noopener noreferrer">Alternative Fuels Data Center</a> · <a href="https://openei.org/wiki/Utility_Rate_Database" rel="noopener noreferrer">OpenEI Utility Rate Database</a> · U.S. Census Bureau geography and population · <a href="https://www.eia.gov/electricity/annual/" rel="noopener noreferrer">U.S. EIA</a> electricity prices · Elevation: <a href="https://registry.opendata.aws/terrain-tiles/" rel="noopener noreferrer">AWS Terrain Tiles</a> (Mapzen/Tilezen; USGS 3DEP, SRTM, ETOPO1) · Lakes and mountain names: <a href="https://www.naturalearthdata.com" rel="noopener noreferrer">Natural Earth</a>.</p>
         </footer>
       </body>
     </html>

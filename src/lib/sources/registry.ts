@@ -2,13 +2,13 @@ import { sql } from "drizzle-orm";
 import type { DB } from "../db/client";
 import { sources } from "../db/schema";
 import { afdcAdapter } from "./afdc";
-import { federalAdapter } from "./curated";
+import { federalAdapter, localAdapter, stateAdapter } from "./curated";
 import { openeiAdapter } from "./openei";
 import { rewiringAmericaAdapter } from "./rewiring-america";
 import { isBulk, missingEnv, type Adapter, type BulkAdapter, type OnDemandAdapter } from "./types";
 
 /** All adapters. Adding a source = adding an adapter here. */
-export const ADAPTERS: Adapter[] = [federalAdapter, afdcAdapter, rewiringAmericaAdapter, openeiAdapter];
+export const ADAPTERS: Adapter[] = [federalAdapter, stateAdapter, localAdapter, afdcAdapter, rewiringAmericaAdapter, openeiAdapter];
 
 export const bulkAdapters = (): BulkAdapter[] => ADAPTERS.filter(isBulk);
 export const onDemandAdapters = (): OnDemandAdapter[] => ADAPTERS.filter((a): a is OnDemandAdapter => !isBulk(a));

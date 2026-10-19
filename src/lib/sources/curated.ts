@@ -102,3 +102,50 @@ export function makeCuratedAdapter(meta: SourceMeta, file: string): BulkAdapter 
 }
 
 export const federalAdapter = makeCuratedAdapter(FEDERAL_META, path.join(process.cwd(), "data/curated/federal.json"));
+
+const STATES_FILE = path.join(process.cwd(), "data/curated/states.json");
+
+/** Hosts the state records quote from; the adapter may fetch only these pages to re-check quotes. */
+function hostsOf(file: string): string[] {
+  try {
+    const data = loadCuratedFile(file);
+    const urls = data.records.flatMap((r) => [r.programUrl, r.sourceUrl, ...collectQuotes(r).map((e) => e.url)]);
+    return [...new Set(urls.map((u) => new URL(u).hostname))].sort();
+  } catch {
+    return [];
+  }
+}
+
+export const STATE_META: SourceMeta = {
+  id: "state_curated",
+  name: "State and regional programs (official pages, curated)",
+  kind: "curated",
+  homepage: "https://afdc.energy.gov/laws/state",
+  attribution: "Values quoted from official state and regional program pages",
+  requiredEnv: [],
+  allowedHosts: hostsOf(STATES_FILE),
+  covers: "A hand-reviewed starter set of open state and regional EV, charger, solar and battery programs, each value quoted from the official program page.",
+  gaps: "A starter set, not every state program. The DOE Alternative Fuels Data Center feed adds the full state list once its API key is set.",
+  priority: 6,
+  staleAfterDays: 30,
+};
+
+export const stateAdapter = makeCuratedAdapter(STATE_META, STATES_FILE);
+
+const LOCAL_FILE = path.join(process.cwd(), "data/curated/local.json");
+
+export const LOCAL_META: SourceMeta = {
+  id: "local_curated",
+  name: "Utility, county and city programs (official pages, curated)",
+  kind: "curated",
+  homepage: "https://afdc.energy.gov/laws/state",
+  attribution: "Values quoted from official utility, county and city program pages",
+  requiredEnv: [],
+  allowedHosts: hostsOf(LOCAL_FILE),
+  covers: "A hand-reviewed set of open utility, county and city EV, charger, rate, solar and battery programs, each value quoted from the official program page.",
+  gaps: "Not every utility or city. 17 states have no local records yet (AK, DE, IA, ID, KS, KY, MD, ME, MT, NC, NE, NV, OH, PA, SC, WV, WY), and utility programs are matched by state unless the page names counties.",
+  priority: 7,
+  staleAfterDays: 30,
+};
+
+export const localAdapter = makeCuratedAdapter(LOCAL_META, LOCAL_FILE);

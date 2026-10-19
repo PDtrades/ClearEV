@@ -1,3 +1,4 @@
+import { requestOrigin } from "@/lib/admin/origin";
 import { eq } from "drizzle-orm";
 import { NextResponse } from "next/server";
 import { isAdminSession } from "@/lib/admin/session";
@@ -16,7 +17,7 @@ export async function POST(req: Request) {
   const form = await req.formData();
   const action = String(form.get("action") ?? "");
   const back = String(form.get("back") ?? "/admin");
-  const origin = new URL(req.url).origin;
+  const origin = requestOrigin(req);
   const safeBack = back.startsWith("/admin") ? back : "/admin";
   const db = await getDb();
   const id = Number(form.get("id"));

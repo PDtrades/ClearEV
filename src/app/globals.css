@@ -34,11 +34,14 @@ button, input, select { font: inherit; color: inherit; }
 
 /* ---------- clouds ---------- */
 .sky { position: fixed; inset: 0; z-index: -1; overflow: hidden; background: linear-gradient(180deg, #e6f2fb 0%, var(--sky) 60%, #f5fafd 100%); pointer-events: none; }
-.cloud { position: absolute; filter: blur(0.5px); opacity: 0.85; will-change: transform; animation: drift linear infinite; }
+/* A soft blue shadow under each cloud so white clouds still read against the pale sky. */
+.cloud { position: absolute; left: 0; filter: drop-shadow(0 8px 10px rgba(88, 132, 180, 0.28)); opacity: 0.85; will-change: transform; animation: drift linear infinite; }
+.cloud-bob { animation: bob ease-in-out infinite alternate; will-change: transform; }
 .cloud svg { display: block; width: 100%; height: auto; }
-@keyframes drift { from { transform: translateX(-30vw); } to { transform: translateX(130vw); } }
-.sky[data-paused="true"] .cloud, [data-motion="reduced"] .cloud { animation-play-state: paused; }
-@media (prefers-reduced-motion: reduce) { .cloud { animation-play-state: paused; } }
+@keyframes drift { from { transform: translateX(-40vw); } to { transform: translateX(110vw); } }
+@keyframes bob { from { transform: translateY(-6px); } to { transform: translateY(6px); } }
+.sky[data-paused="true"] .cloud, .sky[data-paused="true"] .cloud-bob { animation-play-state: paused; }
+@media (prefers-reduced-motion: reduce) { .sky[data-paused="auto"] .cloud, .sky[data-paused="auto"] .cloud-bob { animation-play-state: paused; } }
 
 /* ---------- layout ---------- */
 .site-header { position: sticky; top: 0; z-index: 30; height: var(--header-h); display: flex; align-items: center; gap: 16px; padding: 0 20px; background: rgba(255, 255, 255, 0.82); backdrop-filter: blur(10px); border-bottom: 1px solid var(--line); }
@@ -78,7 +81,7 @@ h3 { font-size: 16px; margin: 12px 0 6px; }
 .searchbar { display: grid; grid-template-columns: minmax(140px, 180px) minmax(160px, 220px) 1fr auto; gap: 10px; padding: 14px; margin-top: 14px; }
 .explorer { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.9fr); gap: 16px; margin-top: 14px; align-items: start; }
 .map-panel { position: sticky; top: calc(var(--header-h) + 12px); overflow: hidden; }
-.map-wrap { position: relative; height: min(70vh, 640px); min-height: 380px; background: linear-gradient(180deg, #e3f0fa, #f3f9fd); border-radius: var(--radius); }
+.map-wrap { position: relative; height: min(calc(80vh - 140px), 620px); min-height: 380px; background: linear-gradient(180deg, #e3f0fa, #f3f9fd); border-radius: var(--radius); }
 .map-canvas { position: absolute; inset: 0; }
 .map-controls { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 5; }
 .map-controls .btn { width: 38px; height: 38px; justify-content: center; padding: 0; font-size: 18px; }
@@ -174,3 +177,65 @@ table.data th, table.data td { text-align: left; padding: 8px; border-bottom: 1p
   .kv { grid-template-columns: 1fr; }
   .map-wrap { height: 62vh; }
 }
+
+/* Map hotspots */
+.hotspot-strip { border-top: 1px solid var(--line); padding: 10px 14px 12px; display: grid; gap: 8px; font-size: 13px; }
+.hotspot-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.hotspot-title { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.hotspot-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle, #e8603c 0 40%, #f7b26788 41% 100%); flex: none; }
+.hotspot-modes { display: flex; gap: 4px; flex-wrap: wrap; }
+.hotspot-modes button { font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+.hotspot-modes button[aria-pressed="true"] { background: #c2451f; border-color: #c2451f; color: #fff; }
+.hotspot-modes button:focus-visible, .hotspot-list button:focus-visible { outline: 3px solid var(--blue); outline-offset: 1px; }
+.hotspot-list { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.hotspot-list button { display: inline-flex; gap: 6px; align-items: center; font: inherit; background: #fff7ef; border: 1px solid #f6d3b5; padding: 3px 10px 3px 4px; border-radius: 999px; cursor: pointer; color: var(--ink); }
+.hotspot-list button:hover { background: #ffe9d6; }
+.hotspot-rank { width: 20px; height: 20px; border-radius: 50%; background: #e8603c; color: #fff; font-weight: 700; font-size: 11px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.hotspot-rank-county { background: #fff; color: #c2451f; border: 2px solid #c2451f; width: 18px; height: 18px; }
+.hotspot-value { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hotspot-empty, .hotspot-note { margin: 0; }
+.hotspot-ring { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; background: #e8603c; color: #fff; font: 700 12px/1 system-ui, sans-serif; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.hotspot-ring::after { content: ""; position: absolute; inset: -2px; border-radius: 50%; background: rgba(232, 96, 60, 0.45); z-index: -1; will-change: transform, opacity; animation: hotspot-pulse 2.2s ease-out infinite; pointer-events: none; }
+.hotspot-ring-county { width: 14px; height: 14px; background: #fff; border: 3px solid #c2451f; }
+/* A wider invisible hit area so a single county dot is easy to click or tap. */
+.hotspot-ring-county::before { content: ""; position: absolute; inset: -6px; border-radius: 50%; }
+.hotspot-ring-county:hover, .hotspot-ring-county[data-active="true"] { background: #c2451f; z-index: 2; }
+.county-pop { display: grid; gap: 4px; font-size: 13px; line-height: 1.35; }
+.county-pop ul { margin: 4px 0; padding: 0; list-style: none; display: grid; gap: 6px; }
+.linklike { background: none; border: 0; padding: 0; color: var(--blue); text-decoration: underline; cursor: pointer; font: inherit; text-align: left; }
+.linklike:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.hotspot-ring:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+/* Transform and opacity only, so the pulse runs on the compositor instead of repainting every frame. */
+@keyframes hotspot-pulse { 0% { transform: scale(1); opacity: 1; } 70% { transform: scale(2.1); opacity: 0; } 100% { transform: scale(2.1); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hotspot-ring { box-shadow: 0 0 0 4px rgba(232, 96, 60, 0.35); } .hotspot-ring::after { animation: none; opacity: 0; } }
+.svg-hotspot { cursor: pointer; }
+.svg-hotspot circle { fill: #e8603c; stroke: #fff; stroke-width: 2; }
+.svg-hotspot text { fill: #fff; font: 700 10px system-ui, sans-serif; pointer-events: none; }
+.svg-hotspot:focus { outline: none; }
+.svg-hotspot:focus circle { stroke: var(--blue); stroke-width: 3; }
+.map-legend summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; }
+.map-legend summary::-webkit-details-marker { display: none; }
+.map-legend summary::after { content: "▾"; margin-left: auto; color: var(--ink-soft); }
+.map-legend:not([open]) summary::after { content: "▸"; }
+.map-legend[open] summary { margin-bottom: 4px; }
+.hotspot-name { text-align: left; }
+.fallback-wrap { position: absolute; inset: 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.fallback-wrap .svg-map { flex: 1; min-height: 0; height: 100%; width: 100%; }
+
+/* Terrain labels and EV-friendliness */
+.range-label { font: italic 600 11px/1.1 Georgia, "Times New Roman", serif; color: #6b5640; letter-spacing: 0.06em; text-transform: uppercase; pointer-events: none; text-shadow: 0 0 3px #fffaf2, 0 0 3px #fffaf2; white-space: nowrap; opacity: 0.85; }
+.map-canvas[data-detail="low"] .range-label[data-rank="3"], .map-canvas[data-detail="low"] .range-label[data-rank="4"], .map-canvas[data-detail="low"] .range-label[data-rank="5"], .map-canvas[data-detail="low"] .range-label[data-rank="6"] { display: none; }
+.ev-swatch { display: inline-block; width: 10px; height: 14px; border-radius: 2px; background: linear-gradient(0deg, #c8553d, #e9a23b 40%, #8fbf4d 65%, #1d8a5a); flex: none; }
+.ev-pop { display: grid; gap: 3px; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line); }
+.ev-meter, .ev-chip-meter { display: block; height: 6px; border-radius: 3px; background: #e5ecf3; overflow: hidden; }
+.ev-meter > span, .ev-chip-meter > span { display: block; height: 100%; background: linear-gradient(90deg, #c8553d, #e9a23b 40%, #8fbf4d 65%, #1d8a5a); background-size: 100% 100%; }
+.ev-chip-meter { width: 46px; }
+.ev-strip .hotspot-list button { background: #eef7f1; border-color: #c4e3d0; }
+.ev-strip .hotspot-list button:hover { background: #def0e5; }
+.ev-rank { width: 20px; height: 20px; border-radius: 50%; background: #1d8a5a; color: #fff; font-weight: 700; font-size: 11px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.ev-least .ev-rank { background: #c8553d; }
+.ev-selected { margin: 0; font-size: 13px; }
+.hotspot-note a { color: inherit; }
+.svg-ev-bar { stroke: #fff; stroke-width: 0.6; }
+.map-controls .btn[aria-pressed="false"] { opacity: 0.6; }
+.map-perf-note { position: absolute; left: 12px; bottom: 12px; z-index: 5; max-width: min(360px, calc(100% - 24px)); margin: 0; padding: 8px 10px; font-size: 13px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }

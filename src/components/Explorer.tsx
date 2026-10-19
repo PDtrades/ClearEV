@@ -10,6 +10,11 @@ import { ActiveFilters, Filters } from "./Filters";
 import { CategoryIcon } from "./Icons";
 import { cssId, ResultCard } from "./ResultCard";
 import { UsMapFallback } from "./UsMapFallback";
+import { HotspotPanel, type HotspotView } from "./HotspotPanel";
+import type { HotspotData } from "@/lib/search/hotspots";
+import { EV_FRIENDLINESS } from "@/lib/geo/ev-friendliness";
+import { EvFriendlyPanel } from "./EvFriendlyPanel";
+import { webglInfo } from "@/lib/webgl";
 
 const UsMap = dynamic(() => import("./UsMap"), { ssr: false, loading: () => <p className="muted small" style={{ padding: 16 }}>Loading 3D map…</p> });
 
@@ -17,15 +22,12 @@ const LEGEND: IconKind[] = ["bolt", "solar", "battery", "plug", "general"];
 const LOCAL_COVERAGE = new Set(["utility", "zip", "county", "municipality", "other"]);
 
 function webglAvailable(): boolean {
-  try {
-    const c = document.createElement("canvas");
-    return !!(c.getContext("webgl2") || c.getContext("webgl"));
-  } catch {
-    return false;
-  }
+  return webglInfo().supported;
 }
 
-export function Explorer({ initialParams, initialResult, stateCounts }: { initialParams: ShareableParams; initialResult: SearchResponse; stateCounts: Record<string, number> }) {
+const NO_HOTSPOTS: HotspotData = { states: [], counties: [], counted: 0 };
+
+export function Explorer({ initialParams, initialResult, stateCounts, hotspots = NO_HOTSPOTS }: { initialParams: ShareableParams; initialResult: SearchResponse; stateCounts: Record<string, number>; hotspots?: HotspotData }) {
   const pathname = usePathname();
   const [params, setParams] = useState<ShareableParams>(initialParams);
   const [sensitive, setSensitive] = useState<SensitiveParams>({});
@@ -37,6 +39,12 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
   const [zipInput, setZipInput] = useState(initialParams.zip ?? "");
   const [qInput, setQInput] = useState(initialParams.q ?? "");
   const [zipError, setZipError] = useState<string | null>(null);
+  const [hotspotMode, setHotspotMode] = useState<HotspotView>("programs");
+  const [legendOpen, setLegendOpen] = useState(true);
+  const [showBars, setShowBars] = useState(true);
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 560px)").matches) setLegendOpen(false);
+  }, []);
   const first = useRef(true);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -93,6 +101,19 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
     setZipInput("");
     patch({ state: abbr, zip: undefined, sel: undefined });
   };
+  // A program picked from a county dot: switch to its state, then scroll to it once the state's results arrive.
+  const pendingScroll = useRef<string | null>(null);
+  const pickProgram = (state: string, id: string) => {
+    setZipInput("");
+    pendingScroll.current = id;
+    patch({ state, zip: undefined, sel: id });
+  };
+  useEffect(() => {
+    const id = pendingScroll.current;
+    if (!id || !result.programs.some((p) => p.id === id)) return;
+    pendingScroll.current = null;
+    document.getElementById(`result-${cssId(id)}`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
+  }, [result.programs]);
   const selectProgram = (id: string) => {
     patch({ sel: id });
     document.getElementById(`result-${cssId(id)}`)?.scrollIntoView({ block: "nearest", behavior: "smooth" });
@@ -151,11 +172,11 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
         <section className="card map-panel" aria-label="Map">
           <div className="map-wrap">
             {webgl === null ? null : webgl ? (
-              <UsMap stateCounts={stateCounts} selectedState={loc?.state?.abbr} selectedId={params.sel} zipPoint={result.zipPoint} zipLabel={loc?.zip?.zip} localPrograms={localPrograms} onSelectState={selectState} onSelectProgram={selectProgram} />
+              <UsMap stateCounts={stateCounts} selectedState={loc?.state?.abbr} selectedId={params.sel} zipPoint={result.zipPoint} zipLabel={loc?.zip?.zip} localPrograms={localPrograms} onSelectState={selectState} onSelectProgram={selectProgram} onPickProgram={pickProgram} hotspots={hotspots} hotspotMode={hotspotMode} evFriendliness={EV_FRIENDLINESS} showBars={showBars} />
             ) : (
-              <div style={{ padding: 12 }}>
-                <p className="notice" data-tone="amber" style={{ marginTop: 0 }}>3D rendering is not available in this browser, so here is a 2D map. All programs are also in the list.</p>
-                <UsMapFallback stateCounts={stateCounts} selectedState={loc?.state?.abbr} zip={loc?.zip} onSelectState={selectState} />
+              <div className="fallback-wrap">
+                <p className="notice" data-tone="amber" style={{ margin: 0 }}>3D rendering is not available in this browser, so here is a 2D map. All programs are also in the list.</p>
+                <UsMapFallback stateCounts={stateCounts} selectedState={loc?.state?.abbr} zip={loc?.zip} onSelectState={selectState} hotspots={hotspots} hotspotMode={hotspotMode} evFriendliness={EV_FRIENDLINESS} showBars={showBars} />
               </div>
             )}
             {webgl && (
@@ -165,12 +186,12 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
                 ) : loc?.state ? (
                   <><strong>{loc.state.name}</strong> selected. Enter a ZIP for utility and local programs.</>
                 ) : (
-                  <>Click a state, or enter a ZIP code. Taller states list more state and local programs.</>
+                  <>Click a state, or enter a ZIP code. Bars show how EV-friendly each state is; drag with two fingers or right-click to tilt.</>
                 )}
               </div>
             )}
-            <div className="card map-legend" aria-label="Legend">
-              <h3>Legend</h3>
+            <details className="card map-legend" open={legendOpen} onToggle={(e) => setLegendOpen((e.target as HTMLDetailsElement).open)}>
+              <summary><h3>Legend</h3></summary>
               {LEGEND.map((k) => (
                 <div key={k} className="legend-row">
                   <span className="card-icon" data-kind={k} style={{ width: 24, height: 24, borderRadius: 7 }}>
@@ -179,9 +200,12 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
                   {ICON_LABELS[k]}
                 </div>
               ))}
-              <div className="legend-row"><span style={{ width: 24, textAlign: "center" }}>▲</span>Height = programs listed for the state</div>
-            </div>
+              {showBars && <div className="legend-row"><span className="ev-swatch" aria-hidden="true" style={{ margin: "0 6px" }} />Bar height = EV-friendliness score (0–100)</div>}
+              {hotspotMode !== "off" && <div className="legend-row"><span className="hotspot-dot" aria-hidden="true" style={{ margin: "0 7px" }} />Hotspot: warmer color = {hotspotMode === "programs" ? "more open programs" : "larger stated amount"}</div>}
+            </details>
           </div>
+          <HotspotPanel data={hotspots} mode={hotspotMode} onMode={setHotspotMode} onSelectState={(abbr) => selectState(abbr)} />
+          <EvFriendlyPanel data={EV_FRIENDLINESS} show={showBars} onShow={setShowBars} selectedState={loc?.state?.abbr} onSelectState={(abbr) => selectState(abbr)} />
         </section>
 
         <section className="results-panel" aria-label="Results" aria-busy={loading}>
@@ -203,7 +227,7 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
           <CoverageNotices result={result} />
           {selected && (
             <div className="notice" data-tone="green" aria-live="polite">
-              Selected: <strong>{selected.name}</strong> — {selected.coverage.type === "national" ? "applies nationwide" : selected.coverage.type === "state" ? `statewide in ${selected.coverage.states.join(", ")}` : "shown at your search location"}.
+              Selected: <strong>{selected.name}</strong> — {selected.coverage.type === "national" ? "applies nationwide" : selected.coverage.type === "state" ? `statewide in ${selected.coverage.states.join(", ")}` : loc?.zip ? "shown at your search location" : "a local program; its card says where it applies"}.
               <button type="button" className="btn btn-sm" style={{ marginLeft: 8 }} onClick={() => patch({ sel: undefined })}>Clear</button>
             </div>
           )}

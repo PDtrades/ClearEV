@@ -5,7 +5,8 @@ import { programs, sourceCache, sources, zipUtilities } from "../db/schema";
 import { normalizedProgramSchema, type NormalizedProgram, type ProgramView } from "../domain/program";
 import { evaluateEligibility, type EligibilityResult } from "../eligibility/evaluate";
 import { stateByAbbr } from "../geo/states";
-import { lookupZip, type ZipInfo } from "../geo/zip";
+import { countyName, lookupZip, type ZipInfo } from "../geo/zip";
+import { computeHotspots, type HotspotData } from "./hotspots";
 import { collapseDuplicates } from "../pipeline/dedupe";
 import { linkStatusFor } from "../pipeline/linkcheck";
 import { staleCutoff } from "../pipeline/ingest";
@@ -13,6 +14,7 @@ import { upsertPrograms } from "../pipeline/ingest";
 import { adapterById, onDemandAdapters } from "../sources/registry";
 import { missingEnv, type SourceMeta } from "../sources/types";
 import type { SensitiveParams, ShareableParams } from "./params";
+import { outsideZipCounties, scopeRank, unconfirmedUtility, utilityNote } from "./locality";
 
 export interface SourceStatus {
   id: string;
@@ -109,7 +111,7 @@ export async function search(db: DB, params: ShareableParams, sensitive: Sensiti
   if (st) where.push(or(eq(programs.coverageType, "national"), sql`${st.abbr} = ANY(${programs.coverageStates})`)!);
   const rows = await db.select().from(programs).where(and(...where)).orderBy(desc(programs.updatedAt)).limit(2000);
   let list: ProgramView[] = rows.map((r) => rowToView(r, adapterById(r.sourceId)?.meta, srcRows.get(r.sourceId)));
-  for (const a of adapterById("afdc") ? [adapterById("afdc")!, adapterById("federal_curated")!] : []) {
+  for (const a of ["afdc", "federal_curated", "state_curated", "local_curated"].map((id) => adapterById(id)).filter((x) => x != null)) {
     const row = srcRows.get(a.meta.id);
     const configured = missingEnv(a.meta, env).length === 0;
     const count = list.filter((p) => p.sourceId === a.meta.id).length;
@@ -187,7 +189,9 @@ export async function search(db: DB, params: ShareableParams, sensitive: Sensiti
   }
 
   // 3. Dedupe across sources (never merges materially different offers).
-  const { kept, collapsed } = collapseDuplicates(list, (sid) => adapterById(sid)?.meta.priority ?? 100);
+  const { kept: all, collapsed } = collapseDuplicates(list, (sid) => adapterById(sid)?.meta.priority ?? 100);
+  // County and city programs only where the source names this ZIP's county.
+  const kept = all.filter((p) => !outsideZipCounties(p, zip));
   const totalBeforeFilters = kept.length;
 
   // 4. Filters.
@@ -204,7 +208,7 @@ export async function search(db: DB, params: ShareableParams, sensitive: Sensiti
   });
 
   const withVerdicts = filtered.map((p) => ({ ...p, verdict: evaluateEligibility(p, sensitive) }));
-  withVerdicts.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
+  withVerdicts.sort((a, b) => rank(a, zip, utilities) - rank(b, zip, utilities) || a.name.localeCompare(b.name));
 
   // 5. Honest empty-state reason.
   let emptyReason: SearchResult["emptyReason"];
@@ -219,6 +223,7 @@ export async function search(db: DB, params: ShareableParams, sensitive: Sensiti
   }
   if (anyNotConfigured) coverageNotes.push("Some data sources are not connected in this deployment, so results for this area are incomplete.");
   if (st && !zip) coverageNotes.push("Utility rate plans and ZIP-level programs appear after you enter a ZIP code.");
+  if (st && zip && withVerdicts.some((p) => unconfirmedUtility(p, zip, utilities))) coverageNotes.push(utilityNote(st.name, zip.zip));
 
   return {
     location: st ? { zip: zip ?? undefined, state: { abbr: st.abbr, name: st.name } } : null,
@@ -233,10 +238,10 @@ export async function search(db: DB, params: ShareableParams, sensitive: Sensiti
   };
 }
 
-function rank(p: ProgramView & { verdict: EligibilityResult }) {
+function rank(p: ProgramView & { verdict: EligibilityResult }, zip: Parameters<typeof scopeRank>[1], utilities: string[]) {
   const status = p.status === "active" ? 0 : p.status === "upcoming" ? 1 : p.status === "unknown" ? 2 : 3;
   const verdict = p.verdict.verdict === "verified" ? 0 : p.verdict.verdict === "relevant" ? 1 : p.verdict.verdict === "needs_info" ? 2 : 3;
-  const scope = p.coverage.type === "utility" || p.coverage.type === "zip" ? 0 : p.coverage.type === "state" ? 1 : 2;
+  const scope = scopeRank(p, zip, utilities);
   return status * 100 + verdict * 10 + scope;
 }
 
@@ -252,4 +257,15 @@ export async function stateCounts(db: DB): Promise<Record<string, number>> {
 
 export async function keywordSuggest(db: DB, q: string) {
   return db.select({ id: programs.id, name: programs.name }).from(programs).where(and(eq(programs.reviewState, "published"), keywordClause(q))).limit(10);
+}
+
+/** Hotspot rankings for the map, from published state and local programs (see ./hotspots.ts). */
+export async function hotspotData(db: DB): Promise<HotspotData> {
+  const rows = await db
+    .select()
+    .from(programs)
+    .where(and(eq(programs.reviewState, "published"), eq(programs.isFixture, false), sql`${programs.coverageType} <> 'national'`));
+  const data = computeHotspots(rows.map((r) => rowToView(r, adapterById(r.sourceId)?.meta)));
+  for (const c of data.counties) c.name = countyName(c.key);
+  return data;
 }

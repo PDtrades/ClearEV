@@ -1,0 +1,2315 @@
+{
+  "$comment": "Curated state and regional records. Each value that matters carries a verbatim quote from the official program page it was read from, with the retrieval date. The curated adapter re-checks each quote during ingestion; a missing quote queues the record for review. This is production data, not a fixture.",
+  "reviewedAt": "2026-10-19",
+  "records": [
+    {
+      "id": "state_curated:ca-dcap-cc4a",
+      "externalId": "ca-dcap-cc4a",
+      "name": "Driving Clean Assistance Program (DCAP) - Clean Cars 4 All pathway",
+      "providerName": "California Air Resources Board (Driving Clean Assistance Program)",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase",
+        "home_charging",
+        "public_charging"
+      ],
+      "benefitTypes": [
+        "grant"
+      ],
+      "summary": "Statewide CARB-funded scrap-and-replace grant for income-qualified Californians: up to $10,000 (up to $12,000 in designated Disadvantaged Communities) toward a new or used battery electric vehicle, plus $2,000 toward Level 2 home charging or a $2,000 prepaid public-charging card. Residents of air districts that run their own Clean Cars 4 All program must use that program instead.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 12000,
+          "label": "Up to $12,000 (Disadvantaged Community residents)",
+          "evidence": {
+            "quote": "are eligible for up to $12,000 for these vehicles.",
+            "url": "https://drivingcleanca.org/about-us/dcap-eligibility/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 10000,
+          "label": "Up to $10,000 for a new or used BEV",
+          "evidence": {
+            "quote": "up to $10,000 to purchase or lease a new or used battery electric vehicle",
+            "url": "https://drivingcleanca.org/about-us/dcap-eligibility/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2000,
+          "label": "$2,000 toward Level 2 home charging",
+          "evidence": {
+            "quote": "$2,000 towards the purchase and installation of level 2 home charging equipment.",
+            "url": "https://drivingcleanca.org/about-us/dcap-eligibility/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2000,
+          "label": "$2,000 prepaid public charging card (alternative)",
+          "evidence": {
+            "quote": "A $2,000 prepaid charge card to pay for public charging.",
+            "url": "https://drivingcleanca.org/about-us/dcap-eligibility/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        }
+      ],
+      "stackingNote": "Each program's own rules decide whether it can be combined with other state, local or utility incentives; ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "CA"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "California residents; the page states residents of an air district with its own CC4A program are not eligible to scrap and replace through DCAP."
+      },
+      "eligibility": {
+        "summary": [
+          "Household income less than 300% of the Federal Poverty Level (page notes the threshold is subject to change every year).",
+          "Must be a California resident (AB60 and ITIN holders qualify).",
+          "Residents of an air district with its own Clean Cars 4 All program are not eligible for DCAP scrap-and-replace.",
+          "Vehicle to retire: gasoline or diesel light- or medium-duty vehicle under 10,000 lbs GVWR that passes a functionality test, with two years' proof of operation; the page lists model year 2010 or older for 2025 applications.",
+          "Replacement vehicle: new or used, bought or leased from an authorized California dealership, purchase price cap $45,000; used vehicles must be 8 calendar years or newer with 75,000 or fewer original miles."
+        ],
+        "applicant": [
+          "residential"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPrice": 45000,
+          "maxPriceNote": "Maximum purchase price cap of $45,000, excluding taxes and fees.",
+          "evidence": {
+            "quote": "New or used with a maximum purchase price cap of $45,000 (excluding taxes and fees).",
+            "url": "https://drivingcleanca.org/about-us/dcap-eligibility/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        "restrictions": [
+          "Must scrap a qualifying older vehicle.",
+          "The separate DCAP Financing Assistance pathway is closed to new applications."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Check eligibility on the DCAP eligibility page.",
+          "Apply online through the DCAP application portal.",
+          "Once approved, buy or lease an eligible vehicle from an authorized California dealership and retire the old vehicle through the program."
+        ],
+        "documents": [
+          "Proof of household income",
+          "Proof of California residency",
+          "Two years' proof of operation for the vehicle being retired"
+        ],
+        "deadlineNote": "No end date stated on the page."
+      },
+      "programUrl": "https://drivingcleanca.org/",
+      "applicationUrl": "https://chdc.my.site.com/dcap/s/language-idioma?language=en_US",
+      "status": "active",
+      "statusBasis": "The DCAP home page states the Clean Cars 4 All pathway is open and accepting applications; only the Financing Assistance pathway is closed.",
+      "statusEvidence": {
+        "quote": "Clean Cars 4 All, is still open and accepting applications from all tiers.",
+        "url": "https://drivingcleanca.org/",
+        "retrievedAt": "2026-10-19T19:08:06Z"
+      },
+      "sourceUrl": "https://drivingcleanca.org/about-us/dcap-eligibility/",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Eligibility page states the retired-vehicle model-year rule for calendar year 2025 applications; the 2026 rule is not stated.",
+        "Which air districts count as having their own CC4A program is not listed on the eligibility page (CARB says five participating districts).",
+        "Remaining funding level not stated."
+      ]
+    },
+    {
+      "id": "state_curated:ca-baaqmd-clean-cars-for-all",
+      "externalId": "ca-baaqmd-clean-cars-for-all",
+      "name": "Clean Cars for All (Bay Area Air District)",
+      "providerName": "Bay Area Air Quality Management District",
+      "providerType": "local",
+      "categories": [
+        "ev_purchase",
+        "home_charging"
+      ],
+      "benefitTypes": [
+        "grant"
+      ],
+      "summary": "Bay Area Air District's Clean Cars 4 All program: income-qualified residents who retire a working model-year 2007 or older vehicle can get $10,000 toward a battery-electric or fuel-cell vehicle ($12,000 in a Disadvantaged Community census tract), $9,500/$11,500 for a plug-in hybrid, or a $7,500 mobility option, plus up to $2,000 for an EV charger.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 12000,
+          "label": "Up to $12,000 (BEV/FCEV, Disadvantaged Community census tract)",
+          "evidence": {
+            "quote": "$12,000",
+            "url": "https://www.baaqmd.gov/Funding-and-Incentives/Residents/Clean-Cars-for-All/Eligibility",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 10000,
+          "label": "$10,000 (BEV/FCEV, standard)",
+          "evidence": {
+            "quote": "$10,000",
+            "url": "https://www.baaqmd.gov/Funding-and-Incentives/Residents/Clean-Cars-for-All/Eligibility",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2000,
+          "label": "Up to $2,000 EV charger rebate",
+          "evidence": {
+            "quote": "Up to $2,000 is available for an EV charger rebate.",
+            "url": "https://www.baaqmd.gov/Funding-and-Incentives/Residents/Clean-Cars-for-All/Eligibility",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        }
+      ],
+      "stackingNote": "Each program's own rules decide whether it can be combined with other state, local or utility incentives; ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "county",
+        "states": [
+          "CA"
+        ],
+        "counties": [
+          "06001",
+          "06013",
+          "06041",
+          "06055",
+          "06075",
+          "06081",
+          "06085",
+          "06095",
+          "06097"
+        ],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Air District jurisdiction: Alameda, Contra Costa, Marin, Napa, San Francisco, San Mateo, Santa Clara, southwestern Solano and southern Sonoma counties (Solano and Sonoma only partly covered)."
+      },
+      "eligibility": {
+        "summary": [
+          "Annual household income at or below the Air District's income cap (page lists $47,880 for a 1-person household and $99,000 for a 4-person household).",
+          "Applications submitted on or after July 1, 2026 use Total Income rather than Adjusted Gross Income.",
+          "Must live within the Air District's jurisdiction.",
+          "Must retire a functioning model year 2007 or older vehicle through the program.",
+          "Grant amounts are higher for residents of a Disadvantaged Community (DAC) census tract."
+        ],
+        "applicant": [
+          "residential"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ]
+        },
+        "restrictions": [
+          "Vehicle being retired must be model year 2007 or older and functioning.",
+          "Up to $5,000 toward vehicle adaptive equipment may also be available."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Confirm household income is under the cap and that you live in the Air District's jurisdiction.",
+          "Register for an account and submit the online application.",
+          "After approval, buy or lease an eligible vehicle at a participating dealership and retire the old vehicle through the program."
+        ],
+        "documents": [
+          "Proof of household income (tax return)",
+          "Registration for the vehicle being retired"
+        ],
+        "deadlineNote": "No deadline stated; program relaunched 8/19/2025."
+      },
+      "programUrl": "https://www.baaqmd.gov/funding-and-incentives/residents/clean-cars-for-all",
+      "applicationUrl": "https://www.baaqmd.gov/en/funding-and-incentives/residents/clean-cars-for-all/apply",
+      "status": "active",
+      "statusBasis": "The program page states it relaunched in August 2025 and is accepting new applications; the apply page shows Program Status: Open.",
+      "statusEvidence": {
+        "quote": "Clean Cars for All relaunched on 8/19/2025 and is now accepting new applications.",
+        "url": "https://www.baaqmd.gov/funding-and-incentives/residents/clean-cars-for-all",
+        "retrievedAt": "2026-10-19T19:08:06Z"
+      },
+      "sourceUrl": "https://www.baaqmd.gov/Funding-and-Incentives/Residents/Clean-Cars-for-All/Eligibility",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Vehicle grant amounts appear only as table cells on the eligibility page, so the amount quotes are the bare cell values.",
+        "Solano and Sonoma counties are only partly inside the Air District (southwestern Solano, southern Sonoma).",
+        "Remaining funding level not stated."
+      ]
+    },
+    {
+      "id": "state_curated:co-ev-tax-credit",
+      "externalId": "co-ev-tax-credit",
+      "name": "Colorado Innovative Motor Vehicle (EV) Tax Credit",
+      "providerName": "Colorado Department of Revenue / Colorado Energy Office",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "tax_credit",
+        "pos_rebate"
+      ],
+      "summary": "Colorado state income-tax credit of $750 for buying or leasing a new light-duty EV with an MSRP up to $80,000, plus an additional $2,500 if the MSRP is under $35,000. Buyers can assign the credit to a participating dealer for a point-of-sale discount.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 750,
+          "label": "$750 (new EV, MSRP up to $80,000)",
+          "evidence": {
+            "quote": "Colorado taxpayers are eligible for a state tax credit of $750 for the purchase or lease of a new qualifying",
+            "url": "https://energyoffice.colorado.gov/index.php/transportation/grants-incentives/electric-vehicle-tax-credits",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2500,
+          "label": "Additional $2,500 (MSRP under $35,000)",
+          "evidence": {
+            "quote": "an additional credit of $2,500 is allowed for any qualifying vehicle",
+            "url": "https://tax.colorado.gov/income-tax-topics-innovative-motor-vehicle-credit",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        }
+      ],
+      "stackingNote": "Each program's own rules decide whether it can be combined with other state, local or utility incentives; ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "CO"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Colorado taxpayers; statewide."
+      },
+      "eligibility": {
+        "summary": [
+          "New light-duty EV (GVWR 8,500 lbs or less) with MSRP up to $80,000.",
+          "An additional $2,500 applies when the MSRP is under $35,000.",
+          "Leases must have an initial term of at least two years; the credit goes to the lessee.",
+          "For the 2027 tax year the credit rises to $2,000 (MSRP up to $50,000) and the extra $2,500 applies under $40,000 MSRP."
+        ],
+        "applicant": [
+          "residential",
+          "business"
+        ],
+        "vehicle": {
+          "condition": [
+            "new"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPrice": 80000,
+          "maxPriceNote": "No credit for a vehicle with MSRP greater than $80,000; the additional $2,500 requires MSRP under $35,000.",
+          "evidence": {
+            "quote": "that has a manufacturer’s suggested retail price (MSRP) greater than $80,000.",
+            "url": "https://tax.colorado.gov/income-tax-topics-innovative-motor-vehicle-credit",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        "restrictions": [
+          "New vehicles only.",
+          "The lease must be for a term of at least two years."
+        ]
+      },
+      "application": {
+        "steps": [
+          "At purchase or lease, ask whether the dealer accepts assignment of the credit; if so, complete form DR 0618 at the time of sale for a point-of-sale discount.",
+          "Otherwise, file a Colorado income tax return and claim the credit with form DR 0617, attaching the registration and purchase or lease agreement."
+        ],
+        "documents": [
+          "Form DR 0618 (if assigning to dealer) or DR 0617",
+          "Permanent Colorado vehicle registration",
+          "Vehicle invoice, purchase agreement or lease agreement"
+        ],
+        "deadlineNote": "Amounts shown apply to the 2026 tax year; amounts change for the 2027 tax year."
+      },
+      "programUrl": "https://energyoffice.colorado.gov/index.php/transportation/grants-incentives/electric-vehicle-tax-credits",
+      "applicationUrl": "https://tax.colorado.gov/income-tax-topics-innovative-motor-vehicle-credit",
+      "status": "active",
+      "statusBasis": "Both the Energy Office and Department of Revenue pages describe the credit as currently available, and the DOR table lists $750 for tax year 2026; no closure notice.",
+      "statusEvidence": {
+        "quote": "Colorado taxpayers are eligible for a state tax credit of $750 for the purchase or lease of a new qualifying",
+        "url": "https://energyoffice.colorado.gov/index.php/transportation/grants-incentives/electric-vehicle-tax-credits",
+        "retrievedAt": "2026-10-19T19:08:06Z"
+      },
+      "sourceUrl": "https://tax.colorado.gov/income-tax-topics-innovative-motor-vehicle-credit",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Not every dealer accepts assignment of the credit.",
+        "The 2026 amount ($750) appears in a DOR table; the Energy Office page does not label it as a 2026 figure."
+      ]
+    },
+    {
+      "id": "state_curated:co-vxc",
+      "externalId": "co-vxc",
+      "name": "Vehicle Exchange Colorado (VXC)",
+      "providerName": "Colorado Energy Office",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "rebate_timing_unknown"
+      ],
+      "summary": "Income-qualified Coloradans who recycle an old (12+ model years) or emissions-failing vehicle can get $9,000 toward a new EV or $6,000 toward a used EV (battery-electric or plug-in hybrid).",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 9000,
+          "label": "$9,000 for a new EV",
+          "evidence": {
+            "quote": "New electric vehicle (BEV or PHEV): $9,000",
+            "url": "https://energyoffice.colorado.gov/vehicle-exchange-colorado",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 6000,
+          "label": "$6,000 for a used EV",
+          "evidence": {
+            "quote": "Used electric vehicle (BEV or PHEV): $6,000",
+            "url": "https://energyoffice.colorado.gov/vehicle-exchange-colorado",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        }
+      ],
+      "stackingNote": "Each program's own rules decide whether it can be combined with other state, local or utility incentives; ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "CO"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Colorado residents; statewide."
+      },
+      "eligibility": {
+        "summary": [
+          "Household income below 80% of the area median income in the resident's county, OR enrollment in a qualifying assistance program (e.g. SNAP, Medicaid, SSI).",
+          "Vehicle to recycle must be model year 12 years or older (2014 or older for a 2026 application) or fail a Colorado emissions test.",
+          "Replacement must be a battery electric or plug-in hybrid vehicle."
+        ],
+        "applicant": [
+          "residential"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ]
+        },
+        "restrictions": [
+          "Subject to available program funds; rebate levels may change or be cancelled without notice."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Confirm income eligibility (below 80% AMI or enrolled in a qualifying assistance program).",
+          "Apply on the VXC portal.",
+          "Recycle the qualifying vehicle and buy or lease an eligible EV per program instructions."
+        ],
+        "documents": [
+          "Proof of income or assistance-program enrollment",
+          "Registration for the vehicle being recycled"
+        ],
+        "deadlineNote": "No deadline stated; current amounts effective November 3, 2025."
+      },
+      "programUrl": "https://energyoffice.colorado.gov/vehicle-exchange-colorado",
+      "applicationUrl": "https://coloradoenergyoffice.aptim.com/",
+      "status": "unknown",
+      "statusBasis": "The official page lists 2026 application rules and current amounts but does not say whether applications are open; it states amounts are subject to available program funds.",
+      "statusEvidence": {
+        "quote": "are subject to change or cancellation without notice and are subject to available program funds",
+        "url": "https://energyoffice.colorado.gov/vehicle-exchange-colorado",
+        "retrievedAt": "2026-10-19T19:20:00Z"
+      },
+      "sourceUrl": "https://energyoffice.colorado.gov/vehicle-exchange-colorado",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "The page does not explicitly say applications are open; status is inferred from current-year rules with no closure notice.",
+        "Whether the rebate is applied at the dealer or paid afterward is not stated on the page.",
+        "Whether leases qualify is not stated on the page."
+      ]
+    },
+    {
+      "id": "state_curated:or-ocvrp",
+      "externalId": "or-ocvrp",
+      "name": "Oregon Clean Vehicle Rebate Program (Standard and Charge Ahead)",
+      "providerName": "Oregon Department of Environmental Quality",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "post_purchase_rebate"
+      ],
+      "summary": "Oregon rebates for EVs bought or leased between Aug. 25 and Nov. 4, 2026: Standard rebate of $2,000 (new BEV) or $1,500 (new PHEV); income-qualified Charge Ahead rebate of $7,500 (new BEV), $5,000 (new PHEV) or up to $4,000 (used BEV). Vehicles must have a base MSRP under $50,000. Funds were running low as of Oct. 17, 2026.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 7500,
+          "label": "$7,500 Charge Ahead (new BEV, income-qualified)",
+          "evidence": {
+            "quote": "they may apply for the $7,500 Charge Ahead Rebate for new BEVs",
+            "url": "https://www.oregon.gov/deq/aq/programs/Pages/Charge-Ahead-Rebate.aspx",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 5000,
+          "label": "$5,000 Charge Ahead (new PHEV, income-qualified)",
+          "evidence": {
+            "quote": "or the $5,000 Charge Ahead Rebate for new PHEVs.",
+            "url": "https://www.oregon.gov/deq/aq/programs/Pages/Charge-Ahead-Rebate.aspx",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 4000,
+          "label": "Up to $4,000 Charge Ahead (used BEV)",
+          "evidence": {
+            "quote": "Eligible, used battery electric vehicle: $4,000 or no more than 30% of the vehicle price.",
+            "url": "https://goelectric.oregon.gov/blog/2026/8/26/oregon-clean-vehicle-rebate-program-now-reopen-through-november-4-2026",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2000,
+          "label": "$2,000 Standard (new BEV)",
+          "evidence": {
+            "quote": "Eligible, new battery electric vehicle: $2,000",
+            "url": "https://goelectric.oregon.gov/blog/2026/8/26/oregon-clean-vehicle-rebate-program-now-reopen-through-november-4-2026",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 1500,
+          "label": "$1,500 Standard (new PHEV)",
+          "evidence": {
+            "quote": "Eligible, new plug-in hybrid electric vehicle: $1,500",
+            "url": "https://goelectric.oregon.gov/blog/2026/8/26/oregon-clean-vehicle-rebate-program-now-reopen-through-november-4-2026",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        }
+      ],
+      "stackingNote": "Applicants may receive either a Standard or a Charge Ahead rebate, not both. Each program's own rules decide whether it can be combined with other state, local or utility incentives; ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "OR"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Oregon residents with a valid ID; statewide."
+      },
+      "eligibility": {
+        "summary": [
+          "Must be an Oregon resident with a valid ID.",
+          "Vehicle must be purchased or leased between Aug. 25, 2026 and Nov. 4, 2026.",
+          "Vehicle must have a base MSRP under $50,000.",
+          "Charge Ahead requires household income below 400% of the federal poverty guideline.",
+          "Apply within six months of the purchase or lease date."
+        ],
+        "applicant": [
+          "residential",
+          "business"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPrice": 50000,
+          "maxPriceNote": "Base MSRP must be under $50,000.",
+          "evidence": {
+            "quote": "All vehicles must have a base MRSP under $50,000.",
+            "url": "https://www.oregon.gov/deq/aq/programs/Pages/Standard-EV-Rebate.aspx",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        "restrictions": [
+          "Only one of Standard or Charge Ahead.",
+          "Used-vehicle rebates are Charge Ahead only.",
+          "Applications submitted late in the window may be waitlisted for payment in spring 2027."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Charge Ahead applicants: prequalify on the DEQ voucher site before buying.",
+          "Buy or lease an eligible vehicle between Aug. 25 and Nov. 4, 2026.",
+          "Submit the rebate application within six months of the purchase or lease date."
+        ],
+        "documents": [
+          "Oregon ID",
+          "Purchase or lease agreement",
+          "Income documentation (Charge Ahead)"
+        ],
+        "deadlineNote": "Purchase/lease window Aug. 25 - Nov. 4, 2026; apply within six months of purchase."
+      },
+      "programUrl": "https://www.oregon.gov/deq/aq/programs/Pages/zev-rebate.aspx",
+      "applicationUrl": "https://www.evrebate.oregon.gov/",
+      "startDate": "2026-08-25",
+      "endDate": "2026-11-04",
+      "status": "active",
+      "statusBasis": "DEQ states it is accepting applications for purchases/leases Aug. 25 - Nov. 4, 2026, but warns funds are running low as of Oct. 17, 2026 and later applications may be waitlisted to spring 2027.",
+      "statusEvidence": {
+        "quote": "The Oregon Clean Vehicle Rebate Program is accepting rebate applications for eligible vehicle purchases and leases made",
+        "url": "https://www.oregon.gov/deq/aq/programs/Pages/zev-rebate.aspx",
+        "retrievedAt": "2026-10-19T19:08:06Z"
+      },
+      "sourceUrl": "https://www.oregon.gov/deq/aq/programs/Pages/zev-rebate.aspx",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "As of Oct. 17, 2026 DEQ says funds are running low; applications may be waitlisted for payment in spring 2027.",
+        "Standard and used-vehicle amounts come from the state's Go Electric Oregon announcement, not the DEQ requirements pages.",
+        "Go Electric post is inconsistent on the cutoff (after Nov. 4 vs on or after Nov. 5); DEQ page says through Nov. 4, 2026.",
+        "Exact dollar income limits for Charge Ahead not stated (400% of federal poverty guideline)."
+      ]
+    },
+    {
+      "id": "state_curated:nm-clean-car-tax-credit",
+      "externalId": "nm-clean-car-tax-credit",
+      "name": "New Mexico Clean Car Income Tax Credit",
+      "providerName": "New Mexico Energy, Minerals and Natural Resources Department / Taxation and Revenue Department",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase",
+        "home_charging"
+      ],
+      "benefitTypes": [
+        "tax_credit"
+      ],
+      "summary": "Refundable New Mexico income-tax credit of up to $3,000 for a new clean car (EV, PHEV or fuel cell; MSRP $55,000 or less) or up to $2,500 for a used one (market value $25,000 or less) bought from a New Mexico licensed dealer, plus a credit for EV charging units ($400 for Level 2). Covers purchases May 15, 2024 through Dec. 31, 2029.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 3000,
+          "label": "Up to $3,000 (new clean car)",
+          "evidence": {
+            "quote": "The maximum credit for a new clean car is $3,000 and the maximum credit for a previously-owned clean car is $2,500.",
+            "url": "https://clean.energy.nm.gov/clean-car-state-tax-credit/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2500,
+          "label": "Up to $2,500 (used clean car)",
+          "evidence": {
+            "quote": "The maximum credit for a new clean car is $3,000 and the maximum credit for a previously-owned clean car is $2,500.",
+            "url": "https://clean.energy.nm.gov/clean-car-state-tax-credit/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 400,
+          "label": "$400 Level 2 charging unit",
+          "evidence": {
+            "quote": "$400.00",
+            "url": "https://clean.energy.nm.gov/clean-car-state-tax-credit/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        }
+      ],
+      "stackingNote": "Each program's own rules decide whether it can be combined with other state, local or utility incentives; ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "NM"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "New Mexico taxpayers; statewide."
+      },
+      "eligibility": {
+        "summary": [
+          "Vehicle must be purchased from a New Mexico licensed motor vehicle dealer.",
+          "New cars: MSRP $55,000 or less. Used cars: market value $25,000 or less.",
+          "Vehicles and chargers purchased May 15, 2024 through December 31, 2029 are eligible.",
+          "Credit amounts for 2024-2026: new EV $3,000, new PHEV/FCEV $2,500, used EV $2,500, used PHEV/FCEV $2,000.",
+          "A car is eligible only twice in its lifetime."
+        ],
+        "applicant": [
+          "residential",
+          "business"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase"
+          ],
+          "maxPrice": 55000,
+          "maxPriceNote": "New: MSRP $55,000 or less. Used: market value $25,000 or less.",
+          "evidence": {
+            "quote": "For new cars, the MSRP must be $55,000 or less.",
+            "url": "https://clean.energy.nm.gov/clean-car-state-tax-credit/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        },
+        "restrictions": [
+          "Must buy from a New Mexico licensed dealer.",
+          "Amounts step down in later years (2027+)."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Apply to EMNRD for a Certificate of Eligibility within one year of the vehicle purchase.",
+          "After receiving the certificate, claim the credit on your New Mexico income tax return through the Taxation and Revenue Department."
+        ],
+        "documents": [
+          "Purchase documents from the NM licensed dealer",
+          "EMNRD Certificate of Eligibility"
+        ],
+        "deadlineNote": "Apply no later than one year from the date of vehicle purchase; purchases through Dec. 31, 2029."
+      },
+      "programUrl": "https://clean.energy.nm.gov/clean-car-state-tax-credit/",
+      "applicationUrl": "https://wwwapps.emnrd.nm.gov/ECAM/CleanCarSubmissions/",
+      "startDate": "2024-05-15",
+      "endDate": "2029-12-31",
+      "status": "active",
+      "statusBasis": "The EMNRD page states purchases through Dec. 31, 2029 are eligible and provides an Apply Now link; no closure notice.",
+      "statusEvidence": {
+        "quote": "Vehicles and chargers purchased on or between May 15, 2024 through December 31, 2029, are eligible.",
+        "url": "https://clean.energy.nm.gov/clean-car-state-tax-credit/",
+        "retrievedAt": "2026-10-19T19:08:06Z"
+      },
+      "sourceUrl": "https://clean.energy.nm.gov/clean-car-state-tax-credit/",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "The page states no income limits; check with TRD whether statutory income limits apply.",
+        "The $400 charger amount appears only as a table cell for 'Other electric vehicle charging units (e.g. Level 2)'.",
+        "The page's FAQ and table disagree on the 2027 new-EV amount ($2,200 vs $2,220).",
+        "Whether leases qualify is not stated."
+      ]
+    },
+    {
+      "id": "state_curated:nm-solar-tax-credit",
+      "externalId": "nm-solar-tax-credit",
+      "name": "New Mexico New Solar Market Development Tax Credit",
+      "providerName": "New Mexico Energy, Minerals and Natural Resources Department",
+      "providerType": "state",
+      "categories": [
+        "solar",
+        "battery"
+      ],
+      "benefitTypes": [
+        "tax_credit"
+      ],
+      "summary": "Refundable New Mexico tax credit of 10% of the equipment, materials and labor cost of a solar thermal or PV system (and associated battery system), capped at $6,000 per taxpayer per year, for systems installed 2025 through 2031. EMNRD certifies up to $30 million in credits per year.",
+      "amounts": [
+        {
+          "kind": "percent",
+          "value": 10,
+          "maximum": 6000,
+          "label": "10% of system cost, up to $6,000",
+          "evidence": {
+            "quote": "The tax credit covers 10% of the equipment, materials, and labor costs of a solar energy system",
+            "url": "https://clean.energy.nm.gov/new-solar-market-development-tax-credit-nsmdtc/",
+            "retrievedAt": "2026-10-19T19:08:06Z"
+          }
+        }
+      ],
+      "stackingNote": "Each program's own rules decide whether it can be combined with other state, local or utility incentives; ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "NM"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "New Mexico residences and businesses; statewide."
+      },
+      "eligibility": {
+        "summary": [
+          "Solar thermal or photovoltaic system installed on a New Mexico residence, business or agricultural enterprise; battery systems with a qualifying system are covered.",
+          "Credit cannot exceed $6,000 per taxpayer per taxable year.",
+          "Systems installed from 2025 through 2031 are eligible.",
+          "EMNRD can certify up to $30 million per year; once the cap is met no further credits are issued that year."
+        ],
+        "applicant": [
+          "residential",
+          "business"
+        ],
+        "restrictions": [
+          "Annual statewide certification cap of $30 million."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Apply to EMNRD for certification within one calendar year after installation (e.g. a 2026 installation must apply by December 31, 2027).",
+          "Claim the certified credit on your New Mexico tax return; excess credit is refundable."
+        ],
+        "documents": [
+          "System installation and cost documentation"
+        ],
+        "deadlineNote": "Apply by December 31 of the year after installation."
+      },
+      "programUrl": "https://clean.energy.nm.gov/new-solar-market-development-tax-credit-nsmdtc/",
+      "applicationUrl": "https://wwwapps.emnrd.nm.gov/ECAM/NSMDSubmissions/",
+      "status": "active",
+      "statusBasis": "EMNRD states the credit remains in effect for systems installed 2025 through 2031 and that it is processing applications; no notice that the 2026 cap is exhausted.",
+      "statusEvidence": {
+        "quote": "The tax credit remains in effect and available for systems installed from 2025 through 2031.",
+        "url": "https://clean.energy.nm.gov/new-solar-market-development-tax-credit-nsmdtc/",
+        "retrievedAt": "2026-10-19T19:08:06Z"
+      },
+      "sourceUrl": "https://clean.energy.nm.gov/new-solar-market-development-tax-credit-nsmdtc/",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Whether the 2026 $30 million certification cap has been reached is not stated.",
+        "Battery eligibility details (e.g. whether it must be installed with solar) are not spelled out.",
+        "Exact program end date is given only as 'through 2031'."
+      ]
+    },
+    {
+      "id": "state_curated:ny-drive-clean",
+      "externalId": "ny-drive-clean",
+      "name": "Drive Clean Rebate",
+      "providerName": "New York State Energy Research and Development Authority (NYSERDA)",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "pos_rebate"
+      ],
+      "summary": "A point-of-sale rebate of $500 to $2,000 off the purchase or lease of an eligible new battery-electric or plug-in hybrid vehicle at a participating New York dealer. The amount depends on the vehicle's electric range; vehicles with an MSRP over $42,000 get $500. NYSERDA added $30 million to the program in April 2026.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 2000,
+          "label": "Up to $2,000 (EVs with more than 200 miles of range)",
+          "evidence": {
+            "quote": "The Drive Clean Rebate offers electric vehicle (EV) buyers up to $2,000 off the purchase or lease of 60+ new EV models.",
+            "url": "https://www.nyserda.ny.gov/All-Programs/Drive-Clean-Rebate-For-Electric-Cars-Program",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 1000,
+          "label": "$1,000 (40- to 199-mile range)",
+          "evidence": {
+            "quote": "40- to 199-mile range: $1,000 rebate",
+            "url": "https://www.nyserda.ny.gov/All-Programs/Drive-Clean-Rebate-For-Electric-Cars-Program",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 500,
+          "label": "$500 (under 40-mile range, or MSRP over $42,000)",
+          "evidence": {
+            "quote": "MSRP greater than $42,000: $500 rebate",
+            "url": "https://www.nyserda.ny.gov/All-Programs/Drive-Clean-Rebate-For-Electric-Cars-Program",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        }
+      ],
+      "stackingNote": "State incentives may or may not combine with utility or other programs; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "NY"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide NYSERDA program for New York State residents, businesses and government entities."
+      },
+      "eligibility": {
+        "summary": [
+          "New York State residents, businesses or government entities buying or leasing a new eligible EV or plug-in hybrid.",
+          "Must buy or lease from a participating New York dealership; the dealer applies the rebate at the point of sale.",
+          "Rebate tiers: more than 200-mile range $2,000; 40 to 199 miles $1,000; under 40 miles $500; MSRP over $42,000 gets $500."
+        ],
+        "applicant": [
+          "residential",
+          "business"
+        ],
+        "vehicle": {
+          "condition": [
+            "new"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPriceNote": "No price cap stated; vehicles with an MSRP over $42,000 receive the $500 tier.",
+          "evidence": {
+            "quote": "MSRP greater than $42,000: $500 rebate",
+            "url": "https://www.nyserda.ny.gov/All-Programs/Drive-Clean-Rebate-For-Electric-Cars-Program",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        "restrictions": [
+          "Only models on NYSERDA's eligible-models list qualify.",
+          "Rebate is only available through participating dealers."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Check the eligible-models list and find a participating dealer on NYSERDA's site.",
+          "Buy or lease the eligible new EV at a participating New York dealership.",
+          "The dealer takes the rebate off the price at the point of sale and applies to NYSERDA on your behalf."
+        ],
+        "documents": [
+          "Purchase or lease agreement (handled by the dealer)"
+        ],
+        "deadlineNote": "No end date stated; funding is limited."
+      },
+      "programUrl": "https://www.nyserda.ny.gov/All-Programs/Drive-Clean-Rebate-For-Electric-Cars-Program",
+      "status": "active",
+      "statusBasis": "NYSERDA's April 21, 2026 announcement says an additional $30 million is now available; the program page shows no pause or closure notice.",
+      "statusEvidence": {
+        "quote": "is now available for consumers to use towards the purchase or lease of an electric vehicle",
+        "url": "https://www.nyserda.ny.gov/About/Newsroom/2026-Announcements/2026-04-21-Governor-Hochul-Announces-Additional-30-Million-Purchase-Lease-EV-NYS",
+        "retrievedAt": "2026-10-19T19:04:33Z"
+      },
+      "sourceUrl": "https://www.nyserda.ny.gov/All-Programs/Drive-Clean-Rebate-For-Electric-Cars-Program",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "How long the April 2026 $30 million will last is not stated.",
+        "Program page lists no end date."
+      ]
+    },
+    {
+      "id": "state_curated:nj-charge-up",
+      "externalId": "nj-charge-up",
+      "name": "Charge Up New Jersey (FY27)",
+      "providerName": "New Jersey Board of Public Utilities (Charge Up New Jersey)",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase",
+        "home_charging"
+      ],
+      "benefitTypes": [
+        "pos_rebate",
+        "rebate_timing_unknown"
+      ],
+      "summary": "A $1,500 incentive for New Jersey residents who buy or lease a new eligible EV at a participating New Jersey dealer, with an extra $2,500 (Charge Up+, $4,000 total) for income-qualifying applicants. Up to $250 is also offered for a qualifying Level 2 home charger. The FY27 program launched July 1, 2026.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 1500,
+          "label": "$1,500 for a new eligible EV",
+          "evidence": {
+            "quote": "The Charge Up incentive provides $1,500 to eligible New Jersey residents for the purchase or lease of a new eligible EV.",
+            "url": "https://chargeup.njcleanenergy.com/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 4000,
+          "label": "Up to $4,000 total with Charge Up+ (income-qualified)",
+          "evidence": {
+            "quote": "The Charge Up+ incentive provides an additional $2,500 for income-qualifying applicants, for a total incentive of $4,000.",
+            "url": "https://chargeup.njcleanenergy.com/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 250,
+          "label": "Up to $250 for a Level 2 home charger",
+          "evidence": {
+            "quote": "Charge Up New Jersey also offers up to $250 for the purchase of a qualifying Level 2 charger",
+            "url": "https://chargeup.njcleanenergy.com/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        }
+      ],
+      "stackingNote": "State incentives may or may not combine with utility or other programs; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "NJ"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide program for New Jersey residents."
+      },
+      "eligibility": {
+        "summary": [
+          "Must be a New Jersey resident at the time of order, purchase or lease, verified with a New Jersey driver's license, and remain a resident for at least two years.",
+          "Vehicle must be bought or leased on or after July 1, 2026 at a participating New Jersey dealership or showroom; vehicles ordered before July 1, 2026 are not eligible.",
+          "Vehicle must be kept and registered for at least 36 consecutive months.",
+          "Charge Up+ adds $2,500 for income-qualifying applicants and is not available post-purchase."
+        ],
+        "applicant": [
+          "residential"
+        ],
+        "vehicle": {
+          "condition": [
+            "new"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPriceNote": "No MSRP cap was stated on the pages read; see the program's Eligible Vehicles list.",
+          "evidence": {
+            "quote": "must occur on or after the official launch of the FY27 program on July 1, 2026",
+            "url": "https://chargeup.njcleanenergy.com/eligibility-guidelines",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        "restrictions": [
+          "A vehicle ordered, purchased, or leased, and/or delivered out-of-state, is not eligible.",
+          "Only vehicles on the program's eligible-vehicle list qualify."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Confirm the vehicle is on the Charge Up New Jersey eligible-vehicle list.",
+          "Buy or lease at a participating New Jersey dealership or showroom on or after July 1, 2026.",
+          "If income-qualified, apply for Charge Up+ before or at purchase; it is not available after purchase.",
+          "Apply separately for the Level 2 home charger incentive on the Charge Up New Jersey site."
+        ],
+        "documents": [
+          "New Jersey driver's license",
+          "Purchase or lease agreement",
+          "For Charge Up+: 2025 tax filing or 2024 tax transcript plus 2025 non-filing verification"
+        ],
+        "deadlineNote": "FY27 program launched July 1, 2026; funding is limited and the end date is not stated."
+      },
+      "programUrl": "https://chargeup.njcleanenergy.com/",
+      "startDate": "2026-07-01",
+      "status": "active",
+      "statusBasis": "The Charge Up New Jersey homepage invites residents to apply now and lists the consumer EV program among open programs; the July 2026 pause notice covers only the Clean Fleet EV and EV Charging programs.",
+      "statusEvidence": {
+        "quote": "Apply now for electric vehicle and charging incentives for New Jersey residents and multi-unit dwelling owner/operators",
+        "url": "https://chargeup.njcleanenergy.com/",
+        "retrievedAt": "2026-10-19T19:04:33Z"
+      },
+      "sourceUrl": "https://chargeup.njcleanenergy.com/eligibility-guidelines",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Live remaining-funding figures on the Available Funding page could not be read.",
+        "No MSRP cap was found on the pages read.",
+        "Charge Up+ income thresholds were not captured.",
+        "Timing of the home-charger incentive (point of sale vs. after purchase) not confirmed.",
+        "Homepage meta description says 'up to $5,000', which conflicts with the $4,000 and $4,250 figures in the page body."
+      ]
+    },
+    {
+      "id": "state_curated:ct-cheapr",
+      "externalId": "ct-cheapr",
+      "name": "CHEAPR (Connecticut Hydrogen and Electric Automobile Purchase Rebate)",
+      "providerName": "Connecticut Department of Energy and Environmental Protection (DEEP)",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "rebate_timing_unknown"
+      ],
+      "summary": "Rebates for Connecticut residents who buy or lease an eligible EV with a base MSRP under $50,000 from a licensed Connecticut dealer. From October 15, 2026 the standard rebate for a new battery-electric vehicle is $1,500. Income-qualified Rebate+ applicants can get $4,500 total on a new BEV or $5,000 on a used BEV.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 1500,
+          "label": "$1,500 standard rebate for a new BEV (from Oct 15, 2026)",
+          "evidence": {
+            "quote": "As of October 15, 2026, the Standard incentive for a new battery electric vehicle will be $1,500.",
+            "url": "https://portal.ct.gov/deep/news-releases/news-releases---2026/deep-announces-increased-incentive-levels-for-cheapr-program-effective-october-15th",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 4500,
+          "label": "$4,500 total for a new BEV with Rebate+ (income-qualified)",
+          "evidence": {
+            "quote": "As this award is issued in addition to and stackable with the Standard incentive, the new total incentive will be $4,500.",
+            "url": "https://portal.ct.gov/deep/news-releases/news-releases---2026/deep-announces-increased-incentive-levels-for-cheapr-program-effective-october-15th",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 5000,
+          "label": "$5,000 Rebate+ for a used BEV (income-qualified)",
+          "evidence": {
+            "quote": "These voucher-based incentives also remain unchanged at $5,000 and $3,000, respectively.",
+            "url": "https://portal.ct.gov/deep/news-releases/news-releases---2026/deep-announces-increased-incentive-levels-for-cheapr-program-effective-october-15th",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        }
+      ],
+      "stackingNote": "State incentives may or may not combine with utility or other programs; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "CT"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide program for Connecticut residents."
+      },
+      "eligibility": {
+        "summary": [
+          "Connecticut residents who buy or lease an eligible new or used EV from a licensed Connecticut dealership or OEM.",
+          "Eligible EVs must have a base MSRP under $50,000.",
+          "Rebate+ (income-qualified) requires pre-qualification: income under 300% of the Federal Poverty Level, participation in a qualifying state or federal program, or residence in an Environmental Justice Community or Distressed Municipality.",
+          "Rebate+ new PHEV: $1,500; used PHEV: $3,000."
+        ],
+        "applicant": [
+          "residential"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPrice": 50000,
+          "maxPriceNote": "Base MSRP must be under $50,000.",
+          "evidence": {
+            "quote": "A CHEAPR eligible EV must have a base MSRP less than $50,000.",
+            "url": "https://portal.ct.gov/deep/air/mobile-sources/cheapr/cheapr---home",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        "restrictions": [
+          "Must be bought or leased from a licensed Connecticut dealership or OEM.",
+          "Rebate+ is issued as a voucher; applicants must pre-apply."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Check the CHEAPR eligible-vehicle lists.",
+          "If seeking Rebate+, pre-apply to get a voucher before buying.",
+          "Buy or lease from a licensed Connecticut dealership and complete the CHEAPR application."
+        ],
+        "documents": [
+          "Purchase or lease agreement",
+          "For Rebate+: pre-approval voucher"
+        ],
+        "deadlineNote": "No end date stated."
+      },
+      "programUrl": "https://portal.ct.gov/deep/air/mobile-sources/cheapr/cheapr---home",
+      "applicationUrl": "https://apply.drivecheapr-ct.org/",
+      "status": "active",
+      "statusBasis": "DEEP's October 14, 2026 release announces higher CHEAPR incentive levels effective October 15, 2026, with no closure notice.",
+      "statusEvidence": {
+        "quote": "As of October 15, 2026, the Standard incentive for a new battery electric vehicle will be $1,500.",
+        "url": "https://portal.ct.gov/deep/news-releases/news-releases---2026/deep-announces-increased-incentive-levels-for-cheapr-program-effective-october-15th",
+        "retrievedAt": "2026-10-19T19:04:33Z"
+      },
+      "sourceUrl": "https://portal.ct.gov/deep/news-releases/news-releases---2026/deep-announces-increased-incentive-levels-for-cheapr-program-effective-october-15th",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "The CHEAPR home page (last updated Oct 7, 2026) still shows the old $1,000 standard BEV rebate.",
+        "The release did not state the standard PHEV amount after Oct 15, 2026 (home page showed $500).",
+        "Whether the standard rebate is applied at the point of sale was not confirmed from a quote."
+      ]
+    },
+    {
+      "id": "state_curated:ma-mor-ev",
+      "externalId": "ma-mor-ev",
+      "name": "MOR-EV (Massachusetts Offers Rebates for Electric Vehicles)",
+      "providerName": "Massachusetts Department of Energy Resources (MOR-EV)",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "post_purchase_rebate"
+      ],
+      "summary": "A $3,500 rebate for Massachusetts residents who buy or lease an eligible new battery-electric vehicle with a total MSRP of $55,000 or less, and $3,500 for an eligible used EV priced $40,000 or less. Residents in qualifying income-based programs can get a $1,500 MOR-EV+ adder. Apply online within 90 days of purchase or lease.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 3500,
+          "label": "$3,500 for a new BEV",
+          "evidence": {
+            "quote": "MOR-EV Standard rebate of $3,500 for purchases or leases of eligible new light-duty battery electric vehicles",
+            "url": "https://www.mass.gov/doc/may-11-2026-mor-ev-program-guideline-for-applicants/download",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 3500,
+          "label": "$3,500 for a used EV",
+          "evidence": {
+            "quote": "A rebate of $3,500 for the purchase or lease of eligible used light-duty vehicles is available",
+            "url": "https://www.mass.gov/doc/may-11-2026-mor-ev-program-guideline-for-applicants/download",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 1500,
+          "label": "+$1,500 MOR-EV+ adder (income-qualified)",
+          "evidence": {
+            "quote": "A rebate adder of $1,500 is available to income-qualifying Massachusetts residents.",
+            "url": "https://www.mass.gov/doc/may-11-2026-mor-ev-program-guideline-for-applicants/download",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        }
+      ],
+      "stackingNote": "State incentives may or may not combine with utility or other programs; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "MA"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide program for Massachusetts residents."
+      },
+      "eligibility": {
+        "summary": [
+          "Applicant must be a private individual who is a Massachusetts resident (other applicant types also exist).",
+          "New vehicles: total MSRP of $55,000 or less. Used vehicles: purchase price of $40,000 or less.",
+          "MOR-EV+ $1,500 adder for residents who participate in a qualifying state or federal income-based program (e.g. SNAP, WIC, MassHealth, LIHEAP).",
+          "Rebates are contingent on availability of funds."
+        ],
+        "applicant": [
+          "residential"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPrice": 55000,
+          "maxPriceNote": "$55,000 total MSRP for new vehicles; $40,000 purchase price for used vehicles.",
+          "evidence": {
+            "quote": "of $55,000 or below at the time of purchase",
+            "url": "https://www.mass.gov/doc/may-11-2026-mor-ev-program-guideline-for-applicants/download",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        "restrictions": [
+          "Only vehicles on the MOR-EV eligible-vehicle list qualify.",
+          "Rebates are contingent upon availability of funds."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Check the MOR-EV eligible-vehicle list.",
+          "Buy or lease the vehicle.",
+          "Apply online at apply.mor-ev.org within 90 calendar days of the purchase or lease date."
+        ],
+        "documents": [
+          "Purchase or lease agreement",
+          "For MOR-EV+: proof of participation in a qualifying income-based program"
+        ],
+        "deadlineNote": "Apply within 90 calendar days of the purchase or lease date."
+      },
+      "programUrl": "https://mor-ev.org/",
+      "applicationUrl": "https://apply.mor-ev.org",
+      "status": "active",
+      "statusBasis": "Program guideline revised May 11, 2026 and the program site advertise current rebates with an Apply Now link and no closure notice.",
+      "statusEvidence": {
+        "quote": "Receive $3,500-$6,000 for an electric vehicle",
+        "url": "https://mor-ev.org/",
+        "retrievedAt": "2026-10-19T19:04:33Z"
+      },
+      "sourceUrl": "https://www.mass.gov/doc/may-11-2026-mor-ev-program-guideline-for-applicants/download",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "A September 2026 public hearing considered lower vehicle price caps, changed amounts for pickups and heavier vehicles, and a new income threshold for MOR-EV+; the outcome was not confirmed.",
+        "The $6,000 top figure on mor-ev.org likely includes rideshare/other adders not captured here.",
+        "Rebates are contingent on funding."
+      ]
+    },
+    {
+      "id": "state_curated:ri-drive-ev",
+      "externalId": "ri-drive-ev",
+      "name": "DRIVE EV Rebate",
+      "providerName": "Rhode Island Office of Energy Resources (DRIVE program)",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "post_purchase_rebate"
+      ],
+      "summary": "Rebates for Rhode Island residents who buy or lease a qualifying EV: $3,000 for a new BEV or fuel-cell vehicle, $2,000 for a new plug-in hybrid, $2,500 for a used BEV and $1,750 for a used plug-in hybrid. New vehicles must be valued at $75,000 or less. Apply within 120 days of purchase or lease.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 3000,
+          "label": "$3,000 for a new BEV or FCEV",
+          "evidence": {
+            "quote": "$3,000.00 rebate for new Battery Electric Vehicles (BEVs) or new Fuel-Cell Electric Vehicles (FCEVs)",
+            "url": "https://drive.ri.gov/ev-programs/drive-ev",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2000,
+          "label": "$2,000 for a new PHEV",
+          "evidence": {
+            "quote": "$2,000.00 rebate for new Plug-in Hybrid Electric Vehicles (PHEVs)",
+            "url": "https://drive.ri.gov/ev-programs/drive-ev",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2500,
+          "label": "$2,500 for a used BEV or FCEV",
+          "evidence": {
+            "quote": "$2,500.00 for used Battery Electric Vehicles (BEVs) or used Fuel-Cell Electric Vehicles (FCEVs)",
+            "url": "https://drive.ri.gov/ev-programs/drive-ev",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 1750,
+          "label": "$1,750 for a used PHEV",
+          "evidence": {
+            "quote": "$1,750.00 for used Plug-in Hybrid Electric Vehicles (PHEVs).",
+            "url": "https://drive.ri.gov/ev-programs/drive-ev",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        }
+      ],
+      "stackingNote": "State incentives may or may not combine with utility or other programs; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "RI"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide program for Rhode Island residents."
+      },
+      "eligibility": {
+        "summary": [
+          "Open to Rhode Island residents who purchase or lease a qualifying vehicle.",
+          "New vehicles: agreed value at or below $75,000. Used vehicles: the page states a $55,000 limit.",
+          "Rebates are first-come, first-served and contingent on funding."
+        ],
+        "applicant": [
+          "residential"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPrice": 75000,
+          "maxPriceNote": "$75,000 agreed value for new vehicles; $55,000 for used vehicles.",
+          "evidence": {
+            "quote": "Purchase or lease a new eligible EV with an agreed upon value of the vehicle at or below $75,000.00",
+            "url": "https://drive.ri.gov/ev-programs/drive-ev",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        "restrictions": [
+          "Rebates are contingent on funding availability."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Buy or lease a qualifying EV.",
+          "Submit the individual application on drive.ri.gov with all supporting documents within 120 days of the purchase or lease date."
+        ],
+        "documents": [
+          "Required supporting documentation listed on the DRIVE EV application"
+        ],
+        "deadlineNote": "Submit all required documentation within 120 days of the purchase or lease date."
+      },
+      "programUrl": "https://drive.ri.gov/ev-programs/drive-ev",
+      "applicationUrl": "https://drive.ri.gov/individual-application",
+      "status": "active",
+      "statusBasis": "The DRIVE EV page describes rebates as available first-come, first-served with an application link and no pause or funds-exhausted notice.",
+      "statusEvidence": {
+        "quote": "DRIVE EV rebates are available on a first-come, first-served basis",
+        "url": "https://drive.ri.gov/ev-programs/drive-ev",
+        "retrievedAt": "2026-10-19T19:04:33Z"
+      },
+      "sourceUrl": "https://drive.ri.gov/ev-programs/drive-ev",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "The used-vehicle price-cap line on the page is worded as 'a new eligible EV ... at or below $55,000.00', which appears to be a page typo.",
+        "No income-qualified amounts are shown on this page; a separate DRIVE+ program exists but was not verified.",
+        "Remaining funding is not stated."
+      ]
+    },
+    {
+      "id": "state_curated:de-clean-vehicle-rebate",
+      "externalId": "de-clean-vehicle-rebate",
+      "name": "Delaware Clean Vehicle Rebate Program",
+      "providerName": "Delaware Department of Natural Resources and Environmental Control (DNREC)",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "post_purchase_rebate"
+      ],
+      "summary": "Rebates for Delawareans who buy or lease an eligible EV, at amounts in effect since May 1, 2026: $2,500 for a new BEV with a base MSRP under $40,000, $1,500 for a new BEV between $40,000 and $50,000, $1,000 for a new plug-in hybrid under $50,000, and $2,500 or $1,000 for used BEVs or plug-in hybrids priced $40,000 or less. Apply within 90 days of purchase.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 2500,
+          "label": "$2,500 for a new BEV under $40,000 MSRP",
+          "evidence": {
+            "quote": "New Battery Electric Vehicles with a base MSRP below $40,000",
+            "url": "https://dnrec.delaware.gov/energy-climate/clean-transportation/vehicle-rebates/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 1500,
+          "label": "$1,500 for a new BEV with MSRP $40,000-$50,000",
+          "evidence": {
+            "quote": "New Battery Electric Vehicles with a base MSRP between $40,000 and $50,000",
+            "url": "https://dnrec.delaware.gov/energy-climate/clean-transportation/vehicle-rebates/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 1000,
+          "label": "$1,000 for a new PHEV under $50,000 MSRP",
+          "evidence": {
+            "quote": "New Plug-in Hybrid Vehicles with a base MSRP below $50,000",
+            "url": "https://dnrec.delaware.gov/energy-climate/clean-transportation/vehicle-rebates/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2500,
+          "label": "$2,500 for a used BEV priced $40,000 or less",
+          "evidence": {
+            "quote": "Used Battery Electric Vehicle with a fair market purchase price of $40,000 or less",
+            "url": "https://dnrec.delaware.gov/energy-climate/clean-transportation/vehicle-rebates/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        }
+      ],
+      "stackingNote": "State incentives may or may not combine with utility or other programs; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "DE"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide program for Delaware residents and businesses."
+      },
+      "eligibility": {
+        "summary": [
+          "Delaware residents and businesses buying or leasing an eligible vehicle.",
+          "New BEVs: base MSRP below $50,000; new PHEVs: base MSRP below $50,000.",
+          "Used BEVs and PHEVs: fair market purchase price (Kelley Blue Book) of $40,000 or less; used PHEV rebate is $1,000.",
+          "Vehicles purchased before May 1, 2026 are no longer accepted."
+        ],
+        "applicant": [
+          "residential",
+          "business"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPrice": 50000,
+          "maxPriceNote": "$50,000 base MSRP for new vehicles; $40,000 fair market purchase price for used vehicles.",
+          "evidence": {
+            "quote": "New Battery Electric Vehicles with a base MSRP between $40,000 and $50,000",
+            "url": "https://dnrec.delaware.gov/energy-climate/clean-transportation/vehicle-rebates/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        "restrictions": [
+          "Applications for vehicles purchased before May 1, 2026 are no longer accepted."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Buy or lease an eligible vehicle.",
+          "Apply through the Drive Electric Delaware site within 90 days of the purchase date."
+        ],
+        "documents": [
+          "Documents listed in the program guidelines on driveelectricdelaware.org"
+        ],
+        "deadlineNote": "The rebate must be applied for within 90 days of the purchase date."
+      },
+      "programUrl": "https://dnrec.delaware.gov/energy-climate/clean-transportation/vehicle-rebates/",
+      "applicationUrl": "https://driveelectricdelaware.org/",
+      "status": "active",
+      "statusBasis": "The DNREC page lists rebate amounts in effect as of May 1, 2026, with no pause, end or funds-exhausted notice.",
+      "statusEvidence": {
+        "quote": "Rebate Amounts as of May 1, 2026",
+        "url": "https://dnrec.delaware.gov/energy-climate/clean-transportation/vehicle-rebates/",
+        "retrievedAt": "2026-10-19T19:04:33Z"
+      },
+      "sourceUrl": "https://dnrec.delaware.gov/energy-climate/clean-transportation/vehicle-rebates/",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "The page says amounts stay fixed until the program is reevaluated in 2026; a later change was not found.",
+        "Detailed residency rules are on a linked guidelines page that was not read.",
+        "Home charger rebates are on a separate DNREC page that was not verified."
+      ]
+    },
+    {
+      "id": "state_curated:me-ev-lmi",
+      "externalId": "me-ev-lmi",
+      "name": "Efficiency Maine EV Rebates for Low- and Moderate-Income Residents",
+      "providerName": "Efficiency Maine Trust",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "rebate_timing_unknown"
+      ],
+      "summary": "Efficiency Maine offers low-income Mainers $7,000 for a new EV or $3,000 for a used EV, and moderate-income Mainers $5,000 new or $2,000 used. Income must be verified by Efficiency Maine before purchase. Price caps apply ($55,000 for most new vehicles, $50,000 for used).",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 7000,
+          "label": "$7,000 for a new EV (low income)",
+          "evidence": {
+            "quote": "$7,000",
+            "url": "https://www.efficiencymaine.com/electric-vehicle-incentives-for-low-and-moderate-income/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 5000,
+          "label": "$5,000 for a new EV (moderate income)",
+          "evidence": {
+            "quote": "$5,000",
+            "url": "https://www.efficiencymaine.com/electric-vehicle-incentives-for-low-and-moderate-income/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 3000,
+          "label": "$3,000 for a used EV (low income)",
+          "evidence": {
+            "quote": "$3,000",
+            "url": "https://www.efficiencymaine.com/electric-vehicle-incentives-for-low-and-moderate-income/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2000,
+          "label": "$2,000 for a used EV (moderate income)",
+          "evidence": {
+            "quote": "$2,000",
+            "url": "https://www.efficiencymaine.com/electric-vehicle-incentives-for-low-and-moderate-income/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        }
+      ],
+      "stackingNote": "State incentives may or may not combine with utility or other programs; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "ME"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide Efficiency Maine program for Maine residents."
+      },
+      "eligibility": {
+        "summary": [
+          "Low income: a household member participates in MaineCare, HEAP, SNAP, or TANF.",
+          "Moderate income: adjusted gross income under $70,000 for individual tax filers or $100,000 for joint filers.",
+          "New vehicles: total MSRP no more than $55,000 ($80,000 for eligible pickup trucks and commercial vans).",
+          "Used vehicles: final purchase price no more than $50,000, no more than 6 model years old (2020 or newer in 2026), and no more than 72,000 miles.",
+          "An off-peak charger must be installed at home and connected to the internet within 90 days of purchase."
+        ],
+        "income": {
+          "type": "text_only",
+          "basis": "Moderate-income tier: adjusted gross income must be less than these amounts; low-income tier is based on program participation instead. Limits stated by the source: joint $100,000, other $70,000.",
+          "evidence": {
+            "quote": "Adjusted Gross Income (AGI) is less than $70,000 for individual tax filers, or $100,000 for joint filers",
+            "url": "https://www.efficiencymaine.com/electric-vehicle-incentives-for-low-and-moderate-income/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        "applicant": [
+          "residential"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase"
+          ],
+          "maxPrice": 55000,
+          "maxPriceNote": "$55,000 for most new vehicles; $80,000 for eligible pickups and commercial vans; $50,000 final price for used vehicles.",
+          "evidence": {
+            "quote": "$55,000 for other eligible new vehicles.",
+            "url": "https://www.efficiencymaine.com/electric-vehicle-incentives-for-low-and-moderate-income/",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        "restrictions": [
+          "Income verification from Efficiency Maine is required before purchasing the vehicle.",
+          "Off-peak home charger must be installed and connected within 90 days of purchase.",
+          "Program and incentives subject to change or termination."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Get income verification from Efficiency Maine before buying (allow 5 business days).",
+          "Buy the eligible vehicle from a participating dealer, which submits the rebate claim form, or buy direct from the manufacturer and submit the claim form within 60 days.",
+          "Install an off-peak charger at home and connect it to the internet within 90 days of purchase."
+        ],
+        "documents": [
+          "Income verification approval from Efficiency Maine",
+          "EV rebate claim form",
+          "Purchase agreement"
+        ],
+        "deadlineNote": "Direct-from-manufacturer claims within 60 days of purchase; off-peak charger setup within 90 days."
+      },
+      "programUrl": "https://www.efficiencymaine.com/electric-vehicle-incentives-for-low-and-moderate-income/",
+      "applicationUrl": "https://www.efficiencymaine.com/income-based-eligibility-verification/",
+      "status": "active",
+      "statusBasis": "The page describes the 2026 program rules (e.g. 2026 model-year limits) with no pause, end or funds-exhausted notice; it only says incentives are subject to change or termination.",
+      "statusEvidence": {
+        "quote": "Model year no more than 6 years old (in 2026, must be model year 2020 or newer)",
+        "url": "https://www.efficiencymaine.com/electric-vehicle-incentives-for-low-and-moderate-income/",
+        "retrievedAt": "2026-10-19T19:04:33Z"
+      },
+      "sourceUrl": "https://www.efficiencymaine.com/electric-vehicle-incentives-for-low-and-moderate-income/",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Amount quotes are bare table cells from the page's Rebate Amounts table (rows: Low Income / Moderate Income; columns: New / Used).",
+        "The enhanced limited-time rebates (up to $8,000) ended April 30, 2026; current amounts are the table values above.",
+        "Whether the rebate is applied at the dealer (point of sale) was not confirmed from a quote.",
+        "Remaining funding is not stated."
+      ]
+    },
+    {
+      "id": "state_curated:md-ev-excise-credit",
+      "externalId": "md-ev-excise-credit",
+      "name": "Maryland Excise Tax Credit for Plug-In Electric or Fuel Cell Vehicles",
+      "providerName": "Maryland Department of Transportation Motor Vehicle Administration (MVA)",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "tax_credit"
+      ],
+      "summary": "A credit of up to $3,000 against Maryland's vehicle excise (titling) tax for a new zero-emission plug-in electric or fuel cell vehicle with a base purchase price of $50,000 or less. Fiscal Year 2027 funding is available, but limited: the MVA reported $2.2 million in credits left as of October 1, 2026.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 3000,
+          "label": "Up to $3,000",
+          "evidence": {
+            "quote": "$3,000 for a zero-emission plug-in electric drive or fuel cell electric vehicle",
+            "url": "https://mva.maryland.gov/your-mva-guide/businesses/bulletins-businesses/excise-tax-credit-plug-electric-or-fuel-cell-vehicles-no-more-fiscal-year-2026-funding",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        }
+      ],
+      "stackingNote": "State incentives may or may not combine with utility or other programs; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "MD"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide credit against the Maryland vehicle excise tax."
+      },
+      "eligibility": {
+        "summary": [
+          "New zero-emission plug-in electric or fuel cell vehicle, purchased or leased for the taxpayer's own use (not for resale).",
+          "Base purchase price (Monroney sticker standard price) of $50,000 or less.",
+          "Vehicle must be titled for the first time on or after July 1, 2023 but before July 1, 2027.",
+          "Electric motorcycles qualify for smaller credits ($1,000 two-wheeled, $2,000 three-wheeled).",
+          "Credits are paid only while state funding lasts."
+        ],
+        "applicant": [
+          "residential",
+          "business"
+        ],
+        "vehicle": {
+          "condition": [
+            "new"
+          ],
+          "acquisition": [
+            "purchase",
+            "lease"
+          ],
+          "maxPrice": 50000,
+          "maxPriceNote": "Base purchase price (Standard Vehicle Price on the Monroney sticker) of $50,000 or less.",
+          "evidence": {
+            "quote": "The vehicle has a base purchase price not exceeding $50,000.",
+            "url": "https://mva.maryland.gov/your-mva-guide/businesses/bulletins-businesses/excise-tax-credit-plug-electric-or-fuel-cell-vehicles-begin-july-1-2023",
+            "retrievedAt": "2026-10-19T19:04:33Z"
+          }
+        },
+        "restrictions": [
+          "Funding is limited per fiscal year; the MVA reported FY2026 funds depleted in an August 2025 bulletin.",
+          "Vehicle must be titled before July 1, 2027."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Buy or lease an eligible new EV with a base price of $50,000 or less.",
+          "Request the excise tax credit from the MVA when the vehicle is first titled."
+        ],
+        "documents": [
+          "Monroney (window) sticker showing the base price"
+        ],
+        "deadlineNote": "Vehicle must be titled for the first time before July 1, 2027; FY2027 funds are limited."
+      },
+      "programUrl": "https://mva.maryland.gov/your-mva-guide/businesses/vehicle-dealers-title-services/resources-dealers-title-services/bulletins-vehicle-dealers/excise-tax-credit-plug-electric-or-fuel-cell-vehicles-fiscal-year-2027-funding",
+      "status": "active",
+      "statusBasis": "The MVA's October 1, 2026 bulletin says FY2027 funding is available, with $2,200,000 in credits still available.",
+      "statusEvidence": {
+        "quote": "funding for the Fiscal Year 2027 EV excise tax credit is available.",
+        "url": "https://mva.maryland.gov/your-mva-guide/businesses/vehicle-dealers-title-services/resources-dealers-title-services/bulletins-vehicle-dealers/excise-tax-credit-plug-electric-or-fuel-cell-vehicles-fiscal-year-2027-funding",
+        "retrievedAt": "2026-10-19T19:04:33Z"
+      },
+      "sourceUrl": "https://mva.maryland.gov/your-mva-guide/businesses/vehicle-dealers-title-services/resources-dealers-title-services/bulletins-vehicle-dealers/excise-tax-credit-plug-electric-or-fuel-cell-vehicles-fiscal-year-2027-funding",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Only about $2.2 million in FY2027 credits remained as of October 1, 2026; funds may run out soon.",
+        "Credit amount is from the August 2025 bulletin and the price cap from the June 2023 bulletin; the FY2027 bulletin does not restate them.",
+        "Exact application form for the current period was not confirmed."
+      ]
+    },
+    {
+      "id": "state_curated:il-ev-rebate",
+      "externalId": "il-ev-rebate",
+      "name": "Illinois Electric Vehicle Rebate Program",
+      "providerName": "Illinois Environmental Protection Agency",
+      "providerType": "state",
+      "categories": [
+        "ev_purchase"
+      ],
+      "benefitTypes": [
+        "post_purchase_rebate"
+      ],
+      "summary": "A state rebate for Illinois residents who buy a new or used electric vehicle from an Illinois-licensed dealer: $2,000, or $4,000 for low-income applicants, and $1,500 for an all-electric motorcycle. The current application cycle runs August 1 to December 31, 2026.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 4000,
+          "label": "$4,000 for low-income applicants",
+          "evidence": {
+            "quote": "A $4,000 rebate to a low-income applicant, as defined in the EV Rebate Act",
+            "url": "https://epa.illinois.gov/topics/ceja/electric-vehicle-rebates.html",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 2000,
+          "label": "$2,000 for other eligible applicants",
+          "evidence": {
+            "quote": "A $2,000 rebate to an applicant that is eligible to apply for a rebate but does not meet the low-income",
+            "url": "https://epa.illinois.gov/topics/ceja/electric-vehicle-rebates.html",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        },
+        {
+          "kind": "flat",
+          "value": 1500,
+          "label": "$1,500 for an all-electric motorcycle",
+          "evidence": {
+            "quote": "A $1,500 rebate to an eligible applicant for the purchase of an all-electric motorcycle.",
+            "url": "https://epa.illinois.gov/topics/ceja/electric-vehicle-rebates.html",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        }
+      ],
+      "stackingNote": "Utility and local incentives may also apply; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "IL"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide; the applicant must reside in Illinois."
+      },
+      "eligibility": {
+        "summary": [
+          "Applicant must reside in Illinois both when the vehicle is purchased and when the rebate is issued.",
+          "Vehicle must be bought from a dealership licensed by the Illinois Secretary of State.",
+          "Application must be postmarked during the cycle and within 180 days of purchase.",
+          "Purchaser must keep the vehicle for at least 12 consecutive months.",
+          "Income must not exceed 500% of the federal poverty line; low-income (the $4,000 tier) means income at or below 80% of the regional or county median income."
+        ],
+        "income": {
+          "type": "text_only",
+          "basis": "Income may not exceed 500% of the federal poverty line; the low-income tier is income at or below 80% of the regional or county median income. No dollar table is stated on the page.",
+          "evidence": {
+            "quote": "whose income does not exceed 500% of the federal poverty line",
+            "url": "https://epa.illinois.gov/content/dam/soi/en/web/epa/about-us/documents/news-releases/2026/07-21-2026-IEPA-EV-Rebate-FY27Cycle-Final.pdf",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        },
+        "applicant": [
+          "residential"
+        ],
+        "vehicle": {
+          "condition": [
+            "new",
+            "used"
+          ],
+          "acquisition": [
+            "purchase"
+          ],
+          "evidence": {
+            "quote": "The rebate is $2,000 for an eligible new or used electric vehicle.",
+            "url": "https://epa.illinois.gov/content/dam/soi/en/web/epa/about-us/documents/news-releases/2026/07-21-2026-IEPA-EV-Rebate-FY27Cycle-Final.pdf",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        },
+        "restrictions": [
+          "Applications postmarked before August 1, 2026 or after December 31, 2026 are rejected.",
+          "Rebates are available only to the extent appropriated; the page states $14 million was appropriated for the current fiscal year."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Buy an eligible new or used EV (or all-electric motorcycle) from an Illinois-licensed dealer.",
+          "Download the application form and instructions from the Illinois EPA EV Rebate page.",
+          "Mail the completed application, postmarked between August 1 and December 31, 2026 and within 180 days of purchase."
+        ],
+        "documents": [
+          "Completed Illinois EPA EV rebate application form"
+        ],
+        "deadlineNote": "Current cycle closes December 31, 2026 (postmark); applications must also be within 180 days of purchase."
+      },
+      "programUrl": "https://epa.illinois.gov/topics/ceja/electric-vehicle-rebates.html",
+      "applicationUrl": "https://epa.illinois.gov/content/dam/soi/en/web/epa/topics/ceja/documents/application-documents/aug-dec2026documents/EVRebate%20Application%20and%20Instructions%20-%20English.pdf",
+      "startDate": "2026-08-01",
+      "endDate": "2026-12-31",
+      "status": "active",
+      "statusBasis": "The Illinois EPA page states the current application cycle opened August 1, 2026 and is open until December 31, 2026.",
+      "statusEvidence": {
+        "quote": "The latest cycle for the EV Rebate Program opened on August 1, 2026 and is open until December 31, 2026.",
+        "url": "https://epa.illinois.gov/topics/ceja/electric-vehicle-rebates.html",
+        "retrievedAt": "2026-10-19T19:06:08Z"
+      },
+      "sourceUrl": "https://epa.illinois.gov/topics/ceja/electric-vehicle-rebates.html",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Funding is limited to the annual appropriation ($14 million stated); the page does not say how many rebates remain.",
+        "Exact dollar income limits are not published on the page; only percentages of the federal poverty line and area median income."
+      ]
+    },
+    {
+      "id": "state_curated:il-shines",
+      "externalId": "il-shines",
+      "name": "Illinois Shines (Adjustable Block Program)",
+      "providerName": "Illinois Power Agency",
+      "providerType": "state",
+      "categories": [
+        "solar"
+      ],
+      "benefitTypes": [
+        "other"
+      ],
+      "summary": "The state's solar incentive program pays Renewable Energy Credit (REC) incentives for new solar projects, including home rooftop systems, through Approved Vendors. From June 1, 2026 an extra $20 per REC is offered for customer-owned small projects that will not get the federal tax credit.",
+      "amounts": [
+        {
+          "kind": "text",
+          "label": "REC incentive set by the program, paid to the Approved Vendor; savings may be passed on to the customer"
+        },
+        {
+          "kind": "per_unit",
+          "value": 20,
+          "unit": "REC",
+          "label": "Extra $20 per REC for eligible customer-owned small projects",
+          "evidence": {
+            "quote": "If eligible, your Approved Vendor can receive an additional $20 per REC from your solar project.",
+            "url": "https://illinoisshines.com/faqs/",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        }
+      ],
+      "stackingNote": "Separate from the ComEd/Ameren distributed generation rebate; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "IL"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide Illinois program; projects in co-op and municipal utility territories can also participate per the FAQ."
+      },
+      "eligibility": {
+        "summary": [
+          "Projects are submitted to the program by Approved Vendors, not by homeowners directly.",
+          "Incentives are paid to the Approved Vendor, who is not required to pass them through to the customer.",
+          "The $20/REC adder applies only to customer-owned Small DG projects that will not receive the federal residential clean energy credit."
+        ],
+        "applicant": [
+          "residential",
+          "business"
+        ],
+        "restrictions": [
+          "Approved Vendors are not required to pass through any of the incentive to customers."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Choose an Illinois Shines Approved Vendor to design and install the solar system.",
+          "The Approved Vendor submits the project application to the program.",
+          "Ask the vendor how the REC incentive is reflected in your price or contract."
+        ],
+        "documents": [],
+        "deadlineNote": "The 2026-27 Program Year opened in June 2026; capacity is allocated in blocks."
+      },
+      "programUrl": "https://illinoisshines.com/faqs/",
+      "startDate": "2026-06-01",
+      "status": "active",
+      "statusBasis": "The Illinois Power Agency announced on June 4, 2026 that Illinois Shines opened for the 2026-27 Program Year; the block capacity update lists 236.71 MW available for Small DG at opening.",
+      "statusEvidence": {
+        "quote": "Illinois Shines opened this week for the 2026-27 Program Year",
+        "url": "https://ipa.illinois.gov/announcements/press-release--state-solar-incentive-program-illinois-shines-ope.html",
+        "retrievedAt": "2026-10-19T19:06:08Z"
+      },
+      "sourceUrl": "https://illinoisshines.com/faqs/",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Per-REC prices for 2026-27 are in a separate price file and were not captured; no dollar amount per kW for homeowners is stated.",
+        "Remaining Small DG block capacity as of October 2026 was not confirmed."
+      ]
+    },
+    {
+      "id": "state_curated:il-dg-storage-rebate",
+      "externalId": "il-dg-storage-rebate",
+      "name": "Illinois Distributed Generation and Storage Rebate (ComEd and Ameren Illinois)",
+      "providerName": "ComEd and Ameren Illinois",
+      "providerType": "utility",
+      "categories": [
+        "solar",
+        "battery"
+      ],
+      "benefitTypes": [
+        "post_purchase_rebate"
+      ],
+      "summary": "ComEd and Ameren Illinois are required by state law to offer a rebate to customers who install solar and/or battery storage with a smart inverter: $300 per kW of solar capacity and $300 per kWh of storage for residential and small commercial customers.",
+      "amounts": [
+        {
+          "kind": "per_unit",
+          "value": 300,
+          "unit": "kW",
+          "label": "$300 per kW of installed solar capacity",
+          "evidence": {
+            "quote": "Solar projects for residential and small commercial customers receive $300/kW for installed solar project capacity.",
+            "url": "https://illinoisshines.com/faqs/",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        },
+        {
+          "kind": "per_unit",
+          "value": 300,
+          "unit": "kWh",
+          "label": "$300 per kWh of battery storage nameplate capacity",
+          "evidence": {
+            "quote": "These customers are also eligible for a separate storage rebate calculated at $300/kWh for nameplate capacity",
+            "url": "https://illinoisshines.com/faqs/",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        }
+      ],
+      "stackingNote": "Separate from and not dependent on the Illinois Shines incentive; each program's own rules decide. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "utility",
+        "states": [
+          "IL"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [
+          "ComEd",
+          "Ameren Illinois"
+        ],
+        "confidence": "source_stated",
+        "note": "Customers of ComEd and Ameren Illinois only."
+      },
+      "eligibility": {
+        "summary": [
+          "Must be a ComEd or Ameren Illinois customer.",
+          "Solar and/or battery storage must use a smart inverter.",
+          "The $300/kW and $300/kWh amounts apply to residential and small commercial customers."
+        ],
+        "applicant": [
+          "residential",
+          "business"
+        ],
+        "utilityCustomersOf": [
+          "ComEd",
+          "Ameren Illinois"
+        ],
+        "restrictions": []
+      },
+      "application": {
+        "steps": [
+          "Install solar and/or storage with a smart inverter in ComEd or Ameren Illinois territory.",
+          "Apply for the distributed generation rebate through your utility (your installer usually helps)."
+        ],
+        "documents": []
+      },
+      "programUrl": "https://illinoisshines.com/faqs/",
+      "status": "active",
+      "statusBasis": "The Illinois Shines FAQ (state program administrator) describes the rebate as a current requirement on ComEd and Ameren with no closure notice. ComEd's tariff revision effective October 19, 2026 lists $300/kW and $300/kWh rates for 2027-2029.",
+      "statusEvidence": {
+        "quote": "This rebate is available for residential and nonresidential customers.",
+        "url": "https://illinoisshines.com/faqs/",
+        "retrievedAt": "2026-10-19T19:06:08Z"
+      },
+      "sourceUrl": "https://illinoisshines.com/faqs/",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Amounts and status are taken from the Illinois Shines FAQ, not the utilities' own pages (ComEd's rebate page did not render for verification).",
+        "ComEd's revised tariff (effective October 19, 2026) says stand-alone storage applications are not accepted until January 1, 2027; storage paired with solar may differ.",
+        "Competitively declared projects receive lower rates ($250/kW, $250/kWh) per the ComEd tariff."
+      ]
+    },
+    {
+      "id": "state_curated:il-solar-for-all-residential",
+      "externalId": "il-solar-for-all-residential",
+      "name": "Illinois Solar for All: Residential Solar",
+      "providerName": "Illinois Power Agency (Illinois Solar for All)",
+      "providerType": "state",
+      "categories": [
+        "solar"
+      ],
+      "benefitTypes": [
+        "grant"
+      ],
+      "summary": "Income-eligible Illinois households (80% of area median income or less) can get rooftop solar with no upfront cost for 1-4 unit buildings through Approved Vendors. The 2026-27 project window closed September 25, 2026; a rolling window was to open October 12, 2026 only if funding remains.",
+      "amounts": [
+        {
+          "kind": "text",
+          "label": "No upfront cost for 1-4 unit buildings; low or no upfront cost for 5+ unit buildings (no dollar amount stated)"
+        }
+      ],
+      "coverage": {
+        "type": "state",
+        "states": [
+          "IL"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide Illinois program for income-eligible households."
+      },
+      "eligibility": {
+        "summary": [
+          "Single-family owners must have income at or below 80% of the Area Median Income.",
+          "For 2-4 unit properties, at least two units must be occupied by households at or below 80% of AMI.",
+          "For 5+ unit properties, at least half of units must be occupied by households at or below 80% of AMI."
+        ],
+        "income": {
+          "type": "text_only",
+          "basis": "Household income at or below 80% of the Area Median Income; no dollar table on the page.",
+          "evidence": {
+            "quote": "Must have an income of 80% or less of the Area Median Income (AMI).",
+            "url": "https://www.illinoissfa.com/residential-solar/",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        },
+        "ownership": "homeowner",
+        "applicant": [
+          "residential"
+        ],
+        "restrictions": [
+          "Projects are submitted by Approved Vendors; rolling-window projects are first-come, first-served until May 31, 2027."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Check income eligibility on the Illinois Solar for All site.",
+          "Contact an Illinois Solar for All Approved Vendor.",
+          "The vendor submits the project if sub-program funding remains."
+        ],
+        "documents": [
+          "Income verification"
+        ],
+        "deadlineNote": "Main 2026-27 submission window closed September 25, 2026; a rolling window opens October 12, 2026 only if funding remains, through May 31, 2027."
+      },
+      "programUrl": "https://www.illinoissfa.com/residential-solar/",
+      "applicationUrl": "https://www.illinoissfa.com/eligibility-verification/",
+      "status": "unknown",
+      "statusBasis": "The main 2026-27 Residential Solar (Small) window closed September 25, 2026 and selection may be by lottery on January 13, 2027 if oversubscribed. A rolling window was set to open October 12, 2026 only if funding remained; no page confirms whether it opened. The residential page still shows 2025 capacity notices.",
+      "statusEvidence": {
+        "quote": "A rolling submission window for Residential Solar (Small) projects will open on October 12, 2026",
+        "url": "https://www.illinoissfa.com/announcements/2026/09/the-residential-solar-small-project-submission-window-closes-on-september-25-2026/",
+        "retrievedAt": "2026-10-19T19:06:08Z"
+      },
+      "sourceUrl": "https://www.illinoissfa.com/residential-solar/",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Whether the October 12, 2026 rolling window opened depends on funding left after the main window; not confirmed.",
+        "Residential page still carries 2025 capacity notices.",
+        "Sub-program budget stated as $8,884,790.74 for the window; remaining funds unknown."
+      ]
+    },
+    {
+      "id": "state_curated:az-solar-energy-credit",
+      "externalId": "az-solar-energy-credit",
+      "name": "Arizona Credit for Solar Energy Devices (Form 310)",
+      "providerName": "Arizona Department of Revenue",
+      "providerType": "state",
+      "categories": [
+        "solar",
+        "battery"
+      ],
+      "benefitTypes": [
+        "tax_credit"
+      ],
+      "summary": "A nonrefundable Arizona income-tax credit of 25% of the cost of a solar energy device installed at your Arizona residence, up to $1,000 per residence. Solar PV (including batteries and inverters) and solar water heating qualify; unused credit carries forward up to five years.",
+      "amounts": [
+        {
+          "kind": "percent",
+          "value": 25,
+          "maximum": 1000,
+          "label": "25% of cost, up to $1,000 per residence",
+          "evidence": {
+            "quote": "The solar energy credit for buying and installing a solar energy device is 25% (.25) of the cost",
+            "url": "https://azdor.gov/sites/default/files/document/FORMS_CREDIT_2025_310_i.pdf",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        }
+      ],
+      "stackingNote": "State tax credit; other incentives may apply under their own rules. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "state",
+        "states": [
+          "AZ"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [],
+        "confidence": "source_stated",
+        "note": "Statewide; device must be installed at the taxpayer's Arizona residence."
+      },
+      "eligibility": {
+        "summary": [
+          "Must be an Arizona resident who is not a dependent of another taxpayer.",
+          "Device must be installed in your residence located in Arizona.",
+          "Cumulative credit cannot exceed $1,000 for the same residence.",
+          "Qualifying devices include solar PV systems (collectors, batteries, inverters) and solar domestic water heating."
+        ],
+        "ownership": "homeowner",
+        "applicant": [
+          "residential"
+        ],
+        "restrictions": [
+          "Nonrefundable; unused credit may be carried forward for up to five consecutive years.",
+          "If you install another device in a later year, the cumulative credit cannot exceed $1,000 for the same residence."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Install a qualifying solar energy device at your Arizona residence.",
+          "Complete Arizona Form 310 for the tax year of installation.",
+          "File it with your Arizona individual income tax return."
+        ],
+        "documents": [
+          "Arizona Form 310",
+          "Receipts showing the cost of the device and installation"
+        ]
+      },
+      "programUrl": "https://azdor.gov/forms/tax-credits-forms/credit-solar-energy-devices",
+      "applicationUrl": "https://azdor.gov/sites/default/files/document/FORMS_CREDIT_2025_310_f.pdf",
+      "status": "active",
+      "statusBasis": "The Department of Revenue publishes the 2025 Form 310 and instructions for the current filing year with no expiration or repeal notice.",
+      "statusEvidence": {
+        "quote": "To be eligible for this credit, you must be an Arizona resident who is not a dependent of another taxpayer.",
+        "url": "https://azdor.gov/sites/default/files/document/FORMS_CREDIT_2025_310_i.pdf",
+        "retrievedAt": "2026-10-19T19:06:08Z"
+      },
+      "sourceUrl": "https://azdor.gov/sites/default/files/document/FORMS_CREDIT_2025_310_i.pdf",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "The 2026 tax-year form is not yet published; status is based on the 2025 form and no stated sunset.",
+        "Whether a stand-alone battery (not paired with solar) qualifies is not stated."
+      ]
+    },
+    {
+      "id": "state_curated:tx-austin-energy-solar-rebate",
+      "externalId": "tx-austin-energy-solar-rebate",
+      "name": "Austin Energy Residential Solar Rebate",
+      "providerName": "Austin Energy",
+      "providerType": "utility",
+      "categories": [
+        "solar"
+      ],
+      "benefitTypes": [
+        "post_purchase_rebate"
+      ],
+      "summary": "Austin Energy (the City of Austin's electric utility) offers a $4,000 rebate for eligible home solar systems of 3 kW (DC) or larger installed by an approved contractor. The rebate rose from $2,500 to $4,000 on July 1, 2026.",
+      "amounts": [
+        {
+          "kind": "flat",
+          "value": 4000,
+          "label": "$4,000 per eligible home solar project",
+          "evidence": {
+            "quote": "Austin Energy offers a $4,000 rebate for eligible home solar projects.",
+            "url": "https://austinenergy.com/green-power/solar-solutions/for-your-home",
+            "retrievedAt": "2026-10-19T19:06:08Z"
+          }
+        }
+      ],
+      "stackingNote": "Utility rebate; other incentives may apply under their own rules. ClearEV does not add amounts together.",
+      "coverage": {
+        "type": "utility",
+        "states": [
+          "TX"
+        ],
+        "counties": [],
+        "zips": [],
+        "utilityNames": [
+          "Austin Energy"
+        ],
+        "confidence": "source_stated",
+        "note": "Austin Energy residential electric customers only."
+      },
+      "eligibility": {
+        "summary": [
+          "Must have an Austin Energy residential electric utility account.",
+          "System must be 3 kW (DC) or larger and mostly free of shading.",
+          "Must use a contractor on Austin Energy's approved list."
+        ],
+        "applicant": [
+          "residential"
+        ],
+        "utilityCustomersOf": [
+          "Austin Energy"
+        ],
+        "restrictions": [
+          "No rebate if the contractor is not on Austin Energy's approved list."
+        ]
+      },
+      "application": {
+        "steps": [
+          "Take Austin Energy's solar rebate quiz / start an online application.",
+          "Hire a contractor from Austin Energy's approved list.",
+          "The system must meet the size and shading requirements."
+        ],
+        "documents": []
+      },
+      "programUrl": "https://austinenergy.com/green-power/solar-solutions/for-your-home",
+      "applicationUrl": "https://rebates.austinenergy.com/OnlineApp/#enrollment/?programId=1024",
+      "startDate": "2026-07-01",
+      "status": "active",
+      "statusBasis": "The program page describes the rebate as currently offered with no closure or funding notice; Austin Energy increased it to $4,000 effective July 1, 2026.",
+      "statusEvidence": {
+        "quote": "Austin Energy offers a $4,000 rebate for eligible home solar projects.",
+        "url": "https://austinenergy.com/green-power/solar-solutions/for-your-home",
+        "retrievedAt": "2026-10-19T19:06:08Z"
+      },
+      "sourceUrl": "https://austinenergy.com/green-power/solar-solutions/for-your-home",
+      "verificationMethod": "Read from the official program page and quoted verbatim; quotes are re-checked against the page on each ingestion run.",
+      "uncertainties": [
+        "Page does not state funding limits or a fiscal-year end date.",
+        "Austin Energy service territory counties are not named on the page, so coverage is by utility only.",
+        "startDate is the effective date of the increase to $4,000, not the program's original start."
+      ]
+    }
+  ]
+}

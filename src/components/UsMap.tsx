@@ -5,6 +5,11 @@ import type { FeatureCollection, MultiPolygon } from "geojson";
 import { PSEUDO_BOUNDS } from "@/lib/geo/projection";
 import { ICON_LABELS, iconForCategory, type IconKind } from "@/lib/domain/program";
 import type { ResultProgram } from "./ResultCard";
+import { fmtDollars, metric, rankCountyGroups, rankHotspots, type HotspotData } from "@/lib/search/hotspots";
+import { countyTitle, hotspotLabel, hotspotSummary, type HotspotView } from "./HotspotPanel";
+import { stateByAbbr } from "@/lib/geo/states";
+import { fmtCost, type EvFriendlyData } from "@/lib/geo/ev-friendliness";
+import { webglInfo } from "@/lib/webgl";
 
 export interface UsMapProps {
   stateCounts: Record<string, number>;
@@ -16,7 +21,13 @@ export interface UsMapProps {
   localPrograms: ResultProgram[];
   onSelectState: (abbr: string | undefined) => void;
   onSelectProgram: (id: string) => void;
+  /** A program picked from a county dot's list: show its state and select it. */
+  onPickProgram?: (state: string, id: string) => void;
   onHoverProgram?: (id: string | undefined) => void;
+  hotspots?: HotspotData;
+  hotspotMode?: HotspotView;
+  evFriendliness?: EvFriendlyData;
+  showBars?: boolean;
 }
 
 type StateProps = { abbr: string; name: string; fips: string; labelLng: number; labelLat: number };
@@ -35,6 +46,61 @@ export function iconSvg(kind: IconKind, size = 16) {
 }
 
 const SPREAD_ZOOM = 5.2;
+/** Zoom at which neighbouring county dots stop overlapping. */
+const COUNTY_ZOOM = 6.2;
+/** Vertical exaggeration so mountain ranges read at country scale (the composite is roughly 1:1 horizontally). */
+const TERRAIN_EXAGGERATION = 9;
+const BAR_HALF = 0.2; // pseudo degrees
+
+/**
+ * True when WebGL runs on a CPU rasterizer. Elevation shading and 3D terrain make start-up and every frame
+ * slow there, so the map draws without them. Reuses the page's single WebGL probe (see lib/webgl).
+ */
+function softwareRenderer(): boolean {
+  return webglInfo().software;
+}
+
+const TERRAIN_PREF_KEY = "clearev.terrain";
+/** Frames slower than this while the map moves (about 20 fps) mean 3D terrain is too heavy for the device. */
+const SLOW_FRAME_MS = 50;
+
+/** The viewer's own choice for 3D terrain ("on" | "off"), or null to decide automatically. Browser-only convenience. */
+function terrainPref(): "on" | "off" | null {
+  try {
+    const v = window.localStorage.getItem(TERRAIN_PREF_KEY);
+    return v === "on" || v === "off" ? v : null;
+  } catch {
+    return null;
+  }
+}
+function saveTerrainPref(v: "on" | "off") {
+  try {
+    window.localStorage.setItem(TERRAIN_PREF_KEY, v);
+  } catch {
+    /* storage blocked: the choice lasts for this page view */
+  }
+}
+
+/** Absolute URL for a file under the site's geo folder (the static preview sets its own base). */
+export function geoUrl(p: string) {
+  const base = (window as unknown as { __CLEAREV_GEO_BASE__?: string }).__CLEAREV_GEO_BASE__;
+  return base ? `${base.replace(/\/$/, "")}/${p}` : `${window.location.origin}/geo/${p}`;
+}
+
+function barFeatures(fc: FeatureCollection<MultiPolygon, StateProps>, ev: EvFriendlyData | undefined): FeatureCollection {
+  const features = [];
+  for (const f of fc.features) {
+    const row = ev?.rows[f.properties.abbr];
+    if (!row || row.score == null) continue;
+    const { labelLng: x, labelLat: y } = f.properties;
+    features.push({
+      type: "Feature" as const,
+      properties: { abbr: f.properties.abbr, score: row.score },
+      geometry: { type: "Polygon" as const, coordinates: [[[x - BAR_HALF, y - BAR_HALF], [x + BAR_HALF, y - BAR_HALF], [x + BAR_HALF, y + BAR_HALF], [x - BAR_HALF, y + BAR_HALF], [x - BAR_HALF, y - BAR_HALF]]] },
+    });
+  }
+  return { type: "FeatureCollection", features };
+}
 const FIT_PADDING = { top: 24, bottom: 36, left: 24, right: 24 };
 const HOME_PITCH = 38;
 
@@ -42,8 +108,12 @@ export default function UsMap(props: UsMapProps) {
   const container = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MlMap | null>(null);
   const popupRef = useRef<Popup | null>(null);
+  const pinnedRef = useRef<Popup | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const labelsRef = useRef<Marker[]>([]);
+  const hotspotMarkersRef = useRef<Marker[]>([]);
+  const rangeLabelsRef = useRef<Marker[]>([]);
+  const countyPointsRef = useRef<Record<string, [number, number, number, number]> | null>(null);
   const hoveredRef = useRef<number | null>(null);
   const fcRef = useRef<FeatureCollection<MultiPolygon, StateProps> | null>(null);
   const propsRef = useRef(props);
@@ -51,6 +121,9 @@ export default function UsMap(props: UsMapProps) {
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [hasTerrain, setHasTerrain] = useState(false);
+  const [terrainOn, setTerrainOn] = useState(true);
+  const [terrainNote, setTerrainNote] = useState<string | null>(null);
 
   // Create the map once.
   useEffect(() => {
@@ -71,7 +144,11 @@ export default function UsMap(props: UsMapProps) {
         dragRotate: true,
         touchPitch: true,
         renderWorldCopies: false,
-        canvasContextAttributes: { antialias: true },
+        // Multisampling is nearly free on a graphics chip but costly when WebGL runs on the CPU.
+        canvasContextAttributes: { antialias: !softwareRenderer() },
+        // Phones report 3x pixel density; drawing at 2x looks the same and fills less than half the pixels.
+        // On a CPU renderer, 1x keeps panning usable on high-density screens.
+        pixelRatio: softwareRenderer() ? 1 : Math.min(window.devicePixelRatio || 1, 2),
       });
     } catch (e) {
       setError((e as Error).message);
@@ -83,26 +160,120 @@ export default function UsMap(props: UsMapProps) {
       const res = await fetch("/geo/states.json");
       const fc = (await res.json()) as FeatureCollection<MultiPolygon, StateProps>;
       fcRef.current = fc;
+
+      // Realistic base: elevation (3D terrain, color relief, hillshade) and lakes, all pre-projected into
+      // the same Albers composite as the states (see scripts/build-terrain.ts). Each layer is optional.
+      // Elevation (shading and 3D terrain) only with a graphics chip: on a CPU renderer its shaders and tile
+      // decoding add seconds to start-up, and the flat map stays usable.
+      const meta = softwareRenderer() ? null : await fetch(geoUrl("terrain/meta.json")).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+      if (meta) {
+        const dem = { type: "raster-dem" as const, tiles: [geoUrl("terrain/{z}/{x}/{y}.png")], tileSize: 256, encoding: "terrarium" as const, minzoom: meta.minzoom, maxzoom: meta.maxzoom, bounds: meta.bounds };
+        // MapLibre wants 3D terrain and the shading layers on separate sources (same tiles).
+        map.addSource("dem", { ...dem, attribution: meta.attribution });
+        map.addSource("dem-shade", dem);
+        map.addLayer({
+          id: "relief",
+          type: "color-relief",
+          source: "dem-shade",
+          paint: {
+            "color-relief-color": ["interpolate", ["linear"], ["elevation"], -120, "rgba(205,226,243,0)", -1, "rgba(205,226,243,0)", 0, "#e4eed8", 250, "#d9e6c6", 700, "#e3dcb6", 1300, "#d8c49e", 2000, "#c6a985", 2800, "#ae9583", 3500, "#cfc6c0", 4200, "#f6f4f2"],
+          },
+        });
+        map.addLayer({ id: "hillshade", type: "hillshade", source: "dem-shade", paint: { "hillshade-exaggeration": 0.6, "hillshade-shadow-color": "#4f5d70", "hillshade-highlight-color": "#ffffff", "hillshade-accent-color": "#6d7c90", "hillshade-illumination-direction": 315 } });
+      }
       map.addSource("states", { type: "geojson", data: fc });
       map.addLayer({
         id: "states-fill",
-        type: "fill-extrusion",
+        type: "fill",
         source: "states",
         paint: {
-          "fill-extrusion-color": [
+          "fill-color": [
             "case",
             ["boolean", ["feature-state", "selected"], false],
             "#2563c7",
             ["boolean", ["feature-state", "hover"], false],
-            "#9cc0f0",
-            ["interpolate", ["linear"], ["coalesce", ["feature-state", "count"], 0], 0, "#ffffff", 1, "#e8f1fb", 30, "#c6dcf5", 120, "#8fb6e8"],
+            "#5f93d8",
+            [">", ["coalesce", ["feature-state", "heat"], 0], 0],
+            ["interpolate", ["linear"], ["feature-state", "heat"], 0, "#fbd9a8", 0.5, "#f59a4c", 1, "#e0532c"],
+            meta ? "#ffffff" : "#f4f8fc",
           ],
-          "fill-extrusion-height": ["+", 12000, ["*", 900, ["min", 200, ["coalesce", ["feature-state", "count"], 0]]]],
-          "fill-extrusion-opacity": 0.96,
+          "fill-opacity": [
+            "case",
+            ["boolean", ["feature-state", "selected"], false],
+            0.42,
+            ["boolean", ["feature-state", "hover"], false],
+            0.3,
+            [">", ["coalesce", ["feature-state", "heat"], 0], 0],
+            0.5,
+            meta ? 0.04 : 1,
+          ],
+        },
+      });
+      const lakes = await fetch(geoUrl("lakes.json")).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+      if (lakes) {
+        map.addSource("lakes", { type: "geojson", data: lakes });
+        map.addLayer({ id: "lakes-fill", type: "fill", source: "lakes", paint: { "fill-color": "#9fc6e8", "fill-opacity": 0.95 } });
+        map.addLayer({ id: "lakes-line", type: "line", source: "lakes", paint: { "line-color": "#7eadd6", "line-width": 0.5 } });
+      }
+      map.addLayer({ id: "states-line", type: "line", source: "states", paint: { "line-color": "#6f8fb3", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.7, 6, 1.4] } });
+
+      // EV-friendliness bars: a square column at each state's label point, height = score.
+      map.addSource("ev-bars", { type: "geojson", data: barFeatures(fc, propsRef.current.evFriendliness) });
+      map.addLayer({
+        id: "ev-bars",
+        type: "fill-extrusion",
+        source: "ev-bars",
+        layout: { visibility: propsRef.current.showBars === false ? "none" : "visible" },
+        paint: {
+          "fill-extrusion-color": ["interpolate", ["linear"], ["get", "score"], 0, "#c8553d", 35, "#e9a23b", 60, "#8fbf4d", 100, "#1d8a5a"],
+          "fill-extrusion-height": ["+", 15000, ["*", 2200, ["get", "score"]]],
+          "fill-extrusion-base": 0,
+          "fill-extrusion-opacity": 0.95,
           "fill-extrusion-vertical-gradient": true,
         },
       });
-      map.addLayer({ id: "states-line", type: "line", source: "states", paint: { "line-color": "#7fa3c9", "line-width": 0.8 } });
+      if (meta) {
+        const pref = terrainPref();
+        const on = pref ? pref === "on" : !softwareRenderer();
+        setHasTerrain(true);
+        setTerrainOn(on);
+        if (on) map.setTerrain({ source: "dem", exaggeration: TERRAIN_EXAGGERATION });
+        // With no saved choice, watch the first few moves: if frames are slow, drop 3D terrain once and say so.
+        if (!pref && on) {
+          let last = 0;
+          const gaps: number[] = [];
+          const onRender = () => {
+            const now = performance.now();
+            if (map.isMoving() && last) gaps.push(now - last);
+            last = now;
+          };
+          const onMoveEnd = () => {
+            last = 0;
+            if (gaps.length < 12) return;
+            const sorted = [...gaps].sort((a, b) => a - b);
+            map.off("render", onRender);
+            map.off("moveend", onMoveEnd);
+            if (sorted[Math.floor(sorted.length / 2)] > SLOW_FRAME_MS) {
+              map.setTerrain(null);
+              setTerrainOn(false);
+              setTerrainNote("3D terrain is off to keep the map smooth on this device. Mountains are still shaded; use the ⛰ button to turn it back on.");
+            }
+          };
+          map.on("render", onRender);
+          map.on("moveend", onMoveEnd);
+        }
+      }
+
+      // Mountain range names (Natural Earth), as quiet italic labels.
+      const ranges = await fetch(geoUrl("ranges.json")).then((r) => (r.ok ? r.json() : [])).catch(() => []);
+      for (const r of ranges as { name: string; scalerank: number; lng: number; lat: number }[]) {
+        const el = document.createElement("div");
+        el.className = "range-label";
+        el.dataset.rank = String(r.scalerank);
+        el.textContent = r.name;
+        el.setAttribute("aria-hidden", "true");
+        rangeLabelsRef.current.push(new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([r.lng, r.lat]).addTo(map));
+      }
 
       // State labels as pointer-transparent HTML markers (no external glyph server needed).
       for (const f of fc.features) {
@@ -137,7 +308,15 @@ export default function UsMap(props: UsMapProps) {
         hoveredRef.current = Number(f.id);
         map.setFeatureState({ source: "states", id: f.id }, { hover: true });
         const n = propsRef.current.stateCounts[f.properties.abbr] ?? 0;
-        popupRef.current!.setLngLat(e.lngLat).setHTML(`<strong>${f.properties.name}</strong><br>${n} state, utility or local program${n === 1 ? "" : "s"} listed · nationwide programs also apply`).addTo(map);
+        const hs = propsRef.current.hotspotMode !== "off" ? propsRef.current.hotspots?.states.find((h) => h.state === f.properties.abbr) : undefined;
+        const extra = hs?.top ? `<br>Largest stated amount: ${fmtDollars(hs.top.value)} (${escapeHtml(hs.top.programName)})` : "";
+        const ev = propsRef.current.evFriendliness;
+        const row = ev?.rows[f.properties.abbr];
+        const evHtml =
+          row && row.score != null && propsRef.current.showBars !== false
+            ? `<div class="ev-pop"><span>EV-friendliness <strong>${row.score}</strong>/100</span><span class="ev-meter"><span style="width:${row.score}%"></span></span><span class="muted">${row.portsPer100k} charging ports per 100k people · ${fmtCost(ev!, row.cost)} home electricity</span></div>`
+            : "";
+        popupRef.current!.setLngLat(e.lngLat).setHTML(`<strong>${f.properties.name}</strong><br>${n} state, utility or local program${n === 1 ? "" : "s"} listed · nationwide programs also apply${extra}${evHtml}`).addTo(map);
       });
       map.on("mouseleave", "states-fill", () => {
         map.getCanvas().style.cursor = "";
@@ -149,7 +328,12 @@ export default function UsMap(props: UsMapProps) {
         const f = e.features?.[0] as (MapGeoJSONFeature & { properties: StateProps }) | undefined;
         if (f) propsRef.current.onSelectState(f.properties.abbr);
       });
-      map.on("zoomend", () => setZoom(map.getZoom()));
+      const markZoom = () => container.current?.setAttribute("data-detail", map.getZoom() >= 4.3 ? "high" : "low");
+      markZoom();
+      map.on("zoomend", () => {
+        setZoom(map.getZoom());
+        markZoom();
+      });
       map.fitBounds(PSEUDO_BOUNDS, { padding: FIT_PADDING, pitch: HOME_PITCH, duration: prefersReduced() ? 0 : 800 });
       setReady(true);
     });
@@ -166,9 +350,119 @@ export default function UsMap(props: UsMapProps) {
     const fc = fcRef.current;
     if (!fc || !map.getSource("states")) return;
     for (const f of fc.features) {
-      map.setFeatureState({ source: "states", id: f.id as number }, { count: props.stateCounts[f.properties.abbr] ?? 0, selected: props.selectedState === f.properties.abbr });
+      map.setFeatureState({ source: "states", id: f.id as number }, { selected: props.selectedState === f.properties.abbr });
     }
   }, [ready, props.stateCounts, props.selectedState]);
+
+  // EV-friendliness bars: data and visibility.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !map.getLayer("ev-bars") || !fcRef.current) return;
+    (map.getSource("ev-bars") as maplibregl.GeoJSONSource).setData(barFeatures(fcRef.current, props.evFriendliness));
+    map.setLayoutProperty("ev-bars", "visibility", props.showBars === false ? "none" : "visible");
+  }, [ready, props.evFriendliness, props.showBars]);
+
+  // Hotspots: warm color ramp on every state that scores, plus ranked rings on the top states and counties.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const fc = fcRef.current;
+    if (!fc || !map.getSource("states")) return;
+    const mode = props.hotspotMode ?? "off";
+    const data = props.hotspots;
+    for (const m of hotspotMarkersRef.current) m.remove();
+    hotspotMarkersRef.current = [];
+    pinnedRef.current?.remove();
+    const byState = new Map((data?.states ?? []).map((h) => [h.state, h]));
+    const max = mode === "off" ? 0 : Math.max(0, ...(data?.states ?? []).map((h) => metric(h, mode)));
+    for (const f of fc.features) {
+      const h = byState.get(f.properties.abbr);
+      const heat = mode === "off" || !h || max === 0 ? 0 : Math.max(0.08, metric(h, mode) / max);
+      map.setFeatureState({ source: "states", id: f.id as number }, { heat });
+    }
+    if (mode === "off" || !data) return;
+    const ring = (h: (typeof data.states)[number], rank: number, at: [number, number], small: boolean) => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = small ? "hotspot-ring hotspot-ring-county" : "hotspot-ring";
+      el.textContent = small ? "" : String(rank);
+      el.setAttribute("aria-label", `Hotspot ${rank}: ${hotspotLabel(h)}. ${hotspotSummary(h)}.`);
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        if (small) openCounty(h, rank, at, el);
+        else propsRef.current.onSelectState(h.state);
+      });
+      el.addEventListener("mouseenter", () => {
+        if (!pinnedRef.current?.isOpen()) popupRef.current?.setLngLat(at).setHTML(`<strong>#${rank} ${escapeHtml(hotspotLabel(h))}</strong><br>${escapeHtml(hotspotSummary(h))}`).addTo(map);
+      });
+      el.addEventListener("mouseleave", () => popupRef.current?.remove());
+      hotspotMarkersRef.current.push(new maplibregl.Marker({ element: el, anchor: "center", offset: small ? [0, 0] : [0, -16] }).setLngLat(at).addTo(map));
+    };
+    // A county dot opens its own card: the county, its programs (each selectable) and a link to the whole state.
+    // Zooming in on click pulls neighbouring dots apart so the next one is easy to hit.
+    const openCounty = (h: (typeof data.states)[number], rank: number, at: [number, number], el: HTMLElement) => {
+      popupRef.current?.remove();
+      pinnedRef.current?.remove();
+      for (const m of hotspotMarkersRef.current) m.getElement().removeAttribute("data-active");
+      el.setAttribute("data-active", "true");
+      const box = document.createElement("div");
+      box.className = "county-pop";
+      const title = document.createElement("strong");
+      title.textContent = countyTitle(h);
+      const sub = document.createElement("div");
+      sub.className = "muted";
+      sub.textContent = `County hotspot ${rank} · ${h.programs} open program${h.programs === 1 ? "" : "s"}`;
+      const list = document.createElement("ul");
+      h.programIds.forEach((id, i) => {
+        const li = document.createElement("li");
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "linklike";
+        b.textContent = h.programNames[i] ?? id;
+        b.addEventListener("click", () => {
+          pinnedRef.current?.remove();
+          (propsRef.current.onPickProgram ?? ((s: string) => propsRef.current.onSelectState(s)))(h.state, id);
+        });
+        li.append(b);
+        list.append(li);
+      });
+      const all = document.createElement("button");
+      all.type = "button";
+      all.className = "linklike small";
+      all.textContent = `All ${stateByAbbr(h.state)?.name ?? h.state} programs`;
+      all.addEventListener("click", () => {
+        pinnedRef.current?.remove();
+        propsRef.current.onSelectState(h.state);
+      });
+      box.append(title, sub, list, all);
+      pinnedRef.current = new maplibregl.Popup({ closeButton: true, closeOnClick: true, offset: 12, maxWidth: "280px", focusAfterOpen: true }).setLngLat(at).setDOMContent(box).addTo(map);
+      pinnedRef.current.on("close", () => el.removeAttribute("data-active"));
+      if (map.getZoom() < COUNTY_ZOOM) map.easeTo({ center: at, zoom: COUNTY_ZOOM, duration: prefersReduced() ? 0 : 700 });
+    };
+    rankHotspots(data.states, mode).forEach((h, i) => {
+      const f = fc.features.find((x) => x.properties.abbr === h.state);
+      if (f) ring(h, i + 1, [f.properties.labelLng, f.properties.labelLat], false);
+    });
+    const groups = rankCountyGroups(data.counties, mode);
+    if (groups.length) {
+      const place = (pts: Record<string, [number, number, number, number]>) =>
+        groups.forEach((g, i) =>
+          g.counties.forEach((h) => {
+            const p = pts[h.key];
+            if (p) ring(h, i + 1, [p[0], p[1]], true);
+          }),
+        );
+      if (countyPointsRef.current) place(countyPointsRef.current);
+      else
+        fetch(geoUrl("county-points.json"))
+          .then((r) => r.json())
+          .then((pts) => {
+            countyPointsRef.current = pts;
+            if (mapRef.current === map) place(pts);
+          })
+          .catch(() => {});
+    }
+  }, [ready, props.hotspots, props.hotspotMode]);
 
   // Fly to the selected state or ZIP.
   useEffect(() => {
@@ -243,6 +537,16 @@ export default function UsMap(props: UsMapProps) {
     });
   }, [ready, zoom, props.zipPoint, props.localPrograms, props.selectedId, props.zipLabel]);
 
+  const toggleTerrain = () => {
+    const map = mapRef.current;
+    if (!map) return;
+    const on = !terrainOn;
+    map.setTerrain(on ? { source: "dem", exaggeration: TERRAIN_EXAGGERATION } : null);
+    setTerrainOn(on);
+    setTerrainNote(null);
+    saveTerrainPref(on ? "on" : "off");
+  };
+
   const reset = () => {
     mapRef.current?.fitBounds(PSEUDO_BOUNDS, { padding: FIT_PADDING, pitch: HOME_PITCH, bearing: 0, duration: prefersReduced() ? 0 : 700 });
     props.onSelectState(undefined);
@@ -257,7 +561,15 @@ export default function UsMap(props: UsMapProps) {
         <button type="button" className="btn" aria-label="Zoom out" onClick={() => mapRef.current?.zoomOut()}>−</button>
         <button type="button" className="btn" aria-label="Tilt map" title="Tilt" onClick={() => mapRef.current?.easeTo({ pitch: (mapRef.current.getPitch() + 25) % 70 })}>⟋</button>
         <button type="button" className="btn" aria-label="Reset view" title="Reset view" onClick={reset}>⌂</button>
+        {hasTerrain && (
+          <button type="button" className="btn" aria-label="3D terrain" aria-pressed={terrainOn} title={terrainOn ? "3D terrain on (turn off if the map feels slow)" : "3D terrain off"} onClick={toggleTerrain}>
+            ⛰
+          </button>
+        )}
       </div>
+      <p className="map-perf-note" role="status" hidden={!terrainNote}>
+        {terrainNote}
+      </p>
     </>
   );
 }

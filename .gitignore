@@ -5,7 +5,9 @@ node_modules
 .env.local
 .env*.local
 *.log
-coverage
+/coverage
 test-results
 playwright-report
 tsconfig.tsbuildinfo
+preview/dist
+preview/.snapshot

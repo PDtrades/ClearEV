@@ -1,0 +1,289 @@
+{
+ "$comment": "State EV-friendliness inputs, collected 2026-10-19 from the official sources listed. Values are copied from those tables, not estimated; national totals were checked against each table.",
+ "sources": {
+  "chargers": {
+   "name": "U.S. DOE Alternative Fuels Data Center - Alternative Fueling Station Counts by State (Electric)",
+   "url": "https://afdc.energy.gov/stations/states",
+   "measure": "EV charging ports (EVSE ports; excludes residential charging; page default view - the page does not explicitly label it public-only, though its Station Access filter offers Public/Private/Total)",
+   "asOf": "2026-10-19",
+   "retrievedAt": "2026-10-19T20:08:25Z",
+   "nationalTotal": 260956,
+   "note": "Page states 'Data last updated: 10/19/2026'. Station locations national total 82,686. Per-state ports sum to 260,956 = page national total."
+  },
+  "cost": {
+   "name": "U.S. EIA - Electric Sales, Revenue, and Average Price, Table 4: 2024 Total Electric Industry - Average Retail Price (cents/kWh), Residential column",
+   "url": "https://www.eia.gov/electricity/sales_revenue_price/pdf/table_4.pdf",
+   "measure": "average residential electricity price, cents/kWh",
+   "period": "calendar year 2024 (annual average)",
+   "retrievedAt": "2026-10-19T20:08:25Z",
+   "nationalValue": 16.48,
+   "note": "DOE eGallon not current (energy.gov eGallon page data as of 2021-03-31), so EIA used. More recent EIA Electric Power Monthly Table 5.6.A (data for July 2026, released 2026-09-24) is published only as XLSX, which could not be read via WebFetch; 2024 annual residential is the most recent residential-by-state figure obtained as fetchable text."
+  },
+  "population": {
+   "name": "U.S. Census Bureau, Population Division - NST-EST2025-POP Annual Estimates of the Resident Population for the United States, Regions, States, District of Columbia, and Puerto Rico: April 1, 2020 to July 1, 2025 (Vintage 2025, released January 2026)",
+   "url": "https://files.hawaii.gov/dbedt/census/popestimate/2025/state-pop/NST-EST2025-POP.pdf",
+   "officialUrl": "https://www2.census.gov/programs-surveys/popest/tables/2020-2025/state/totals/NST-EST2025-POP.xlsx",
+   "period": "July 1, 2025",
+   "retrievedAt": "2026-10-19T20:08:25Z",
+   "nationalTotal": 341784857,
+   "note": "census.gov files (www2.census.gov) are robots-blocked for WebFetch and the Census API requires a key; values read from the Hawaii DBEDT copy of the unaltered Census table (source line 'U.S. Census Bureau, Population Division'). 51 values sum exactly to the U.S. total 341,784,857."
+  }
+ },
+ "states": {
+  "AL": {
+   "chargerPorts": 1754,
+   "cost": 15.18,
+   "population": 5193088
+  },
+  "AK": {
+   "chargerPorts": 206,
+   "cost": 24.82,
+   "population": 737270
+  },
+  "AZ": {
+   "chargerPorts": 4772,
+   "cost": 14.91,
+   "population": 7623818
+  },
+  "AR": {
+   "chargerPorts": 1115,
+   "cost": 12.32,
+   "population": 3114791
+  },
+  "CA": {
+   "chargerPorts": 69273,
+   "cost": 31.97,
+   "population": 39355309
+  },
+  "CO": {
+   "chargerPorts": 7935,
+   "cost": 14.92,
+   "population": 6012561
+  },
+  "CT": {
+   "chargerPorts": 4989,
+   "cost": 28.75,
+   "population": 3688496
+  },
+  "DE": {
+   "chargerPorts": 719,
+   "cost": 16.57,
+   "population": 1059952
+  },
+  "DC": {
+   "chargerPorts": 1087,
+   "cost": 17.71,
+   "population": 693645
+  },
+  "FL": {
+   "chargerPorts": 15371,
+   "cost": 14.14,
+   "population": 23462518
+  },
+  "GA": {
+   "chargerPorts": 7641,
+   "cost": 14.08,
+   "population": 11302748
+  },
+  "HI": {
+   "chargerPorts": 1040,
+   "cost": 42.86,
+   "population": 1432820
+  },
+  "ID": {
+   "chargerPorts": 746,
+   "cost": 11.52,
+   "population": 2029733
+  },
+  "IL": {
+   "chargerPorts": 6246,
+   "cost": 15.87,
+   "population": 12719141
+  },
+  "IN": {
+   "chargerPorts": 2229,
+   "cost": 14.77,
+   "population": 6973333
+  },
+  "IA": {
+   "chargerPorts": 1299,
+   "cost": 13.4,
+   "population": 3238387
+  },
+  "KS": {
+   "chargerPorts": 1423,
+   "cost": 14.15,
+   "population": 2977220
+  },
+  "KY": {
+   "chargerPorts": 1206,
+   "cost": 12.79,
+   "population": 4606864
+  },
+  "LA": {
+   "chargerPorts": 846,
+   "cost": 11.73,
+   "population": 4618189
+  },
+  "ME": {
+   "chargerPorts": 1630,
+   "cost": 24.29,
+   "population": 1414874
+  },
+  "MD": {
+   "chargerPorts": 5617,
+   "cost": 17.86,
+   "population": 6265347
+  },
+  "MA": {
+   "chargerPorts": 11894,
+   "cost": 29.35,
+   "population": 7154084
+  },
+  "MI": {
+   "chargerPorts": 5715,
+   "cost": 19.3,
+   "population": 10127884
+  },
+  "MN": {
+   "chargerPorts": 3273,
+   "cost": 15.45,
+   "population": 5830405
+  },
+  "MS": {
+   "chargerPorts": 704,
+   "cost": 13.39,
+   "population": 2954160
+  },
+  "MO": {
+   "chargerPorts": 3306,
+   "cost": 12.91,
+   "population": 6270541
+  },
+  "MT": {
+   "chargerPorts": 481,
+   "cost": 12.66,
+   "population": 1144694
+  },
+  "NE": {
+   "chargerPorts": 785,
+   "cost": 11.53,
+   "population": 2018006
+  },
+  "NV": {
+   "chargerPorts": 2838,
+   "cost": 15.0,
+   "population": 3282188
+  },
+  "NH": {
+   "chargerPorts": 834,
+   "cost": 23.4,
+   "population": 1415342
+  },
+  "NJ": {
+   "chargerPorts": 6995,
+   "cost": 19.34,
+   "population": 9548215
+  },
+  "NM": {
+   "chargerPorts": 1270,
+   "cost": 14.2,
+   "population": 2125498
+  },
+  "NY": {
+   "chargerPorts": 20164,
+   "cost": 24.43,
+   "population": 20002427
+  },
+  "NC": {
+   "chargerPorts": 5859,
+   "cost": 14.13,
+   "population": 11197968
+  },
+  "ND": {
+   "chargerPorts": 283,
+   "cost": 11.51,
+   "population": 799358
+  },
+  "OH": {
+   "chargerPorts": 5389,
+   "cost": 15.99,
+   "population": 11900510
+  },
+  "OK": {
+   "chargerPorts": 1665,
+   "cost": 12.24,
+   "population": 4123288
+  },
+  "OR": {
+   "chargerPorts": 4353,
+   "cost": 14.7,
+   "population": 4273586
+  },
+  "PA": {
+   "chargerPorts": 5888,
+   "cost": 17.77,
+   "population": 13059432
+  },
+  "RI": {
+   "chargerPorts": 881,
+   "cost": 28.65,
+   "population": 1114521
+  },
+  "SC": {
+   "chargerPorts": 2237,
+   "cost": 14.23,
+   "population": 5570274
+  },
+  "SD": {
+   "chargerPorts": 332,
+   "cost": 12.86,
+   "population": 935094
+  },
+  "TN": {
+   "chargerPorts": 3142,
+   "cost": 12.42,
+   "population": 7315076
+  },
+  "TX": {
+   "chargerPorts": 13012,
+   "cost": 14.94,
+   "population": 31709821
+  },
+  "UT": {
+   "chargerPorts": 3210,
+   "cost": 12.22,
+   "population": 3538904
+  },
+  "VT": {
+   "chargerPorts": 1353,
+   "cost": 21.9,
+   "population": 644663
+  },
+  "VA": {
+   "chargerPorts": 5518,
+   "cost": 14.41,
+   "population": 8880107
+  },
+  "WA": {
+   "chargerPorts": 9093,
+   "cost": 11.9,
+   "population": 8001020
+  },
+  "WV": {
+   "chargerPorts": 545,
+   "cost": 15.07,
+   "population": 1766147
+  },
+  "WI": {
+   "chargerPorts": 2438,
+   "cost": 17.18,
+   "population": 5972787
+  },
+  "WY": {
+   "chargerPorts": 355,
+   "cost": 12.47,
+   "population": 588753
+  }
+ }
+}
