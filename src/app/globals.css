@@ -191,11 +191,13 @@ table.data th, table.data td { text-align: left; padding: 8px; border-bottom: 1p
 .hotspot-rank-county { background: #fff; color: #c2451f; border: 2px solid #c2451f; width: 18px; height: 18px; }
 .hotspot-value { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .hotspot-empty, .hotspot-note { margin: 0; }
-.hotspot-ring { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; background: #e8603c; color: #fff; font: 700 12px/1 system-ui, sans-serif; display: grid; place-items: center; cursor: pointer; padding: 0; box-shadow: 0 0 0 0 rgba(232, 96, 60, 0.55); animation: hotspot-pulse 2.2s ease-out infinite; }
+.hotspot-ring { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; background: #e8603c; color: #fff; font: 700 12px/1 system-ui, sans-serif; display: grid; place-items: center; cursor: pointer; padding: 0; }
+.hotspot-ring::after { content: ""; position: absolute; inset: -2px; border-radius: 50%; background: rgba(232, 96, 60, 0.45); z-index: -1; will-change: transform, opacity; animation: hotspot-pulse 2.2s ease-out infinite; pointer-events: none; }
 .hotspot-ring-county { width: 12px; height: 12px; background: #fff; border: 3px solid #c2451f; }
 .hotspot-ring:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
-@keyframes hotspot-pulse { 0% { box-shadow: 0 0 0 0 rgba(232, 96, 60, 0.55); } 70% { box-shadow: 0 0 0 14px rgba(232, 96, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(232, 96, 60, 0); } }
-@media (prefers-reduced-motion: reduce) { .hotspot-ring { animation: none; box-shadow: 0 0 0 4px rgba(232, 96, 60, 0.35); } }
+/* Transform and opacity only, so the pulse runs on the compositor instead of repainting every frame. */
+@keyframes hotspot-pulse { 0% { transform: scale(1); opacity: 1; } 70% { transform: scale(2.1); opacity: 0; } 100% { transform: scale(2.1); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .hotspot-ring { box-shadow: 0 0 0 4px rgba(232, 96, 60, 0.35); } .hotspot-ring::after { animation: none; opacity: 0; } }
 .svg-hotspot { cursor: pointer; }
 .svg-hotspot circle { fill: #e8603c; stroke: #fff; stroke-width: 2; }
 .svg-hotspot text { fill: #fff; font: 700 10px system-ui, sans-serif; pointer-events: none; }
@@ -225,3 +227,5 @@ table.data th, table.data td { text-align: left; padding: 8px; border-bottom: 1p
 .ev-selected { margin: 0; font-size: 13px; }
 .hotspot-note a { color: inherit; }
 .svg-ev-bar { stroke: #fff; stroke-width: 0.6; }
+.map-controls .btn[aria-pressed="false"] { opacity: 0.6; }
+.map-perf-note { position: absolute; left: 12px; bottom: 12px; z-index: 5; max-width: min(360px, calc(100% - 24px)); margin: 0; padding: 8px 10px; font-size: 13px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }

@@ -50,7 +50,11 @@ const BAR_HALF = 0.2; // pseudo degrees
  * True when WebGL runs on a CPU rasterizer (Chrome's SwiftShader, Mesa llvmpipe), as on machines whose GPU
  * is blocklisted. 3D terrain makes every frame take seconds there, so the map keeps shaded relief but stays flat.
  */
+let softwareGL: boolean | undefined;
 function softwareRenderer(): boolean {
+  return (softwareGL ??= detectSoftwareRenderer());
+}
+function detectSoftwareRenderer(): boolean {
   try {
     const gl = document.createElement("canvas").getContext("webgl");
     const ext = gl?.getExtension("WEBGL_debug_renderer_info");
@@ -59,6 +63,27 @@ function softwareRenderer(): boolean {
     return /swiftshader|llvmpipe|softpipe|software/i.test(name);
   } catch {
     return false;
+  }
+}
+
+const TERRAIN_PREF_KEY = "clearev.terrain";
+/** Frames slower than this while the map moves (about 20 fps) mean 3D terrain is too heavy for the device. */
+const SLOW_FRAME_MS = 50;
+
+/** The viewer's own choice for 3D terrain ("on" | "off"), or null to decide automatically. Browser-only convenience. */
+function terrainPref(): "on" | "off" | null {
+  try {
+    const v = window.localStorage.getItem(TERRAIN_PREF_KEY);
+    return v === "on" || v === "off" ? v : null;
+  } catch {
+    return null;
+  }
+}
+function saveTerrainPref(v: "on" | "off") {
+  try {
+    window.localStorage.setItem(TERRAIN_PREF_KEY, v);
+  } catch {
+    /* storage blocked: the choice lasts for this page view */
   }
 }
 
@@ -101,6 +126,9 @@ export default function UsMap(props: UsMapProps) {
   const [ready, setReady] = useState(false);
   const [zoom, setZoom] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [hasTerrain, setHasTerrain] = useState(false);
+  const [terrainOn, setTerrainOn] = useState(true);
+  const [terrainNote, setTerrainNote] = useState<string | null>(null);
 
   // Create the map once.
   useEffect(() => {
@@ -121,7 +149,11 @@ export default function UsMap(props: UsMapProps) {
         dragRotate: true,
         touchPitch: true,
         renderWorldCopies: false,
-        canvasContextAttributes: { antialias: true },
+        // Multisampling is nearly free on a graphics chip but costly when WebGL runs on the CPU.
+        canvasContextAttributes: { antialias: !softwareRenderer() },
+        // Phones report 3x pixel density; drawing at 2x looks the same and fills less than half the pixels.
+        // On a CPU renderer, 1x keeps panning usable on high-density screens.
+        pixelRatio: softwareRenderer() ? 1 : Math.min(window.devicePixelRatio || 1, 2),
       });
     } catch (e) {
       setError((e as Error).message);
@@ -203,7 +235,37 @@ export default function UsMap(props: UsMapProps) {
           "fill-extrusion-vertical-gradient": true,
         },
       });
-      if (meta && !softwareRenderer()) map.setTerrain({ source: "dem", exaggeration: TERRAIN_EXAGGERATION });
+      if (meta) {
+        const pref = terrainPref();
+        const on = pref ? pref === "on" : !softwareRenderer();
+        setHasTerrain(true);
+        setTerrainOn(on);
+        if (on) map.setTerrain({ source: "dem", exaggeration: TERRAIN_EXAGGERATION });
+        // With no saved choice, watch the first few moves: if frames are slow, drop 3D terrain once and say so.
+        if (!pref && on) {
+          let last = 0;
+          const gaps: number[] = [];
+          const onRender = () => {
+            const now = performance.now();
+            if (map.isMoving() && last) gaps.push(now - last);
+            last = now;
+          };
+          const onMoveEnd = () => {
+            last = 0;
+            if (gaps.length < 12) return;
+            const sorted = [...gaps].sort((a, b) => a - b);
+            map.off("render", onRender);
+            map.off("moveend", onMoveEnd);
+            if (sorted[Math.floor(sorted.length / 2)] > SLOW_FRAME_MS) {
+              map.setTerrain(null);
+              setTerrainOn(false);
+              setTerrainNote("3D terrain is off to keep the map smooth on this device. Mountains are still shaded; use the ⛰ button to turn it back on.");
+            }
+          };
+          map.on("render", onRender);
+          map.on("moveend", onMoveEnd);
+        }
+      }
 
       // Mountain range names (Natural Earth), as quiet italic labels.
       const ranges = await fetch(geoUrl("ranges.json")).then((r) => (r.ok ? r.json() : [])).catch(() => []);
@@ -433,6 +495,16 @@ export default function UsMap(props: UsMapProps) {
     });
   }, [ready, zoom, props.zipPoint, props.localPrograms, props.selectedId, props.zipLabel]);
 
+  const toggleTerrain = () => {
+    const map = mapRef.current;
+    if (!map) return;
+    const on = !terrainOn;
+    map.setTerrain(on ? { source: "dem", exaggeration: TERRAIN_EXAGGERATION } : null);
+    setTerrainOn(on);
+    setTerrainNote(null);
+    saveTerrainPref(on ? "on" : "off");
+  };
+
   const reset = () => {
     mapRef.current?.fitBounds(PSEUDO_BOUNDS, { padding: FIT_PADDING, pitch: HOME_PITCH, bearing: 0, duration: prefersReduced() ? 0 : 700 });
     props.onSelectState(undefined);
@@ -447,7 +519,15 @@ export default function UsMap(props: UsMapProps) {
         <button type="button" className="btn" aria-label="Zoom out" onClick={() => mapRef.current?.zoomOut()}>−</button>
         <button type="button" className="btn" aria-label="Tilt map" title="Tilt" onClick={() => mapRef.current?.easeTo({ pitch: (mapRef.current.getPitch() + 25) % 70 })}>⟋</button>
         <button type="button" className="btn" aria-label="Reset view" title="Reset view" onClick={reset}>⌂</button>
+        {hasTerrain && (
+          <button type="button" className="btn" aria-label="3D terrain" aria-pressed={terrainOn} title={terrainOn ? "3D terrain on (turn off if the map feels slow)" : "3D terrain off"} onClick={toggleTerrain}>
+            ⛰
+          </button>
+        )}
       </div>
+      <p className="map-perf-note" role="status" hidden={!terrainNote}>
+        {terrainNote}
+      </p>
     </>
   );
 }
