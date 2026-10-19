@@ -22,6 +22,18 @@ test.describe("explorer", () => {
     await expect(page.getByRole("listitem").filter({ hasText: "New Clean Vehicle Credit" }).getByText(/Appears ineligible/)).toBeVisible();
   });
 
+  test("ZIP search lists local solar installers with honest discount wording", async ({ page }) => {
+    await page.goto("/?zip=94110");
+    const panel = page.getByRole("region", { name: /Solar installers in San Francisco County, CA/ });
+    await expect(panel).toBeVisible();
+    await expect(panel.getByRole("row")).not.toHaveCount(0);
+    await expect(panel).toContainText("No public source lists installers");
+    await panel.getByRole("button", { name: "Lowest price" }).click();
+    await expect(panel.getByRole("button", { name: "Lowest price" })).toHaveAttribute("aria-pressed", "true");
+    await page.goto("/?state=PA");
+    await expect(page.getByRole("region", { name: /Solar installers in Pennsylvania/ })).toContainText("No installer list for this state");
+  });
+
   test("invalid ZIP is rejected and unknown ZIP explains why", async ({ page }) => {
     await page.goto("/");
     await page.getByLabel("ZIP code").fill("12");

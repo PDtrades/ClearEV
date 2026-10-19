@@ -61,3 +61,7 @@ The map highlights the states and counties with the most open state and local pr
 ## EV-friendliness bars
 
 Each state gets a bar whose height is a 0–100 score: the average of its rank among states on charging ports per 100,000 residents and on average home electricity price (cheaper is better). It does not include public charging prices, which are not published by state, and the charger count includes every port the DOE station locator lists. Sources and dates are in DATA-SOURCES.md.
+
+## Solar installers
+
+With a state or ZIP selected, a table lists the companies that installed the most home solar systems there from 2021 to early 2024, from Berkeley Lab's Tracking the Sun records: a county list when the ZIP's county has at least one company with 3 or more installs, otherwise the state's top 10. It covers 13 states. It is not a recommendation, and a company may have closed or renamed since. The "got an upfront rebate" column counts state or utility rebates recorded for each company's customers; installers' own discounts are not published anywhere ClearEV can source, so none are shown. Sources and method are in DATA-SOURCES.md.

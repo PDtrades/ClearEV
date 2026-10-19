@@ -10,6 +10,7 @@ import { countyTitle, hotspotLabel, hotspotSummary, type HotspotView } from "./H
 import { stateByAbbr } from "@/lib/geo/states";
 import { fmtCost, type EvFriendlyData } from "@/lib/geo/ev-friendliness";
 import { webglInfo } from "@/lib/webgl";
+import { geoUrl } from "@/lib/geo/url";
 
 export interface UsMapProps {
   stateCounts: Record<string, number>;
@@ -82,10 +83,7 @@ function saveTerrainPref(v: "on" | "off") {
 }
 
 /** Absolute URL for a file under the site's geo folder (the static preview sets its own base). */
-export function geoUrl(p: string) {
-  const base = (window as unknown as { __CLEAREV_GEO_BASE__?: string }).__CLEAREV_GEO_BASE__;
-  return base ? `${base.replace(/\/$/, "")}/${p}` : `${window.location.origin}/geo/${p}`;
-}
+export { geoUrl };
 
 function barFeatures(fc: FeatureCollection<MultiPolygon, StateProps>, ev: EvFriendlyData | undefined): FeatureCollection {
   const features = [];
