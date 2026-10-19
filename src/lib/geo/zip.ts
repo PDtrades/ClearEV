@@ -41,6 +41,10 @@ export function lookupZip(input: string | null | undefined): ZipInfo | null {
   return { zip, lat, lng, state, countyFips, countyName: counties[countyFips], otherCountyFips: others, supported: !!stateByAbbr(state)?.supported };
 }
 
+export function countyName(fips: string): string | undefined {
+  return load().counties[fips];
+}
+
 export function geoMeta() {
   return load().zcta.meta;
 }

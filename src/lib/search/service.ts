@@ -5,7 +5,8 @@ import { programs, sourceCache, sources, zipUtilities } from "../db/schema";
 import { normalizedProgramSchema, type NormalizedProgram, type ProgramView } from "../domain/program";
 import { evaluateEligibility, type EligibilityResult } from "../eligibility/evaluate";
 import { stateByAbbr } from "../geo/states";
-import { lookupZip, type ZipInfo } from "../geo/zip";
+import { countyName, lookupZip, type ZipInfo } from "../geo/zip";
+import { computeHotspots, type HotspotData } from "./hotspots";
 import { collapseDuplicates } from "../pipeline/dedupe";
 import { linkStatusFor } from "../pipeline/linkcheck";
 import { staleCutoff } from "../pipeline/ingest";
@@ -109,7 +110,7 @@ export async function search(db: DB, params: ShareableParams, sensitive: Sensiti
   if (st) where.push(or(eq(programs.coverageType, "national"), sql`${st.abbr} = ANY(${programs.coverageStates})`)!);
   const rows = await db.select().from(programs).where(and(...where)).orderBy(desc(programs.updatedAt)).limit(2000);
   let list: ProgramView[] = rows.map((r) => rowToView(r, adapterById(r.sourceId)?.meta, srcRows.get(r.sourceId)));
-  for (const a of adapterById("afdc") ? [adapterById("afdc")!, adapterById("federal_curated")!] : []) {
+  for (const a of ["afdc", "federal_curated", "state_curated"].map((id) => adapterById(id)).filter((x) => x != null)) {
     const row = srcRows.get(a.meta.id);
     const configured = missingEnv(a.meta, env).length === 0;
     const count = list.filter((p) => p.sourceId === a.meta.id).length;
@@ -252,4 +253,15 @@ export async function stateCounts(db: DB): Promise<Record<string, number>> {
 
 export async function keywordSuggest(db: DB, q: string) {
   return db.select({ id: programs.id, name: programs.name }).from(programs).where(and(eq(programs.reviewState, "published"), keywordClause(q))).limit(10);
+}
+
+/** Hotspot rankings for the map, from published state and local programs (see ./hotspots.ts). */
+export async function hotspotData(db: DB): Promise<HotspotData> {
+  const rows = await db
+    .select()
+    .from(programs)
+    .where(and(eq(programs.reviewState, "published"), eq(programs.isFixture, false), sql`${programs.coverageType} <> 'national'`));
+  const data = computeHotspots(rows.map((r) => rowToView(r, adapterById(r.sourceId)?.meta)));
+  for (const c of data.counties) c.name = countyName(c.key);
+  return data;
 }

@@ -9,6 +9,12 @@ Reviewed 2026-10-19. Before adding a source, record here: access method, terms, 
 - **Terms:** US Government works, public domain.
 - **Pages used:** credits-for-new-clean-vehicles-purchased-in-2023-or-after, used-clean-vehicle-credit, alternative-fuel-vehicle-refueling-property-credit, residential-clean-energy-credit, and the OBBB FAQ page (termination dates).
 
+### State and regional programs (curated from official pages)
+- **Access:** official state agency, air district and utility program pages, read on 2026-10-19; values quoted in `data/curated/states.json` (21 records in IL, CA, CO, OR, NM, NY, NJ, CT, MA, RI, DE, ME, MD, AZ, TX). The adapter `state_curated` re-checks every quote on each ingestion run and may fetch only the hosts those records cite.
+- **Terms:** public government pages; utility pages are quoted for facts only.
+- **Known weak spots:** quotes were captured through a web reader rather than a raw download, so a few may differ in punctuation and will be flagged for review on the first run with network access. Some amounts come from bare table cells ("$7,000") and say so in the record's uncertainties. Vehicle Exchange Colorado is marked status unknown because its page does not say whether applications are open.
+- **Skipped on purpose:** programs whose pages say they are closed, paused or out of funds (for example Minnesota's EV rebate, Pennsylvania's AFV rebate, Washington's instant rebate, Texas TCEQ LDV incentive, Oregon Solar + Storage).
+
 ### DOE Alternative Fuels Data Center — Laws and Incentives (NREL API)
 - **Endpoint:** `GET https://developer.nrel.gov/api/transportation-incentives-laws/v1.json` (spec: api.data.gov / NREL developer docs).
 - **Credential:** `NREL_API_KEY` from https://developer.nrel.gov/signup/ (free; api.data.gov default limit 1,000 requests/hour). ClearEV makes 52 requests per full refresh.

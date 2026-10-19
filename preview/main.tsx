@@ -7,7 +7,8 @@ import "./preview.css";
 import { Explorer } from "@/components/Explorer";
 import { CloudBackground } from "@/components/CloudBackground";
 import { parseShareable } from "@/lib/search/params";
-import { makeSearch, stateCountsFrom, type Snapshot } from "./browser-search";
+import { hotspotsFrom, makeSearch, stateCountsFrom, type Snapshot } from "./browser-search";
+import type { HotspotData } from "@/lib/search/hotspots";
 
 // Static preview of ClearEV: the real client components run in the browser; the server's search runs
 // against a snapshot of the published records (see snapshot.mjs), and server-rendered pages are replayed.
@@ -40,13 +41,14 @@ async function boot() {
     const params = parseShareable(new URLSearchParams(window.location.search));
     const initial = search(params, {});
     const counts = stateCountsFrom(snap.programs);
-    root.render(<App snap={snap} initialParams={params} initialResult={initial} counts={counts} />);
+    const hotspots = hotspotsFrom(snap.programs, counties);
+    root.render(<App snap={snap} initialParams={params} initialResult={initial} counts={counts} hotspots={hotspots} />);
   } catch (e) {
     root.render(<p style={{ padding: 24 }}>The preview could not load its data files: {(e as Error).message}</p>);
   }
 }
 
-function App({ snap, initialParams, initialResult, counts }: { snap: Snapshot; initialParams: ReturnType<typeof parseShareable>; initialResult: ReturnType<ReturnType<typeof makeSearch>>; counts: Record<string, number> }) {
+function App({ snap, initialParams, initialResult, counts, hotspots }: { hotspots: HotspotData; snap: Snapshot; initialParams: ReturnType<typeof parseShareable>; initialResult: ReturnType<ReturnType<typeof makeSearch>>; counts: Record<string, number> }) {
   const [route, setRoute] = useState<Route>(() => (window.history.state?.route as Route) ?? { path: "/" });
 
   useEffect(() => {
@@ -86,7 +88,7 @@ function App({ snap, initialParams, initialResult, counts }: { snap: Snapshot; i
       <a href="#main" className="skip-link" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
       <CloudBackground />
       <div className="preview-banner" role="note">
-        <strong>Preview build.</strong> Everything runs in your browser from a snapshot taken {new Date(snap.capturedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}. Only the four federal IRS credits are loaded; state, utility, solar and battery sources are not connected yet.
+        <strong>Preview build.</strong> Everything runs in your browser from a snapshot taken {new Date(snap.capturedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}. {snap.programs.some((p) => p.sourceId === "state_curated") ? "It holds the four federal IRS credits plus a hand-checked starter set of state and regional programs; the full state, utility, solar and battery feeds are not connected yet." : "Only the four federal IRS credits are loaded; state, utility, solar and battery sources are not connected yet."}
       </div>
       <header className="site-header">
         <a href="/" className="brand" aria-label="ClearEV home">
@@ -101,7 +103,7 @@ function App({ snap, initialParams, initialResult, counts }: { snap: Snapshot; i
       </header>
       <main id="main" tabIndex={-1}>
         <div hidden={route.path !== "/"}>
-          <Explorer initialParams={initialParams} initialResult={initialResult} stateCounts={counts} />
+          <Explorer initialParams={initialParams} initialResult={initialResult} stateCounts={counts} hotspots={hotspots} />
         </div>
         {route.path !== "/" &&
           (page ? (

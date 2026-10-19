@@ -75,6 +75,9 @@ test.describe("explorer", () => {
     await page.getByLabel("State", { exact: true }).focus();
     await page.getByLabel("State", { exact: true }).selectOption("WA");
     await expect(page).toHaveURL(/state=WA/);
+    // Wait for the Washington results to replace the Texas ones before choosing a card.
+    await expect(page.getByRole("heading", { name: /Programs in Washington/ })).toBeVisible();
+    await expect(page.locator(".results-panel")).toHaveAttribute("aria-busy", "false");
     const first = page.getByRole("list", { name: "Program results" }).getByRole("listitem").first().locator("article");
     await first.focus();
     await page.keyboard.press("Enter");
@@ -107,7 +110,7 @@ test.describe("map", () => {
     await expect(page.getByText("Legend")).toBeVisible();
     await expect(page.getByRole("button", { name: "Reset view" })).toBeVisible();
     await expect(page.locator(".maplibregl-canvas")).toBeVisible();
-    await expect(page.locator(".maplibregl-marker")).toHaveCount(52, { timeout: 20_000 }); // 51 labels + DC button
+    await expect(page.locator(".maplibregl-marker:not(.hotspot-ring)")).toHaveCount(52, { timeout: 20_000 }); // 51 labels + DC button
     await page.waitForTimeout(2500); // software GL is slow to paint
 
     const box = await page.locator(".maplibregl-canvas").boundingBox();
@@ -118,6 +121,26 @@ test.describe("map", () => {
     await page.getByRole("button", { name: "District of Columbia" }).click();
     await expect(page).toHaveURL(/state=DC/);
     await page.screenshot({ path: "test-results/desktop-map.png", fullPage: false });
+  });
+
+  test("hotspots rank states from loaded programs and select a state on click", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile", "covered on desktop and no-webgl");
+    await page.goto("/");
+    const strip = page.getByLabel("Hotspots", { exact: true });
+    await expect(strip.getByRole("button", { name: "Most programs" })).toHaveAttribute("aria-pressed", "true");
+    const states = strip.getByRole("list", { name: /Top states/ });
+    await expect(states.getByRole("listitem")).toHaveCount(5);
+    // Nationwide programs never make a state a hotspot, and counts are whole programs.
+    await expect(states.getByRole("listitem").first()).toContainText(/\d+ programs?/);
+    await strip.getByRole("button", { name: "Largest amount" }).click();
+    await expect(states.getByRole("listitem").first()).toContainText(/\$\d/);
+    await expect(strip).toContainText("ClearEV never adds programs together");
+    const first = (await states.getByRole("listitem").first().locator(".hotspot-name").textContent())!;
+    await states.getByRole("listitem").first().getByRole("button").click();
+    await expect(page.getByRole("heading", { name: new RegExp(`Programs in ${first}`) })).toBeVisible();
+    await strip.getByRole("button", { name: "Off" }).click();
+    await expect(states).toHaveCount(0);
+    if (testInfo.project.name === "desktop") await expect(page.locator(".hotspot-ring")).toHaveCount(0);
   });
 });
 

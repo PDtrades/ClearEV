@@ -10,6 +10,8 @@ import { ActiveFilters, Filters } from "./Filters";
 import { CategoryIcon } from "./Icons";
 import { cssId, ResultCard } from "./ResultCard";
 import { UsMapFallback } from "./UsMapFallback";
+import { HotspotPanel, type HotspotView } from "./HotspotPanel";
+import type { HotspotData } from "@/lib/search/hotspots";
 
 const UsMap = dynamic(() => import("./UsMap"), { ssr: false, loading: () => <p className="muted small" style={{ padding: 16 }}>Loading 3D map…</p> });
 
@@ -25,7 +27,9 @@ function webglAvailable(): boolean {
   }
 }
 
-export function Explorer({ initialParams, initialResult, stateCounts }: { initialParams: ShareableParams; initialResult: SearchResponse; stateCounts: Record<string, number> }) {
+const NO_HOTSPOTS: HotspotData = { states: [], counties: [], counted: 0 };
+
+export function Explorer({ initialParams, initialResult, stateCounts, hotspots = NO_HOTSPOTS }: { initialParams: ShareableParams; initialResult: SearchResponse; stateCounts: Record<string, number>; hotspots?: HotspotData }) {
   const pathname = usePathname();
   const [params, setParams] = useState<ShareableParams>(initialParams);
   const [sensitive, setSensitive] = useState<SensitiveParams>({});
@@ -37,6 +41,11 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
   const [zipInput, setZipInput] = useState(initialParams.zip ?? "");
   const [qInput, setQInput] = useState(initialParams.q ?? "");
   const [zipError, setZipError] = useState<string | null>(null);
+  const [hotspotMode, setHotspotMode] = useState<HotspotView>("programs");
+  const [legendOpen, setLegendOpen] = useState(true);
+  useEffect(() => {
+    if (window.matchMedia("(max-width: 560px)").matches) setLegendOpen(false);
+  }, []);
   const first = useRef(true);
   const abortRef = useRef<AbortController | null>(null);
 
@@ -151,11 +160,11 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
         <section className="card map-panel" aria-label="Map">
           <div className="map-wrap">
             {webgl === null ? null : webgl ? (
-              <UsMap stateCounts={stateCounts} selectedState={loc?.state?.abbr} selectedId={params.sel} zipPoint={result.zipPoint} zipLabel={loc?.zip?.zip} localPrograms={localPrograms} onSelectState={selectState} onSelectProgram={selectProgram} />
+              <UsMap stateCounts={stateCounts} selectedState={loc?.state?.abbr} selectedId={params.sel} zipPoint={result.zipPoint} zipLabel={loc?.zip?.zip} localPrograms={localPrograms} onSelectState={selectState} onSelectProgram={selectProgram} hotspots={hotspots} hotspotMode={hotspotMode} />
             ) : (
-              <div style={{ padding: 12 }}>
-                <p className="notice" data-tone="amber" style={{ marginTop: 0 }}>3D rendering is not available in this browser, so here is a 2D map. All programs are also in the list.</p>
-                <UsMapFallback stateCounts={stateCounts} selectedState={loc?.state?.abbr} zip={loc?.zip} onSelectState={selectState} />
+              <div className="fallback-wrap">
+                <p className="notice" data-tone="amber" style={{ margin: 0 }}>3D rendering is not available in this browser, so here is a 2D map. All programs are also in the list.</p>
+                <UsMapFallback stateCounts={stateCounts} selectedState={loc?.state?.abbr} zip={loc?.zip} onSelectState={selectState} hotspots={hotspots} hotspotMode={hotspotMode} />
               </div>
             )}
             {webgl && (
@@ -169,8 +178,8 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
                 )}
               </div>
             )}
-            <div className="card map-legend" aria-label="Legend">
-              <h3>Legend</h3>
+            <details className="card map-legend" open={legendOpen} onToggle={(e) => setLegendOpen((e.target as HTMLDetailsElement).open)}>
+              <summary><h3>Legend</h3></summary>
               {LEGEND.map((k) => (
                 <div key={k} className="legend-row">
                   <span className="card-icon" data-kind={k} style={{ width: 24, height: 24, borderRadius: 7 }}>
@@ -180,8 +189,10 @@ export function Explorer({ initialParams, initialResult, stateCounts }: { initia
                 </div>
               ))}
               <div className="legend-row"><span style={{ width: 24, textAlign: "center" }}>▲</span>Height = programs listed for the state</div>
-            </div>
+              {hotspotMode !== "off" && <div className="legend-row"><span className="hotspot-dot" aria-hidden="true" style={{ margin: "0 7px" }} />Hotspot: warmer color = {hotspotMode === "programs" ? "more open programs" : "larger stated amount"}</div>}
+            </details>
           </div>
+          <HotspotPanel data={hotspots} mode={hotspotMode} onMode={setHotspotMode} onSelectState={(abbr) => selectState(abbr)} />
         </section>
 
         <section className="results-panel" aria-label="Results" aria-busy={loading}>

@@ -78,7 +78,7 @@ h3 { font-size: 16px; margin: 12px 0 6px; }
 .searchbar { display: grid; grid-template-columns: minmax(140px, 180px) minmax(160px, 220px) 1fr auto; gap: 10px; padding: 14px; margin-top: 14px; }
 .explorer { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.9fr); gap: 16px; margin-top: 14px; align-items: start; }
 .map-panel { position: sticky; top: calc(var(--header-h) + 12px); overflow: hidden; }
-.map-wrap { position: relative; height: min(70vh, 640px); min-height: 380px; background: linear-gradient(180deg, #e3f0fa, #f3f9fd); border-radius: var(--radius); }
+.map-wrap { position: relative; height: min(calc(80vh - 140px), 620px); min-height: 380px; background: linear-gradient(180deg, #e3f0fa, #f3f9fd); border-radius: var(--radius); }
 .map-canvas { position: absolute; inset: 0; }
 .map-controls { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 6px; z-index: 5; }
 .map-controls .btn { width: 38px; height: 38px; justify-content: center; padding: 0; font-size: 18px; }
@@ -174,3 +174,38 @@ table.data th, table.data td { text-align: left; padding: 8px; border-bottom: 1p
   .kv { grid-template-columns: 1fr; }
   .map-wrap { height: 62vh; }
 }
+
+/* Map hotspots */
+.hotspot-strip { border-top: 1px solid var(--line); padding: 10px 14px 12px; display: grid; gap: 8px; font-size: 13px; }
+.hotspot-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
+.hotspot-title { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; }
+.hotspot-dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: radial-gradient(circle, #e8603c 0 40%, #f7b26788 41% 100%); flex: none; }
+.hotspot-modes { display: flex; gap: 4px; flex-wrap: wrap; }
+.hotspot-modes button { font: inherit; font-size: 12px; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--line); background: #fff; color: var(--ink); cursor: pointer; }
+.hotspot-modes button[aria-pressed="true"] { background: #c2451f; border-color: #c2451f; color: #fff; }
+.hotspot-modes button:focus-visible, .hotspot-list button:focus-visible { outline: 3px solid var(--blue); outline-offset: 1px; }
+.hotspot-list { margin: 0; padding: 0; list-style: none; display: flex; flex-wrap: wrap; gap: 6px; }
+.hotspot-list button { display: inline-flex; gap: 6px; align-items: center; font: inherit; background: #fff7ef; border: 1px solid #f6d3b5; padding: 3px 10px 3px 4px; border-radius: 999px; cursor: pointer; color: var(--ink); }
+.hotspot-list button:hover { background: #ffe9d6; }
+.hotspot-rank { width: 20px; height: 20px; border-radius: 50%; background: #e8603c; color: #fff; font-weight: 700; font-size: 11px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.hotspot-rank-county { background: #fff; color: #c2451f; border: 2px solid #c2451f; width: 18px; height: 18px; }
+.hotspot-value { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.hotspot-empty, .hotspot-note { margin: 0; }
+.hotspot-ring { width: 24px; height: 24px; border-radius: 50%; border: 2px solid #fff; background: #e8603c; color: #fff; font: 700 12px/1 system-ui, sans-serif; display: grid; place-items: center; cursor: pointer; padding: 0; box-shadow: 0 0 0 0 rgba(232, 96, 60, 0.55); animation: hotspot-pulse 2.2s ease-out infinite; }
+.hotspot-ring-county { width: 12px; height: 12px; background: #fff; border: 3px solid #c2451f; }
+.hotspot-ring:focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
+@keyframes hotspot-pulse { 0% { box-shadow: 0 0 0 0 rgba(232, 96, 60, 0.55); } 70% { box-shadow: 0 0 0 14px rgba(232, 96, 60, 0); } 100% { box-shadow: 0 0 0 0 rgba(232, 96, 60, 0); } }
+@media (prefers-reduced-motion: reduce) { .hotspot-ring { animation: none; box-shadow: 0 0 0 4px rgba(232, 96, 60, 0.35); } }
+.svg-hotspot { cursor: pointer; }
+.svg-hotspot circle { fill: #e8603c; stroke: #fff; stroke-width: 2; }
+.svg-hotspot text { fill: #fff; font: 700 10px system-ui, sans-serif; pointer-events: none; }
+.svg-hotspot:focus { outline: none; }
+.svg-hotspot:focus circle { stroke: var(--blue); stroke-width: 3; }
+.map-legend summary { cursor: pointer; list-style: none; display: flex; align-items: center; gap: 6px; }
+.map-legend summary::-webkit-details-marker { display: none; }
+.map-legend summary::after { content: "▾"; margin-left: auto; color: var(--ink-soft); }
+.map-legend:not([open]) summary::after { content: "▸"; }
+.map-legend[open] summary { margin-bottom: 4px; }
+.hotspot-name { text-align: left; }
+.fallback-wrap { position: absolute; inset: 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+.fallback-wrap .svg-map { flex: 1; min-height: 0; height: 100%; width: 100%; }

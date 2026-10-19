@@ -5,6 +5,8 @@ import type { FeatureCollection, MultiPolygon } from "geojson";
 import { PSEUDO_BOUNDS } from "@/lib/geo/projection";
 import { ICON_LABELS, iconForCategory, type IconKind } from "@/lib/domain/program";
 import type { ResultProgram } from "./ResultCard";
+import { fmtDollars, metric, rankCountyGroups, rankHotspots, type HotspotData } from "@/lib/search/hotspots";
+import { hotspotLabel, hotspotSummary, type HotspotView } from "./HotspotPanel";
 
 export interface UsMapProps {
   stateCounts: Record<string, number>;
@@ -17,6 +19,8 @@ export interface UsMapProps {
   onSelectState: (abbr: string | undefined) => void;
   onSelectProgram: (id: string) => void;
   onHoverProgram?: (id: string | undefined) => void;
+  hotspots?: HotspotData;
+  hotspotMode?: HotspotView;
 }
 
 type StateProps = { abbr: string; name: string; fips: string; labelLng: number; labelLat: number };
@@ -44,6 +48,8 @@ export default function UsMap(props: UsMapProps) {
   const popupRef = useRef<Popup | null>(null);
   const markersRef = useRef<Marker[]>([]);
   const labelsRef = useRef<Marker[]>([]);
+  const hotspotMarkersRef = useRef<Marker[]>([]);
+  const countyPointsRef = useRef<Record<string, [number, number, number, number]> | null>(null);
   const hoveredRef = useRef<number | null>(null);
   const fcRef = useRef<FeatureCollection<MultiPolygon, StateProps> | null>(null);
   const propsRef = useRef(props);
@@ -95,6 +101,8 @@ export default function UsMap(props: UsMapProps) {
             "#2563c7",
             ["boolean", ["feature-state", "hover"], false],
             "#9cc0f0",
+            [">", ["coalesce", ["feature-state", "heat"], 0], 0],
+            ["interpolate", ["linear"], ["feature-state", "heat"], 0, "#fde9cc", 0.5, "#f7b267", 1, "#e8603c"],
             ["interpolate", ["linear"], ["coalesce", ["feature-state", "count"], 0], 0, "#ffffff", 1, "#e8f1fb", 30, "#c6dcf5", 120, "#8fb6e8"],
           ],
           "fill-extrusion-height": ["+", 12000, ["*", 900, ["min", 200, ["coalesce", ["feature-state", "count"], 0]]]],
@@ -137,7 +145,9 @@ export default function UsMap(props: UsMapProps) {
         hoveredRef.current = Number(f.id);
         map.setFeatureState({ source: "states", id: f.id }, { hover: true });
         const n = propsRef.current.stateCounts[f.properties.abbr] ?? 0;
-        popupRef.current!.setLngLat(e.lngLat).setHTML(`<strong>${f.properties.name}</strong><br>${n} state, utility or local program${n === 1 ? "" : "s"} listed · nationwide programs also apply`).addTo(map);
+        const hs = propsRef.current.hotspotMode !== "off" ? propsRef.current.hotspots?.states.find((h) => h.state === f.properties.abbr) : undefined;
+        const extra = hs?.top ? `<br>Largest stated amount: ${fmtDollars(hs.top.value)} (${escapeHtml(hs.top.programName)})` : "";
+        popupRef.current!.setLngLat(e.lngLat).setHTML(`<strong>${f.properties.name}</strong><br>${n} state, utility or local program${n === 1 ? "" : "s"} listed · nationwide programs also apply${extra}`).addTo(map);
       });
       map.on("mouseleave", "states-fill", () => {
         map.getCanvas().style.cursor = "";
@@ -169,6 +179,63 @@ export default function UsMap(props: UsMapProps) {
       map.setFeatureState({ source: "states", id: f.id as number }, { count: props.stateCounts[f.properties.abbr] ?? 0, selected: props.selectedState === f.properties.abbr });
     }
   }, [ready, props.stateCounts, props.selectedState]);
+
+  // Hotspots: warm color ramp on every state that scores, plus ranked rings on the top states and counties.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready) return;
+    const fc = fcRef.current;
+    if (!fc || !map.getSource("states")) return;
+    const mode = props.hotspotMode ?? "off";
+    const data = props.hotspots;
+    for (const m of hotspotMarkersRef.current) m.remove();
+    hotspotMarkersRef.current = [];
+    const byState = new Map((data?.states ?? []).map((h) => [h.state, h]));
+    const max = mode === "off" ? 0 : Math.max(0, ...(data?.states ?? []).map((h) => metric(h, mode)));
+    for (const f of fc.features) {
+      const h = byState.get(f.properties.abbr);
+      const heat = mode === "off" || !h || max === 0 ? 0 : Math.max(0.08, metric(h, mode) / max);
+      map.setFeatureState({ source: "states", id: f.id as number }, { heat });
+    }
+    if (mode === "off" || !data) return;
+    const ring = (h: (typeof data.states)[number], rank: number, at: [number, number], small: boolean) => {
+      const el = document.createElement("button");
+      el.type = "button";
+      el.className = small ? "hotspot-ring hotspot-ring-county" : "hotspot-ring";
+      el.textContent = small ? "" : String(rank);
+      el.setAttribute("aria-label", `Hotspot ${rank}: ${hotspotLabel(h)}. ${hotspotSummary(h)}.`);
+      el.addEventListener("click", (e) => {
+        e.stopPropagation();
+        propsRef.current.onSelectState(h.state);
+      });
+      el.addEventListener("mouseenter", () => popupRef.current?.setLngLat(at).setHTML(`<strong>#${rank} ${escapeHtml(hotspotLabel(h))}</strong><br>${escapeHtml(hotspotSummary(h))}`).addTo(map));
+      el.addEventListener("mouseleave", () => popupRef.current?.remove());
+      hotspotMarkersRef.current.push(new maplibregl.Marker({ element: el, anchor: "center", offset: small ? [0, 0] : [0, -16] }).setLngLat(at).addTo(map));
+    };
+    rankHotspots(data.states, mode).forEach((h, i) => {
+      const f = fc.features.find((x) => x.properties.abbr === h.state);
+      if (f) ring(h, i + 1, [f.properties.labelLng, f.properties.labelLat], false);
+    });
+    const groups = rankCountyGroups(data.counties, mode);
+    if (groups.length) {
+      const place = (pts: Record<string, [number, number, number, number]>) =>
+        groups.forEach((g, i) =>
+          g.counties.forEach((h) => {
+            const p = pts[h.key];
+            if (p) ring(h, i + 1, [p[0], p[1]], true);
+          }),
+        );
+      if (countyPointsRef.current) place(countyPointsRef.current);
+      else
+        fetch("/geo/county-points.json")
+          .then((r) => r.json())
+          .then((pts) => {
+            countyPointsRef.current = pts;
+            if (mapRef.current === map) place(pts);
+          })
+          .catch(() => {});
+    }
+  }, [ready, props.hotspots, props.hotspotMode]);
 
   // Fly to the selected state or ZIP.
   useEffect(() => {

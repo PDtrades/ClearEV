@@ -9,6 +9,7 @@ import { collapseDuplicates } from "@/lib/pipeline/dedupe";
 import type { SensitiveParams, ShareableParams } from "@/lib/search/params";
 import type { SearchResult, SourceStatus } from "@/lib/search/service";
 import type { ZipInfo } from "@/lib/geo/zip";
+import { computeHotspots, type HotspotData } from "@/lib/search/hotspots";
 
 export interface Snapshot {
   capturedAt: string;
@@ -18,7 +19,7 @@ export interface Snapshot {
 }
 type ZctaFile = { zips: Record<string, [number, number, string, string, string[]]> };
 
-const PRIORITY: Record<string, number> = { federal_curated: 5, rewiring_america: 10, afdc: 20, openei_urdb: 30 };
+const PRIORITY: Record<string, number> = { federal_curated: 5, state_curated: 6, rewiring_america: 10, afdc: 20, openei_urdb: 30 };
 
 export function makeSearch(snap: Snapshot, zcta: ZctaFile, counties: Record<string, string>) {
   function lookupZip(input?: string): ZipInfo | null {
@@ -94,4 +95,10 @@ export function stateCountsFrom(programs: ProgramView[]): Record<string, number>
   const out: Record<string, number> = {};
   for (const p of programs) if (p.reviewState === "published") for (const s of p.coverage.states) out[s] = (out[s] ?? 0) + 1;
   return out;
+}
+
+export function hotspotsFrom(programs: ProgramView[], counties: Record<string, string>): HotspotData {
+  const data = computeHotspots(programs.filter((p) => p.coverage.type !== "national"));
+  for (const c of data.counties) c.name = counties[c.key];
+  return data;
 }

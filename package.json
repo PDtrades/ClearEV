@@ -16,7 +16,7 @@
     "test:e2e": "playwright test",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "tsx scripts/migrate.ts",
-    "geo:build": "tsx scripts/build-geo.ts",
+    "geo:build": "tsx scripts/build-geo.ts && tsx scripts/build-county-points.ts",
     "ingest": "tsx scripts/ingest.ts",
     "linkcheck": "tsx scripts/linkcheck.ts",
     "admin:hash": "tsx scripts/hash-password.ts",
