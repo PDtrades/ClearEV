@@ -1,13 +1,19 @@
 "use client";
 import { useEffect, useState } from "react";
 
+// Three depth layers: far clouds are small, faint and slow; near clouds are larger and faster (parallax).
+// dur is seconds to cross the screen; negative delays start each cloud part-way across so the sky is never empty.
 const CLOUDS = [
-  { top: "6%", w: 260, dur: 190, delay: -40, o: 0.9 },
-  { top: "18%", w: 180, dur: 230, delay: -120, o: 0.75 },
-  { top: "34%", w: 320, dur: 260, delay: -200, o: 0.8 },
-  { top: "52%", w: 200, dur: 210, delay: -60, o: 0.7 },
-  { top: "70%", w: 280, dur: 280, delay: -150, o: 0.75 },
-  { top: "84%", w: 160, dur: 240, delay: -20, o: 0.65 },
+  { top: "4%", w: 140, dur: 95, delay: -10, o: 0.55, bob: 9 },
+  { top: "22%", w: 120, dur: 105, delay: -70, o: 0.5, bob: 11 },
+  { top: "46%", w: 150, dur: 100, delay: -40, o: 0.5, bob: 10 },
+  { top: "76%", w: 130, dur: 110, delay: -85, o: 0.5, bob: 12 },
+  { top: "10%", w: 230, dur: 70, delay: -50, o: 0.8, bob: 7 },
+  { top: "38%", w: 260, dur: 64, delay: -15, o: 0.75, bob: 8 },
+  { top: "62%", w: 210, dur: 76, delay: -58, o: 0.75, bob: 6 },
+  { top: "16%", w: 340, dur: 48, delay: -30, o: 0.9, bob: 5 },
+  { top: "56%", w: 300, dur: 52, delay: -8, o: 0.85, bob: 6 },
+  { top: "86%", w: 320, dur: 46, delay: -36, o: 0.85, bob: 5 },
 ];
 
 function Cloud({ w }: { w: number }) {
@@ -19,36 +25,41 @@ function Cloud({ w }: { w: number }) {
 }
 
 /**
- * Slowly drifting clouds behind the page. Respects prefers-reduced-motion and offers a pause control
- * whose state persists in localStorage. Pure CSS animation, so it costs nothing while paused.
+ * Drifting clouds behind the page, in three parallax layers. Starts paused when the system asks for reduced
+ * motion; the pause control overrides either way and its choice persists in localStorage. Pure CSS
+ * transform animations, so they run on the compositor and cost nothing while paused.
  */
 export function CloudBackground() {
-  const [paused, setPaused] = useState(false);
+  // null = no choice yet: CSS follows prefers-reduced-motion until the viewer presses the button.
+  const [paused, setPaused] = useState<boolean | null>(null);
   useEffect(() => {
     try {
       const saved = localStorage.getItem("clearev:clouds");
-      if (saved === "paused") setPaused(true);
-      else if (saved === null && window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPaused(true);
+      if (saved === "paused" || saved === "playing") setPaused(saved === "paused");
+      else if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) setPaused(true);
     } catch {}
   }, []);
   const toggle = () => {
     setPaused((p) => {
+      const next = !(p ?? window.matchMedia("(prefers-reduced-motion: reduce)").matches);
       try {
-        localStorage.setItem("clearev:clouds", p ? "playing" : "paused");
+        localStorage.setItem("clearev:clouds", next ? "paused" : "playing");
       } catch {}
-      return !p;
+      return next;
     });
   };
   return (
     <>
-      <div className="sky" data-paused={paused} aria-hidden="true">
+      <div className="sky" data-paused={paused == null ? "auto" : String(paused)} aria-hidden="true">
         {CLOUDS.map((c, i) => (
           <div key={i} className="cloud" style={{ top: c.top, width: c.w, opacity: c.o, animationDuration: `${c.dur}s`, animationDelay: `${c.delay}s` }}>
-            <Cloud w={c.w} />
+            <div className="cloud-bob" style={{ animationDuration: `${c.bob}s`, animationDelay: `${-i * 1.3}s` }}>
+              <Cloud w={c.w} />
+            </div>
           </div>
         ))}
       </div>
-      <button type="button" className="btn btn-sm cloud-toggle" onClick={toggle} aria-pressed={paused} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 40 }}>
+      <button type="button" className="btn btn-sm cloud-toggle" onClick={toggle} aria-pressed={paused === true} style={{ position: "fixed", right: 12, bottom: 12, zIndex: 40 }}>
         {paused ? "Resume background motion" : "Pause background motion"}
       </button>
     </>
