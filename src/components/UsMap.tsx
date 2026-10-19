@@ -9,6 +9,7 @@ import { fmtDollars, metric, rankCountyGroups, rankHotspots, type HotspotData } 
 import { countyTitle, hotspotLabel, hotspotSummary, type HotspotView } from "./HotspotPanel";
 import { stateByAbbr } from "@/lib/geo/states";
 import { fmtCost, type EvFriendlyData } from "@/lib/geo/ev-friendliness";
+import { webglInfo } from "@/lib/webgl";
 
 export interface UsMapProps {
   stateCounts: Record<string, number>;
@@ -52,23 +53,11 @@ const TERRAIN_EXAGGERATION = 9;
 const BAR_HALF = 0.2; // pseudo degrees
 
 /**
- * True when WebGL runs on a CPU rasterizer (Chrome's SwiftShader, Mesa llvmpipe), as on machines whose GPU
- * is blocklisted. 3D terrain makes every frame take seconds there, so the map keeps shaded relief but stays flat.
+ * True when WebGL runs on a CPU rasterizer. Elevation shading and 3D terrain make start-up and every frame
+ * slow there, so the map draws without them. Reuses the page's single WebGL probe (see lib/webgl).
  */
-let softwareGL: boolean | undefined;
 function softwareRenderer(): boolean {
-  return (softwareGL ??= detectSoftwareRenderer());
-}
-function detectSoftwareRenderer(): boolean {
-  try {
-    const gl = document.createElement("canvas").getContext("webgl");
-    const ext = gl?.getExtension("WEBGL_debug_renderer_info");
-    const name = ext && gl ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "";
-    gl?.getExtension("WEBGL_lose_context")?.loseContext();
-    return /swiftshader|llvmpipe|softpipe|software/i.test(name);
-  } catch {
-    return false;
-  }
+  return webglInfo().software;
 }
 
 const TERRAIN_PREF_KEY = "clearev.terrain";
@@ -174,7 +163,9 @@ export default function UsMap(props: UsMapProps) {
 
       // Realistic base: elevation (3D terrain, color relief, hillshade) and lakes, all pre-projected into
       // the same Albers composite as the states (see scripts/build-terrain.ts). Each layer is optional.
-      const meta = await fetch(geoUrl("terrain/meta.json")).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+      // Elevation (shading and 3D terrain) only with a graphics chip: on a CPU renderer its shaders and tile
+      // decoding add seconds to start-up, and the flat map stays usable.
+      const meta = softwareRenderer() ? null : await fetch(geoUrl("terrain/meta.json")).then((r) => (r.ok ? r.json() : null)).catch(() => null);
       if (meta) {
         const dem = { type: "raster-dem" as const, tiles: [geoUrl("terrain/{z}/{x}/{y}.png")], tileSize: 256, encoding: "terrarium" as const, minzoom: meta.minzoom, maxzoom: meta.maxzoom, bounds: meta.bounds };
         // MapLibre wants 3D terrain and the shading layers on separate sources (same tiles).

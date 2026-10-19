@@ -14,6 +14,7 @@ import { HotspotPanel, type HotspotView } from "./HotspotPanel";
 import type { HotspotData } from "@/lib/search/hotspots";
 import { EV_FRIENDLINESS } from "@/lib/geo/ev-friendliness";
 import { EvFriendlyPanel } from "./EvFriendlyPanel";
+import { webglInfo } from "@/lib/webgl";
 
 const UsMap = dynamic(() => import("./UsMap"), { ssr: false, loading: () => <p className="muted small" style={{ padding: 16 }}>Loading 3D map…</p> });
 
@@ -21,12 +22,7 @@ const LEGEND: IconKind[] = ["bolt", "solar", "battery", "plug", "general"];
 const LOCAL_COVERAGE = new Set(["utility", "zip", "county", "municipality", "other"]);
 
 function webglAvailable(): boolean {
-  try {
-    const c = document.createElement("canvas");
-    return !!(c.getContext("webgl2") || c.getContext("webgl"));
-  } catch {
-    return false;
-  }
+  return webglInfo().supported;
 }
 
 const NO_HOTSPOTS: HotspotData = { states: [], counties: [], counted: 0 };

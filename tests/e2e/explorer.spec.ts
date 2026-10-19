@@ -109,8 +109,8 @@ test.describe("map", () => {
     await expect(page.getByRole("region", { name: /Interactive 3D map/ })).toBeVisible();
     await expect(page.getByText("Legend")).toBeVisible();
     await expect(page.getByRole("button", { name: "Reset view" })).toBeVisible();
-    // CPU-rendered WebGL (this test browser) starts with 3D terrain off; the toggle stays available.
-    await expect(page.getByRole("button", { name: "3D terrain" })).toHaveAttribute("aria-pressed", "false", { timeout: 20_000 });
+    // CPU-rendered WebGL (this test browser) skips elevation, so there is no 3D terrain toggle.
+    await expect(page.getByRole("button", { name: "3D terrain" })).toHaveCount(0);
     await expect(page.locator(".maplibregl-canvas")).toBeVisible();
     await expect(page.locator(".maplibregl-marker:not(.hotspot-ring):not(.range-label)")).toHaveCount(52, { timeout: 20_000 }); // 51 labels + DC button
     await page.waitForTimeout(2500); // software GL is slow to paint
