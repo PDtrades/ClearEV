@@ -209,3 +209,19 @@ table.data th, table.data td { text-align: left; padding: 8px; border-bottom: 1p
 .hotspot-name { text-align: left; }
 .fallback-wrap { position: absolute; inset: 0; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
 .fallback-wrap .svg-map { flex: 1; min-height: 0; height: 100%; width: 100%; }
+
+/* Terrain labels and EV-friendliness */
+.range-label { font: italic 600 11px/1.1 Georgia, "Times New Roman", serif; color: #6b5640; letter-spacing: 0.06em; text-transform: uppercase; pointer-events: none; text-shadow: 0 0 3px #fffaf2, 0 0 3px #fffaf2; white-space: nowrap; opacity: 0.85; }
+.map-canvas[data-detail="low"] .range-label[data-rank="3"], .map-canvas[data-detail="low"] .range-label[data-rank="4"], .map-canvas[data-detail="low"] .range-label[data-rank="5"], .map-canvas[data-detail="low"] .range-label[data-rank="6"] { display: none; }
+.ev-swatch { display: inline-block; width: 10px; height: 14px; border-radius: 2px; background: linear-gradient(0deg, #c8553d, #e9a23b 40%, #8fbf4d 65%, #1d8a5a); flex: none; }
+.ev-pop { display: grid; gap: 3px; margin-top: 6px; padding-top: 6px; border-top: 1px solid var(--line); }
+.ev-meter, .ev-chip-meter { display: block; height: 6px; border-radius: 3px; background: #e5ecf3; overflow: hidden; }
+.ev-meter > span, .ev-chip-meter > span { display: block; height: 100%; background: linear-gradient(90deg, #c8553d, #e9a23b 40%, #8fbf4d 65%, #1d8a5a); background-size: 100% 100%; }
+.ev-chip-meter { width: 46px; }
+.ev-strip .hotspot-list button { background: #eef7f1; border-color: #c4e3d0; }
+.ev-strip .hotspot-list button:hover { background: #def0e5; }
+.ev-rank { width: 20px; height: 20px; border-radius: 50%; background: #1d8a5a; color: #fff; font-weight: 700; font-size: 11px; display: grid; place-items: center; font-variant-numeric: tabular-nums; }
+.ev-least .ev-rank { background: #c8553d; }
+.ev-selected { margin: 0; font-size: 13px; }
+.hotspot-note a { color: inherit; }
+.svg-ev-bar { stroke: #fff; stroke-width: 0.6; }

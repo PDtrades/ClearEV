@@ -10,6 +10,7 @@ import type { SensitiveParams, ShareableParams } from "@/lib/search/params";
 import type { SearchResult, SourceStatus } from "@/lib/search/service";
 import type { ZipInfo } from "@/lib/geo/zip";
 import { computeHotspots, type HotspotData } from "@/lib/search/hotspots";
+import { outsideZipCounties, scopeRank, unconfirmedUtility, utilityNote } from "@/lib/search/locality";
 
 export interface Snapshot {
   capturedAt: string;
@@ -19,7 +20,7 @@ export interface Snapshot {
 }
 type ZctaFile = { zips: Record<string, [number, number, string, string, string[]]> };
 
-const PRIORITY: Record<string, number> = { federal_curated: 5, state_curated: 6, rewiring_america: 10, afdc: 20, openei_urdb: 30 };
+const PRIORITY: Record<string, number> = { federal_curated: 5, state_curated: 6, local_curated: 7, rewiring_america: 10, afdc: 20, openei_urdb: 30 };
 
 export function makeSearch(snap: Snapshot, zcta: ZctaFile, counties: Record<string, string>) {
   function lookupZip(input?: string): ZipInfo | null {
@@ -44,7 +45,9 @@ export function makeSearch(snap: Snapshot, zcta: ZctaFile, counties: Record<stri
     const list = snap.programs.filter((p) => p.reviewState === "published" && (!st || p.coverage.type === "national" || p.coverage.states.includes(st.abbr)));
     const sourcesStatus: SourceStatus[] = zip ? [...snap.status.stored, ...snap.status.zip] : snap.status.none;
     const coverageNotes: string[] = [];
-    const { kept, collapsed } = collapseDuplicates(list, (sid) => PRIORITY[sid] ?? 100);
+    const { kept: all, collapsed } = collapseDuplicates(list, (sid) => PRIORITY[sid] ?? 100);
+    // County and city programs only where the source names this ZIP's county.
+    const kept = all.filter((p) => !outsideZipCounties(p, zip));
     const q = params.q?.toLowerCase();
     const filtered = kept.filter((p) => {
       if (params.cat.length && !p.categories.some((c) => params.cat.includes(c))) return false;
@@ -57,7 +60,7 @@ export function makeSearch(snap: Snapshot, zcta: ZctaFile, counties: Record<stri
       return true;
     });
     const withVerdicts = filtered.map((p) => ({ ...p, verdict: evaluateEligibility(p, sensitive) }));
-    withVerdicts.sort((a, b) => rank(a) - rank(b) || a.name.localeCompare(b.name));
+    withVerdicts.sort((a, b) => rank(a, zip, []) - rank(b, zip, []) || a.name.localeCompare(b.name));
 
     let emptyReason: SearchResult["emptyReason"];
     const anyNotConfigured = sourcesStatus.some((s) => s.state === "not_configured");
@@ -69,6 +72,7 @@ export function makeSearch(snap: Snapshot, zcta: ZctaFile, counties: Record<stri
     }
     if (anyNotConfigured) coverageNotes.push("Some data sources are not connected in this deployment, so results for this area are incomplete.");
     if (st && !zip) coverageNotes.push("Utility rate plans and ZIP-level programs appear after you enter a ZIP code.");
+    if (st && zip && withVerdicts.some((p) => unconfirmedUtility(p, zip, []))) coverageNotes.push(utilityNote(st.name, zip.zip));
     return {
       location: st ? { zip: zip ?? undefined, state: { abbr: st.abbr, name: st.name } } : null,
       programs: withVerdicts,
@@ -84,10 +88,10 @@ export function makeSearch(snap: Snapshot, zcta: ZctaFile, counties: Record<stri
   };
 }
 
-function rank(p: ProgramView & { verdict: EligibilityResult }) {
+function rank(p: ProgramView & { verdict: EligibilityResult }, zip: Parameters<typeof scopeRank>[1], utilities: string[]) {
   const status = p.status === "active" ? 0 : p.status === "upcoming" ? 1 : p.status === "unknown" ? 2 : 3;
   const verdict = p.verdict.verdict === "verified" ? 0 : p.verdict.verdict === "relevant" ? 1 : p.verdict.verdict === "needs_info" ? 2 : 3;
-  const scope = p.coverage.type === "utility" || p.coverage.type === "zip" ? 0 : p.coverage.type === "state" ? 1 : 2;
+  const scope = scopeRank(p, zip, utilities);
   return status * 100 + verdict * 10 + scope;
 }
 

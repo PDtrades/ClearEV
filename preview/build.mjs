@@ -31,8 +31,9 @@ await esbuild.build({
   logLevel: "info",
 });
 
-for (const f of ["states.json", "state-paths.json", "county-points.json"]) fs.copyFileSync(path.join(repo, "public/geo", f), path.join(dist, "geo", f));
+for (const f of ["states.json", "state-paths.json", "county-points.json", "lakes.json", "ranges.json"]) fs.copyFileSync(path.join(repo, "public/geo", f), path.join(dist, "geo", f));
 for (const f of ["zcta.json", "counties.json"]) fs.copyFileSync(path.join(repo, "data/geo", f), path.join(dist, "geo", f));
+fs.cpSync(path.join(repo, "public/geo/terrain"), path.join(dist, "geo/terrain"), { recursive: true });
 fs.copyFileSync(path.join(repo, "public/favicon.svg"), path.join(dist, "favicon.svg"));
 fs.copyFileSync(path.join(here, ".snapshot/data.json"), path.join(dist, "data/snapshot.json"));
 fs.writeFileSync(

@@ -53,6 +53,15 @@ describe("hotspots", () => {
     expect(rankHotspots(d.states, "amount")).toEqual([]);
   });
 
+  it("counts city and utility programs toward the counties their source names", () => {
+    const d = computeHotspots([
+      prog("nyc", { coverage: { type: "municipality", states: ["NY"], counties: ["36061", "36047"], zips: [], utilityNames: [], confidence: "source_stated" } }),
+      prog("pge", { coverage: { type: "utility", states: ["CA"], counties: [], zips: [], utilityNames: ["PG&E"], confidence: "source_stated" } }),
+    ]);
+    expect(d.counties.map((c) => c.key).sort()).toEqual(["36047", "36061"]);
+    expect(d.states.map((s) => s.key).sort()).toEqual(["CA", "NY"]);
+  });
+
   it("merges counties that share the same programs into one entry", () => {
     const cov = (counties: string[]) => ({ type: "county" as const, states: ["CA"], counties, zips: [], utilityNames: [], confidence: "source_stated" as const });
     const d = computeHotspots([

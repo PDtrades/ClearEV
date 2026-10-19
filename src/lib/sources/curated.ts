@@ -131,3 +131,21 @@ export const STATE_META: SourceMeta = {
 };
 
 export const stateAdapter = makeCuratedAdapter(STATE_META, STATES_FILE);
+
+const LOCAL_FILE = path.join(process.cwd(), "data/curated/local.json");
+
+export const LOCAL_META: SourceMeta = {
+  id: "local_curated",
+  name: "Utility, county and city programs (official pages, curated)",
+  kind: "curated",
+  homepage: "https://afdc.energy.gov/laws/state",
+  attribution: "Values quoted from official utility, county and city program pages",
+  requiredEnv: [],
+  allowedHosts: hostsOf(LOCAL_FILE),
+  covers: "A hand-reviewed set of open utility, county and city EV, charger, rate, solar and battery programs, each value quoted from the official program page.",
+  gaps: "Not every utility or city. 17 states have no local records yet (AK, DE, IA, ID, KS, KY, MD, ME, MT, NC, NE, NV, OH, PA, SC, WV, WY), and utility programs are matched by state unless the page names counties.",
+  priority: 7,
+  staleAfterDays: 30,
+};
+
+export const localAdapter = makeCuratedAdapter(LOCAL_META, LOCAL_FILE);

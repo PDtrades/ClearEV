@@ -110,7 +110,7 @@ test.describe("map", () => {
     await expect(page.getByText("Legend")).toBeVisible();
     await expect(page.getByRole("button", { name: "Reset view" })).toBeVisible();
     await expect(page.locator(".maplibregl-canvas")).toBeVisible();
-    await expect(page.locator(".maplibregl-marker:not(.hotspot-ring)")).toHaveCount(52, { timeout: 20_000 }); // 51 labels + DC button
+    await expect(page.locator(".maplibregl-marker:not(.hotspot-ring):not(.range-label)")).toHaveCount(52, { timeout: 20_000 }); // 51 labels + DC button
     await page.waitForTimeout(2500); // software GL is slow to paint
 
     const box = await page.locator(".maplibregl-canvas").boundingBox();
@@ -141,6 +141,25 @@ test.describe("map", () => {
     await strip.getByRole("button", { name: "Off" }).click();
     await expect(states).toHaveCount(0);
     if (testInfo.project.name === "desktop") await expect(page.locator(".hotspot-ring")).toHaveCount(0);
+  });
+});
+
+test.describe("EV-friendliness", () => {
+  test("ranks states by chargers per person and home electricity price", async ({ page }, testInfo) => {
+    test.skip(testInfo.project.name === "mobile", "covered on desktop and no-webgl");
+    await page.goto("/");
+    const strip = page.getByLabel("EV-friendliness", { exact: true });
+    await expect(strip.getByRole("button", { name: "Bars on" })).toHaveAttribute("aria-pressed", "true");
+    const best = strip.getByRole("list", { name: "Most EV-friendly states" }).getByRole("listitem");
+    await expect(best).toHaveCount(5);
+    await expect(strip.getByRole("list", { name: "Least EV-friendly states" }).getByRole("listitem")).toHaveCount(3);
+    await expect(strip).toContainText("charging ports per 100,000");
+    const first = (await best.first().getByRole("button").getAttribute("title"))!.split(":")[0];
+    await best.first().getByRole("button").click();
+    await expect(page.getByRole("heading", { name: new RegExp(`Programs in ${first}`) })).toBeVisible();
+    await expect(strip).toContainText(new RegExp(`${first} scores \\d+`));
+    await strip.getByRole("button", { name: "Off" }).click();
+    await expect(strip.getByRole("button", { name: "Off" })).toHaveAttribute("aria-pressed", "true");
   });
 });
 

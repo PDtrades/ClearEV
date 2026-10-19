@@ -73,11 +73,10 @@ export function computeHotspots(programs: HotspotInput[]): HotspotData {
     counted++;
     const top = largestStatedAmount(p);
     for (const s of p.coverage.states) add(states, s, "state", s, p, top);
-    if (p.coverage.type === "county") {
-      for (const fips of p.coverage.counties) {
-        if (!/^\d{5}$/.test(fips)) continue;
-        add(counties, fips, "county", p.coverage.states[0], p, top);
-      }
+    // County, city and utility programs count toward a county only when the source names it.
+    for (const fips of p.coverage.counties ?? []) {
+      if (!/^\d{5}$/.test(fips)) continue;
+      add(counties, fips, "county", p.coverage.states[0], p, top);
     }
   }
   return { states: [...states.values()], counties: [...counties.values()], counted };

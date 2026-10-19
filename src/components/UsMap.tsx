@@ -7,6 +7,7 @@ import { ICON_LABELS, iconForCategory, type IconKind } from "@/lib/domain/progra
 import type { ResultProgram } from "./ResultCard";
 import { fmtDollars, metric, rankCountyGroups, rankHotspots, type HotspotData } from "@/lib/search/hotspots";
 import { hotspotLabel, hotspotSummary, type HotspotView } from "./HotspotPanel";
+import { fmtCost, type EvFriendlyData } from "@/lib/geo/ev-friendliness";
 
 export interface UsMapProps {
   stateCounts: Record<string, number>;
@@ -21,6 +22,8 @@ export interface UsMapProps {
   onHoverProgram?: (id: string | undefined) => void;
   hotspots?: HotspotData;
   hotspotMode?: HotspotView;
+  evFriendliness?: EvFriendlyData;
+  showBars?: boolean;
 }
 
 type StateProps = { abbr: string; name: string; fips: string; labelLng: number; labelLat: number };
@@ -39,6 +42,46 @@ export function iconSvg(kind: IconKind, size = 16) {
 }
 
 const SPREAD_ZOOM = 5.2;
+/** Vertical exaggeration so mountain ranges read at country scale (the composite is roughly 1:1 horizontally). */
+const TERRAIN_EXAGGERATION = 9;
+const BAR_HALF = 0.2; // pseudo degrees
+
+/**
+ * True when WebGL runs on a CPU rasterizer (Chrome's SwiftShader, Mesa llvmpipe), as on machines whose GPU
+ * is blocklisted. 3D terrain makes every frame take seconds there, so the map keeps shaded relief but stays flat.
+ */
+function softwareRenderer(): boolean {
+  try {
+    const gl = document.createElement("canvas").getContext("webgl");
+    const ext = gl?.getExtension("WEBGL_debug_renderer_info");
+    const name = ext && gl ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : "";
+    gl?.getExtension("WEBGL_lose_context")?.loseContext();
+    return /swiftshader|llvmpipe|softpipe|software/i.test(name);
+  } catch {
+    return false;
+  }
+}
+
+/** Absolute URL for a file under the site's geo folder (the static preview sets its own base). */
+export function geoUrl(p: string) {
+  const base = (window as unknown as { __CLEAREV_GEO_BASE__?: string }).__CLEAREV_GEO_BASE__;
+  return base ? `${base.replace(/\/$/, "")}/${p}` : `${window.location.origin}/geo/${p}`;
+}
+
+function barFeatures(fc: FeatureCollection<MultiPolygon, StateProps>, ev: EvFriendlyData | undefined): FeatureCollection {
+  const features = [];
+  for (const f of fc.features) {
+    const row = ev?.rows[f.properties.abbr];
+    if (!row || row.score == null) continue;
+    const { labelLng: x, labelLat: y } = f.properties;
+    features.push({
+      type: "Feature" as const,
+      properties: { abbr: f.properties.abbr, score: row.score },
+      geometry: { type: "Polygon" as const, coordinates: [[[x - BAR_HALF, y - BAR_HALF], [x + BAR_HALF, y - BAR_HALF], [x + BAR_HALF, y + BAR_HALF], [x - BAR_HALF, y + BAR_HALF], [x - BAR_HALF, y - BAR_HALF]]] },
+    });
+  }
+  return { type: "FeatureCollection", features };
+}
 const FIT_PADDING = { top: 24, bottom: 36, left: 24, right: 24 };
 const HOME_PITCH = 38;
 
@@ -49,6 +92,7 @@ export default function UsMap(props: UsMapProps) {
   const markersRef = useRef<Marker[]>([]);
   const labelsRef = useRef<Marker[]>([]);
   const hotspotMarkersRef = useRef<Marker[]>([]);
+  const rangeLabelsRef = useRef<Marker[]>([]);
   const countyPointsRef = useRef<Record<string, [number, number, number, number]> | null>(null);
   const hoveredRef = useRef<number | null>(null);
   const fcRef = useRef<FeatureCollection<MultiPolygon, StateProps> | null>(null);
@@ -89,28 +133,88 @@ export default function UsMap(props: UsMapProps) {
       const res = await fetch("/geo/states.json");
       const fc = (await res.json()) as FeatureCollection<MultiPolygon, StateProps>;
       fcRef.current = fc;
+
+      // Realistic base: elevation (3D terrain, color relief, hillshade) and lakes, all pre-projected into
+      // the same Albers composite as the states (see scripts/build-terrain.ts). Each layer is optional.
+      const meta = await fetch(geoUrl("terrain/meta.json")).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+      if (meta) {
+        const dem = { type: "raster-dem" as const, tiles: [geoUrl("terrain/{z}/{x}/{y}.png")], tileSize: 256, encoding: "terrarium" as const, minzoom: meta.minzoom, maxzoom: meta.maxzoom, bounds: meta.bounds };
+        // MapLibre wants 3D terrain and the shading layers on separate sources (same tiles).
+        map.addSource("dem", { ...dem, attribution: meta.attribution });
+        map.addSource("dem-shade", dem);
+        map.addLayer({
+          id: "relief",
+          type: "color-relief",
+          source: "dem-shade",
+          paint: {
+            "color-relief-color": ["interpolate", ["linear"], ["elevation"], -120, "rgba(205,226,243,0)", -1, "rgba(205,226,243,0)", 0, "#e4eed8", 250, "#d9e6c6", 700, "#e3dcb6", 1300, "#d8c49e", 2000, "#c6a985", 2800, "#ae9583", 3500, "#cfc6c0", 4200, "#f6f4f2"],
+          },
+        });
+        map.addLayer({ id: "hillshade", type: "hillshade", source: "dem-shade", paint: { "hillshade-exaggeration": 0.6, "hillshade-shadow-color": "#4f5d70", "hillshade-highlight-color": "#ffffff", "hillshade-accent-color": "#6d7c90", "hillshade-illumination-direction": 315 } });
+      }
       map.addSource("states", { type: "geojson", data: fc });
       map.addLayer({
         id: "states-fill",
-        type: "fill-extrusion",
+        type: "fill",
         source: "states",
         paint: {
-          "fill-extrusion-color": [
+          "fill-color": [
             "case",
             ["boolean", ["feature-state", "selected"], false],
             "#2563c7",
             ["boolean", ["feature-state", "hover"], false],
-            "#9cc0f0",
+            "#5f93d8",
             [">", ["coalesce", ["feature-state", "heat"], 0], 0],
-            ["interpolate", ["linear"], ["feature-state", "heat"], 0, "#fde9cc", 0.5, "#f7b267", 1, "#e8603c"],
-            ["interpolate", ["linear"], ["coalesce", ["feature-state", "count"], 0], 0, "#ffffff", 1, "#e8f1fb", 30, "#c6dcf5", 120, "#8fb6e8"],
+            ["interpolate", ["linear"], ["feature-state", "heat"], 0, "#fbd9a8", 0.5, "#f59a4c", 1, "#e0532c"],
+            meta ? "#ffffff" : "#f4f8fc",
           ],
-          "fill-extrusion-height": ["+", 12000, ["*", 900, ["min", 200, ["coalesce", ["feature-state", "count"], 0]]]],
-          "fill-extrusion-opacity": 0.96,
+          "fill-opacity": [
+            "case",
+            ["boolean", ["feature-state", "selected"], false],
+            0.42,
+            ["boolean", ["feature-state", "hover"], false],
+            0.3,
+            [">", ["coalesce", ["feature-state", "heat"], 0], 0],
+            0.5,
+            meta ? 0.04 : 1,
+          ],
+        },
+      });
+      const lakes = await fetch(geoUrl("lakes.json")).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+      if (lakes) {
+        map.addSource("lakes", { type: "geojson", data: lakes });
+        map.addLayer({ id: "lakes-fill", type: "fill", source: "lakes", paint: { "fill-color": "#9fc6e8", "fill-opacity": 0.95 } });
+        map.addLayer({ id: "lakes-line", type: "line", source: "lakes", paint: { "line-color": "#7eadd6", "line-width": 0.5 } });
+      }
+      map.addLayer({ id: "states-line", type: "line", source: "states", paint: { "line-color": "#6f8fb3", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.7, 6, 1.4] } });
+
+      // EV-friendliness bars: a square column at each state's label point, height = score.
+      map.addSource("ev-bars", { type: "geojson", data: barFeatures(fc, propsRef.current.evFriendliness) });
+      map.addLayer({
+        id: "ev-bars",
+        type: "fill-extrusion",
+        source: "ev-bars",
+        layout: { visibility: propsRef.current.showBars === false ? "none" : "visible" },
+        paint: {
+          "fill-extrusion-color": ["interpolate", ["linear"], ["get", "score"], 0, "#c8553d", 35, "#e9a23b", 60, "#8fbf4d", 100, "#1d8a5a"],
+          "fill-extrusion-height": ["+", 15000, ["*", 2200, ["get", "score"]]],
+          "fill-extrusion-base": 0,
+          "fill-extrusion-opacity": 0.95,
           "fill-extrusion-vertical-gradient": true,
         },
       });
-      map.addLayer({ id: "states-line", type: "line", source: "states", paint: { "line-color": "#7fa3c9", "line-width": 0.8 } });
+      if (meta && !softwareRenderer()) map.setTerrain({ source: "dem", exaggeration: TERRAIN_EXAGGERATION });
+
+      // Mountain range names (Natural Earth), as quiet italic labels.
+      const ranges = await fetch(geoUrl("ranges.json")).then((r) => (r.ok ? r.json() : [])).catch(() => []);
+      for (const r of ranges as { name: string; scalerank: number; lng: number; lat: number }[]) {
+        const el = document.createElement("div");
+        el.className = "range-label";
+        el.dataset.rank = String(r.scalerank);
+        el.textContent = r.name;
+        el.setAttribute("aria-hidden", "true");
+        rangeLabelsRef.current.push(new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([r.lng, r.lat]).addTo(map));
+      }
 
       // State labels as pointer-transparent HTML markers (no external glyph server needed).
       for (const f of fc.features) {
@@ -147,7 +251,13 @@ export default function UsMap(props: UsMapProps) {
         const n = propsRef.current.stateCounts[f.properties.abbr] ?? 0;
         const hs = propsRef.current.hotspotMode !== "off" ? propsRef.current.hotspots?.states.find((h) => h.state === f.properties.abbr) : undefined;
         const extra = hs?.top ? `<br>Largest stated amount: ${fmtDollars(hs.top.value)} (${escapeHtml(hs.top.programName)})` : "";
-        popupRef.current!.setLngLat(e.lngLat).setHTML(`<strong>${f.properties.name}</strong><br>${n} state, utility or local program${n === 1 ? "" : "s"} listed · nationwide programs also apply${extra}`).addTo(map);
+        const ev = propsRef.current.evFriendliness;
+        const row = ev?.rows[f.properties.abbr];
+        const evHtml =
+          row && row.score != null && propsRef.current.showBars !== false
+            ? `<div class="ev-pop"><span>EV-friendliness <strong>${row.score}</strong>/100</span><span class="ev-meter"><span style="width:${row.score}%"></span></span><span class="muted">${row.portsPer100k} charging ports per 100k people · ${fmtCost(ev!, row.cost)} home electricity</span></div>`
+            : "";
+        popupRef.current!.setLngLat(e.lngLat).setHTML(`<strong>${f.properties.name}</strong><br>${n} state, utility or local program${n === 1 ? "" : "s"} listed · nationwide programs also apply${extra}${evHtml}`).addTo(map);
       });
       map.on("mouseleave", "states-fill", () => {
         map.getCanvas().style.cursor = "";
@@ -159,7 +269,12 @@ export default function UsMap(props: UsMapProps) {
         const f = e.features?.[0] as (MapGeoJSONFeature & { properties: StateProps }) | undefined;
         if (f) propsRef.current.onSelectState(f.properties.abbr);
       });
-      map.on("zoomend", () => setZoom(map.getZoom()));
+      const markZoom = () => container.current?.setAttribute("data-detail", map.getZoom() >= 4.3 ? "high" : "low");
+      markZoom();
+      map.on("zoomend", () => {
+        setZoom(map.getZoom());
+        markZoom();
+      });
       map.fitBounds(PSEUDO_BOUNDS, { padding: FIT_PADDING, pitch: HOME_PITCH, duration: prefersReduced() ? 0 : 800 });
       setReady(true);
     });
@@ -176,9 +291,17 @@ export default function UsMap(props: UsMapProps) {
     const fc = fcRef.current;
     if (!fc || !map.getSource("states")) return;
     for (const f of fc.features) {
-      map.setFeatureState({ source: "states", id: f.id as number }, { count: props.stateCounts[f.properties.abbr] ?? 0, selected: props.selectedState === f.properties.abbr });
+      map.setFeatureState({ source: "states", id: f.id as number }, { selected: props.selectedState === f.properties.abbr });
     }
   }, [ready, props.stateCounts, props.selectedState]);
+
+  // EV-friendliness bars: data and visibility.
+  useEffect(() => {
+    const map = mapRef.current;
+    if (!map || !ready || !map.getLayer("ev-bars") || !fcRef.current) return;
+    (map.getSource("ev-bars") as maplibregl.GeoJSONSource).setData(barFeatures(fcRef.current, props.evFriendliness));
+    map.setLayoutProperty("ev-bars", "visibility", props.showBars === false ? "none" : "visible");
+  }, [ready, props.evFriendliness, props.showBars]);
 
   // Hotspots: warm color ramp on every state that scores, plus ranked rings on the top states and counties.
   useEffect(() => {

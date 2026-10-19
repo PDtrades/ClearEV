@@ -15,6 +15,8 @@ import type { HotspotData } from "@/lib/search/hotspots";
 
 type Route = { path: string };
 const realFetch = window.fetch.bind(window);
+// Map tiles are fetched by MapLibre's workers, which bypass the fetch shim, so give the map an absolute base.
+(window as unknown as { __CLEAREV_GEO_BASE__?: string }).__CLEAREV_GEO_BASE__ = new URL("geo", window.location.href).href;
 
 async function boot() {
   const root = createRoot(document.getElementById("app")!);
@@ -88,7 +90,11 @@ function App({ snap, initialParams, initialResult, counts, hotspots }: { hotspot
       <a href="#main" className="skip-link" onClick={(e) => { e.preventDefault(); document.getElementById("main")?.focus(); }}>Skip to content</a>
       <CloudBackground />
       <div className="preview-banner" role="note">
-        <strong>Preview build.</strong> Everything runs in your browser from a snapshot taken {new Date(snap.capturedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}. {snap.programs.some((p) => p.sourceId === "state_curated") ? "It holds the four federal IRS credits plus a hand-checked starter set of state and regional programs; the full state, utility, solar and battery feeds are not connected yet." : "Only the four federal IRS credits are loaded; state, utility, solar and battery sources are not connected yet."}
+        <strong>Preview build.</strong> Everything runs in your browser from a snapshot taken {new Date(snap.capturedAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}. {snap.programs.some((p) => p.sourceId === "local_curated")
+          ? `It holds ${snap.programs.length} hand-checked programs (federal credits, state programs, and utility, county and city programs); the full state, utility, solar and battery feeds are not connected yet.`
+          : snap.programs.some((p) => p.sourceId === "state_curated")
+            ? "It holds the four federal IRS credits plus a hand-checked starter set of state and regional programs; the full state, utility, solar and battery feeds are not connected yet."
+            : "Only the four federal IRS credits are loaded; state, utility, solar and battery sources are not connected yet."}
       </div>
       <header className="site-header">
         <a href="/" className="brand" aria-label="ClearEV home">
@@ -117,7 +123,7 @@ function App({ snap, initialParams, initialResult, counts, hotspots }: { hotspot
       </main>
       <footer className="site-footer">
         <p>ClearEV lists programs from official and reputable sources and shows where each value came from and when it was last checked. It does not promise eligibility, approval, or savings; always confirm with the program administrator.</p>
-        <p>Incentive data by <a href="https://www.rewiringamerica.org" rel="noopener noreferrer" target="_blank">Rewiring America</a> where noted · U.S. DOE <a href="https://afdc.energy.gov/laws" rel="noopener noreferrer" target="_blank">Alternative Fuels Data Center</a> · <a href="https://openei.org/wiki/Utility_Rate_Database" rel="noopener noreferrer" target="_blank">OpenEI Utility Rate Database</a> · U.S. Census Bureau geography.</p>
+        <p>Incentive data by <a href="https://www.rewiringamerica.org" rel="noopener noreferrer" target="_blank">Rewiring America</a> where noted · U.S. DOE <a href="https://afdc.energy.gov/laws" rel="noopener noreferrer" target="_blank">Alternative Fuels Data Center</a> · <a href="https://openei.org/wiki/Utility_Rate_Database" rel="noopener noreferrer" target="_blank">OpenEI Utility Rate Database</a> · U.S. Census Bureau geography and population · <a href="https://www.eia.gov/electricity/annual/" rel="noopener noreferrer" target="_blank">U.S. EIA</a> electricity prices · Elevation: <a href="https://registry.opendata.aws/terrain-tiles/" rel="noopener noreferrer" target="_blank">AWS Terrain Tiles</a> (Mapzen/Tilezen; USGS 3DEP, SRTM, ETOPO1) · Lakes and mountain names: <a href="https://www.naturalearthdata.com" rel="noopener noreferrer" target="_blank">Natural Earth</a>.</p>
       </footer>
     </>
   );
