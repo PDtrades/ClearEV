@@ -8,7 +8,7 @@ import type { ResultProgram } from "./ResultCard";
 import { fmtDollars, metric, rankCountyGroups, rankHotspots, type HotspotData } from "@/lib/search/hotspots";
 import { countyTitle, hotspotLabel, hotspotSummary, type HotspotView } from "./HotspotPanel";
 import { stateByAbbr } from "@/lib/geo/states";
-import { fmtCost, type EvFriendlyData } from "@/lib/geo/ev-friendliness";
+import { fmtCost, scoreColor, type EvFriendlyData } from "@/lib/geo/ev-friendliness";
 import { webglInfo } from "@/lib/webgl";
 import { geoUrl } from "@/lib/geo/url";
 
@@ -28,7 +28,7 @@ export interface UsMapProps {
   hotspots?: HotspotData;
   hotspotMode?: HotspotView;
   evFriendliness?: EvFriendlyData;
-  showBars?: boolean;
+  showScores?: boolean;
 }
 
 type StateProps = { abbr: string; name: string; fips: string; labelLng: number; labelLat: number };
@@ -51,7 +51,6 @@ const SPREAD_ZOOM = 5.2;
 const COUNTY_ZOOM = 6.2;
 /** Vertical exaggeration so mountain ranges read at country scale (the composite is roughly 1:1 horizontally). */
 const TERRAIN_EXAGGERATION = 9;
-const BAR_HALF = 0.2; // pseudo degrees
 
 /**
  * True when WebGL runs on a CPU rasterizer. Elevation shading and 3D terrain make start-up and every frame
@@ -85,20 +84,6 @@ function saveTerrainPref(v: "on" | "off") {
 /** Absolute URL for a file under the site's geo folder (the static preview sets its own base). */
 export { geoUrl };
 
-function barFeatures(fc: FeatureCollection<MultiPolygon, StateProps>, ev: EvFriendlyData | undefined): FeatureCollection {
-  const features = [];
-  for (const f of fc.features) {
-    const row = ev?.rows[f.properties.abbr];
-    if (!row || row.score == null) continue;
-    const { labelLng: x, labelLat: y } = f.properties;
-    features.push({
-      type: "Feature" as const,
-      properties: { abbr: f.properties.abbr, score: row.score },
-      geometry: { type: "Polygon" as const, coordinates: [[[x - BAR_HALF, y - BAR_HALF], [x + BAR_HALF, y - BAR_HALF], [x + BAR_HALF, y + BAR_HALF], [x - BAR_HALF, y + BAR_HALF], [x - BAR_HALF, y - BAR_HALF]]] },
-    });
-  }
-  return { type: "FeatureCollection", features };
-}
 const FIT_PADDING = { top: 24, bottom: 36, left: 24, right: 24 };
 const HOME_PITCH = 38;
 
@@ -215,21 +200,6 @@ export default function UsMap(props: UsMapProps) {
       }
       map.addLayer({ id: "states-line", type: "line", source: "states", paint: { "line-color": "#6f8fb3", "line-width": ["interpolate", ["linear"], ["zoom"], 3, 0.7, 6, 1.4] } });
 
-      // EV-friendliness bars: a square column at each state's label point, height = score.
-      map.addSource("ev-bars", { type: "geojson", data: barFeatures(fc, propsRef.current.evFriendliness) });
-      map.addLayer({
-        id: "ev-bars",
-        type: "fill-extrusion",
-        source: "ev-bars",
-        layout: { visibility: propsRef.current.showBars === false ? "none" : "visible" },
-        paint: {
-          "fill-extrusion-color": ["interpolate", ["linear"], ["get", "score"], 0, "#c8553d", 35, "#e9a23b", 60, "#8fbf4d", 100, "#1d8a5a"],
-          "fill-extrusion-height": ["+", 15000, ["*", 2200, ["get", "score"]]],
-          "fill-extrusion-base": 0,
-          "fill-extrusion-opacity": 0.95,
-          "fill-extrusion-vertical-gradient": true,
-        },
-      });
       if (meta) {
         const pref = terrainPref();
         const on = pref ? pref === "on" : !softwareRenderer();
@@ -273,13 +243,28 @@ export default function UsMap(props: UsMapProps) {
         rangeLabelsRef.current.push(new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([r.lng, r.lat]).addTo(map));
       }
 
-      // State labels as pointer-transparent HTML markers (no external glyph server needed).
+      // State labels as pointer-transparent HTML markers (no external glyph server needed), each with its
+      // EV-friendliness score above it in the score's color.
+      const ev = propsRef.current.evFriendliness;
       for (const f of fc.features) {
         const el = document.createElement("div");
-        el.textContent = f.properties.abbr;
+        el.className = "state-mark";
         el.setAttribute("aria-hidden", "true");
-        el.style.cssText = "font:600 11px/1 system-ui,sans-serif;color:#2f4262;pointer-events:none;text-shadow:0 0 3px #fff,0 0 3px #fff;";
-        labelsRef.current.push(new maplibregl.Marker({ element: el, anchor: "center" }).setLngLat([f.properties.labelLng, f.properties.labelLat]).addTo(map));
+        const row = f.properties.abbr === "DC" ? undefined : ev?.rows[f.properties.abbr];
+        if (row?.score != null) {
+          const score = document.createElement("span");
+          const c = scoreColor(row.score);
+          score.className = "ev-score";
+          score.textContent = String(row.score);
+          score.style.background = c.fill;
+          score.style.color = c.ink;
+          el.append(score);
+        }
+        const abbr = document.createElement("span");
+        abbr.className = "state-abbr";
+        abbr.textContent = f.properties.abbr;
+        el.append(abbr);
+        labelsRef.current.push(new maplibregl.Marker({ element: el, anchor: row?.score != null ? "bottom" : "center", offset: row?.score != null ? [0, 6] : [0, 0] }).setLngLat([f.properties.labelLng, f.properties.labelLat]).addTo(map));
       }
       // Washington, DC gets an enlarged, clickable target since its polygon is tiny.
       const dc = fc.features.find((f) => f.properties.abbr === "DC");
@@ -311,7 +296,7 @@ export default function UsMap(props: UsMapProps) {
         const ev = propsRef.current.evFriendliness;
         const row = ev?.rows[f.properties.abbr];
         const evHtml =
-          row && row.score != null && propsRef.current.showBars !== false
+          row && row.score != null && propsRef.current.showScores !== false
             ? `<div class="ev-pop"><span>EV-friendliness <strong>${row.score}</strong>/100</span><span class="ev-meter"><span style="width:${row.score}%"></span></span><span class="muted">${row.portsPer100k} charging ports per 100k people · ${fmtCost(ev!, row.cost)} home electricity</span></div>`
             : "";
         popupRef.current!.setLngLat(e.lngLat).setHTML(`<strong>${f.properties.name}</strong><br>${n} state, utility or local program${n === 1 ? "" : "s"} listed · nationwide programs also apply${extra}${evHtml}`).addTo(map);
@@ -352,14 +337,6 @@ export default function UsMap(props: UsMapProps) {
     }
   }, [ready, props.stateCounts, props.selectedState]);
 
-  // EV-friendliness bars: data and visibility.
-  useEffect(() => {
-    const map = mapRef.current;
-    if (!map || !ready || !map.getLayer("ev-bars") || !fcRef.current) return;
-    (map.getSource("ev-bars") as maplibregl.GeoJSONSource).setData(barFeatures(fcRef.current, props.evFriendliness));
-    map.setLayoutProperty("ev-bars", "visibility", props.showBars === false ? "none" : "visible");
-  }, [ready, props.evFriendliness, props.showBars]);
-
   // Hotspots: warm color ramp on every state that scores, plus ranked rings on the top states and counties.
   useEffect(() => {
     const map = mapRef.current;
@@ -394,7 +371,8 @@ export default function UsMap(props: UsMapProps) {
         if (!pinnedRef.current?.isOpen()) popupRef.current?.setLngLat(at).setHTML(`<strong>#${rank} ${escapeHtml(hotspotLabel(h))}</strong><br>${escapeHtml(hotspotSummary(h))}`).addTo(map);
       });
       el.addEventListener("mouseleave", () => popupRef.current?.remove());
-      hotspotMarkersRef.current.push(new maplibregl.Marker({ element: el, anchor: "center", offset: small ? [0, 0] : [0, -16] }).setLngLat(at).addTo(map));
+      // State rings sit left of the state label so they never cover its EV-friendliness score.
+      hotspotMarkersRef.current.push(new maplibregl.Marker({ element: el, anchor: "center", offset: small ? [0, 0] : [-30, -9] }).setLngLat(at).addTo(map));
     };
     // A county dot opens its own card: the county, its programs (each selectable) and a link to the whole state.
     // Zooming in on click pulls neighbouring dots apart so the next one is easy to hit.
@@ -553,7 +531,7 @@ export default function UsMap(props: UsMapProps) {
   if (error) return <div className="notice" data-tone="amber">The 3D map could not start ({error}). Use the state list and search below.</div>;
   return (
     <>
-      <div ref={container} className="map-canvas" role="region" aria-label="Interactive 3D map of the United States. Click a state to filter programs. Keyboard users can choose a state from the State menu above." />
+      <div ref={container} className="map-canvas" data-scores={props.showScores === false ? "off" : "on"} role="region" aria-label="Interactive 3D map of the United States. Click a state to filter programs. Keyboard users can choose a state from the State menu above." />
       <div className="map-controls">
         <button type="button" className="btn" aria-label="Zoom in" onClick={() => mapRef.current?.zoomIn()}>+</button>
         <button type="button" className="btn" aria-label="Zoom out" onClick={() => mapRef.current?.zoomOut()}>−</button>

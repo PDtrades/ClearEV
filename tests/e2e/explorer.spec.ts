@@ -186,7 +186,7 @@ test.describe("EV-friendliness", () => {
     test.skip(testInfo.project.name === "mobile", "covered on desktop and no-webgl");
     await page.goto("/");
     const strip = page.getByLabel("EV-friendliness", { exact: true });
-    await expect(strip.getByRole("button", { name: "Bars on" })).toHaveAttribute("aria-pressed", "true");
+    await expect(strip.getByRole("button", { name: "Scores on" })).toHaveAttribute("aria-pressed", "true");
     const best = strip.getByRole("list", { name: "Most EV-friendly states" }).getByRole("listitem");
     await expect(best).toHaveCount(5);
     await expect(strip.getByRole("list", { name: "Least EV-friendly states" }).getByRole("listitem")).toHaveCount(3);
@@ -195,8 +195,12 @@ test.describe("EV-friendliness", () => {
     await best.first().getByRole("button").click();
     await expect(page.getByRole("heading", { name: new RegExp(`Programs in ${first}`) })).toBeVisible();
     await expect(strip).toContainText(new RegExp(`${first} scores \\d+`));
+    // Each state shows its score on the map (3D labels or the 2D fallback), and Off hides them.
+    const scores = page.locator(".ev-score:visible, .svg-ev-score");
+    await expect.poll(() => scores.count()).toBeGreaterThan(45);
     await strip.getByRole("button", { name: "Off" }).click();
     await expect(strip.getByRole("button", { name: "Off" })).toHaveAttribute("aria-pressed", "true");
+    await expect(scores).toHaveCount(0);
   });
 });
 

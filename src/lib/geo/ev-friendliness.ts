@@ -93,4 +93,22 @@ export function fmtCost(d: Pick<EvFriendlyData, "costUnit">, v: number | null): 
   return String(v);
 }
 
+/** Score color stops, red (low) to green (high); the map's score labels, swatch and meters share them. */
+export const SCORE_STOPS: [number, string][] = [[0, "#c8553d"], [35, "#e9a23b"], [60, "#8fbf4d"], [100, "#1d8a5a"]];
+
+/** Fill color for a 0-100 score, interpolated between SCORE_STOPS, and a readable text color for it. */
+export function scoreColor(score: number): { fill: string; ink: string } {
+  const s = Math.max(0, Math.min(100, score));
+  let i = 1;
+  while (i < SCORE_STOPS.length - 1 && s > SCORE_STOPS[i][0]) i++;
+  const [a, ca] = SCORE_STOPS[i - 1];
+  const [b, cb] = SCORE_STOPS[i];
+  const t = (s - a) / (b - a);
+  const rgb = [0, 2, 4].map((k) => Math.round(parseInt(ca.slice(1 + k, 3 + k), 16) * (1 - t) + parseInt(cb.slice(1 + k, 3 + k), 16) * t));
+  // Relative luminance decides dark or white text.
+  const lum = rgb.map((c) => c / 255).map((c) => (c <= 0.03928 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4));
+  const L = 0.2126 * lum[0] + 0.7152 * lum[1] + 0.0722 * lum[2];
+  return { fill: `#${rgb.map((c) => c.toString(16).padStart(2, "0")).join("")}`, ink: L > 0.22 ? "#1d2633" : "#ffffff" };
+}
+
 export const EV_FRIENDLINESS: EvFriendlyData = computeEvFriendliness(raw as unknown as EvInputs);

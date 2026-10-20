@@ -30,8 +30,8 @@ export function EvFriendlyPanel({ data, show, onShow, selectedState, onSelectSta
         <strong className="hotspot-title">
           <span className="ev-swatch" aria-hidden="true" /> EV-friendliness
         </strong>
-        <div className="hotspot-modes" role="group" aria-label="EV-friendliness bars">
-          <button type="button" aria-pressed={show} onClick={() => onShow(true)}>Bars on</button>
+        <div className="hotspot-modes" role="group" aria-label="EV-friendliness scores on the map">
+          <button type="button" aria-pressed={show} onClick={() => onShow(true)}>Scores on</button>
           <button type="button" aria-pressed={!show} onClick={() => onShow(false)}>Off</button>
         </div>
       </div>

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { computeEvFriendliness } from "@/lib/geo/ev-friendliness";
+import { computeEvFriendliness, scoreColor } from "@/lib/geo/ev-friendliness";
 
 // TEST FIXTURE values: synthetic inputs exercising the scoring rules only.
 describe("EV-friendliness score", () => {
@@ -23,3 +23,22 @@ describe("EV-friendliness score", () => {
     expect(d.rows.DD.costPct).not.toBeNull();
   });
 });
+
+describe("scoreColor", () => {
+  it("uses the end stops at 0 and 100 and clamps beyond them", () => {
+    expect(scoreColor(0).fill).toBe("#c8553d");
+    expect(scoreColor(100).fill).toBe("#1d8a5a");
+    expect(scoreColor(-5).fill).toBe("#c8553d");
+    expect(scoreColor(140).fill).toBe("#1d8a5a");
+  });
+  it("hits the middle stops exactly and blends between them", () => {
+    expect(scoreColor(35).fill).toBe("#e9a23b");
+    expect(scoreColor(60).fill).toBe("#8fbf4d");
+    expect(scoreColor(47).fill).not.toMatch(/^#(e9a23b|8fbf4d)$/);
+  });
+  it("picks dark text on light fills and white on dark ones", () => {
+    expect(scoreColor(35).ink).toBe("#1d2633");
+    expect(scoreColor(100).ink).toBe("#ffffff");
+  });
+});
+

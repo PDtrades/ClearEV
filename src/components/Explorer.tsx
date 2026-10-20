@@ -42,7 +42,7 @@ export function Explorer({ initialParams, initialResult, stateCounts, hotspots =
   const [zipError, setZipError] = useState<string | null>(null);
   const [hotspotMode, setHotspotMode] = useState<HotspotView>("programs");
   const [legendOpen, setLegendOpen] = useState(true);
-  const [showBars, setShowBars] = useState(true);
+  const [showScores, setShowScores] = useState(true);
   useEffect(() => {
     if (window.matchMedia("(max-width: 560px)").matches) setLegendOpen(false);
   }, []);
@@ -173,11 +173,11 @@ export function Explorer({ initialParams, initialResult, stateCounts, hotspots =
         <section className="card map-panel" aria-label="Map">
           <div className="map-wrap">
             {webgl === null ? null : webgl ? (
-              <UsMap stateCounts={stateCounts} selectedState={loc?.state?.abbr} selectedId={params.sel} zipPoint={result.zipPoint} zipLabel={loc?.zip?.zip} localPrograms={localPrograms} onSelectState={selectState} onSelectProgram={selectProgram} onPickProgram={pickProgram} hotspots={hotspots} hotspotMode={hotspotMode} evFriendliness={EV_FRIENDLINESS} showBars={showBars} />
+              <UsMap stateCounts={stateCounts} selectedState={loc?.state?.abbr} selectedId={params.sel} zipPoint={result.zipPoint} zipLabel={loc?.zip?.zip} localPrograms={localPrograms} onSelectState={selectState} onSelectProgram={selectProgram} onPickProgram={pickProgram} hotspots={hotspots} hotspotMode={hotspotMode} evFriendliness={EV_FRIENDLINESS} showScores={showScores} />
             ) : (
               <div className="fallback-wrap">
                 <p className="notice" data-tone="amber" style={{ margin: 0 }}>3D rendering is not available in this browser, so here is a 2D map. All programs are also in the list.</p>
-                <UsMapFallback stateCounts={stateCounts} selectedState={loc?.state?.abbr} zip={loc?.zip} onSelectState={selectState} hotspots={hotspots} hotspotMode={hotspotMode} evFriendliness={EV_FRIENDLINESS} showBars={showBars} />
+                <UsMapFallback stateCounts={stateCounts} selectedState={loc?.state?.abbr} zip={loc?.zip} onSelectState={selectState} hotspots={hotspots} hotspotMode={hotspotMode} evFriendliness={EV_FRIENDLINESS} showScores={showScores} />
               </div>
             )}
             {webgl && (
@@ -187,7 +187,7 @@ export function Explorer({ initialParams, initialResult, stateCounts, hotspots =
                 ) : loc?.state ? (
                   <><strong>{loc.state.name}</strong> selected. Enter a ZIP for utility and local programs.</>
                 ) : (
-                  <>Click a state, or enter a ZIP code. Bars show how EV-friendly each state is; drag with two fingers or right-click to tilt.</>
+                  <>Click a state, or enter a ZIP code. The number on each state is its EV-friendliness score; drag with two fingers or right-click to tilt.</>
                 )}
               </div>
             )}
@@ -201,12 +201,12 @@ export function Explorer({ initialParams, initialResult, stateCounts, hotspots =
                   {ICON_LABELS[k]}
                 </div>
               ))}
-              {showBars && <div className="legend-row"><span className="ev-swatch" aria-hidden="true" style={{ margin: "0 6px" }} />Bar height = EV-friendliness score (0–100)</div>}
+              {showScores && <div className="legend-row"><span className="ev-swatch" aria-hidden="true" style={{ margin: "0 6px" }} />Number above each state = EV-friendliness score (0–100), red low to green high</div>}
               {hotspotMode !== "off" && <div className="legend-row"><span className="hotspot-dot" aria-hidden="true" style={{ margin: "0 7px" }} />Hotspot: warmer color = {hotspotMode === "programs" ? "more open programs" : "larger stated amount"}</div>}
             </details>
           </div>
           <HotspotPanel data={hotspots} mode={hotspotMode} onMode={setHotspotMode} onSelectState={(abbr) => selectState(abbr)} />
-          <EvFriendlyPanel data={EV_FRIENDLINESS} show={showBars} onShow={setShowBars} selectedState={loc?.state?.abbr} onSelectState={(abbr) => selectState(abbr)} />
+          <EvFriendlyPanel data={EV_FRIENDLINESS} show={showScores} onShow={setShowScores} selectedState={loc?.state?.abbr} onSelectState={(abbr) => selectState(abbr)} />
         </section>
 
         <section className="results-panel" aria-label="Results" aria-busy={loading}>

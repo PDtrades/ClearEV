@@ -236,7 +236,14 @@ table.data th, table.data td { text-align: left; padding: 8px; border-bottom: 1p
 .ev-least .ev-rank { background: #c8553d; }
 .ev-selected { margin: 0; font-size: 13px; }
 .hotspot-note a { color: inherit; }
-.svg-ev-bar { stroke: #fff; stroke-width: 0.6; }
+.svg-ev-score { pointer-events: none; }
+.svg-ev-score rect { stroke: #fff; stroke-width: 0.8; }
+.svg-ev-score text { font: 700 9.5px/1 system-ui, sans-serif; text-anchor: middle; font-variant-numeric: tabular-nums; }
+.state-mark { z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 2px; pointer-events: none; }
+.state-abbr { font: 600 11px/1 system-ui, sans-serif; color: #2f4262; text-shadow: 0 0 3px #fff, 0 0 3px #fff; }
+.ev-score { font: 700 11px/1 system-ui, sans-serif; font-variant-numeric: tabular-nums; min-width: 22px; padding: 3px 5px; border-radius: 999px; text-align: center; box-shadow: 0 0 0 1.5px #fff, 0 1px 3px rgba(20, 40, 70, 0.25); }
+.map-canvas[data-scores="off"] .ev-score { display: none; }
+.map-canvas[data-detail="low"] .ev-score { font-size: 10px; min-width: 20px; padding: 2px 4px; }
 .map-controls .btn[aria-pressed="false"] { opacity: 0.6; }
 .map-perf-note { position: absolute; left: 12px; bottom: 12px; z-index: 5; max-width: min(360px, calc(100% - 24px)); margin: 0; padding: 8px 10px; font-size: 13px; background: var(--white); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); }
 
