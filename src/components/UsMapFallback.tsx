@@ -3,16 +3,15 @@ import { useEffect, useState } from "react";
 import { ALBERS_HEIGHT, ALBERS_WIDTH, albers } from "@/lib/geo/projection";
 import { metric, rankHotspots, type HotspotData } from "@/lib/search/hotspots";
 import { hotspotLabel, hotspotSummary, type HotspotView } from "./HotspotPanel";
-import { fmtCost, type EvFriendlyData } from "@/lib/geo/ev-friendliness";
+import { fmtCost, scoreColor, type EvFriendlyData } from "@/lib/geo/ev-friendliness";
 
-const barColor = (s: number) => (s >= 60 ? "#1d8a5a" : s >= 35 ? "#e9a23b" : "#c8553d");
 
 type Paths = Record<string, { d: string; name: string; cx: number; cy: number }>;
 
 /** 2D SVG map for browsers without WebGL. Every state is a keyboard-focusable button. */
 const HEAT = ["#fde9cc", "#f9c98f", "#f7b267", "#f08a4f", "#e8603c"];
 
-export function UsMapFallback({ stateCounts, selectedState, zip, onSelectState, hotspots, hotspotMode = "off", evFriendliness, showBars = true }: { stateCounts: Record<string, number>; selectedState?: string; zip?: { lat: number; lng: number; zip: string }; onSelectState: (abbr: string | undefined) => void; hotspots?: HotspotData; hotspotMode?: HotspotView; evFriendliness?: EvFriendlyData; showBars?: boolean }) {
+export function UsMapFallback({ stateCounts, selectedState, zip, onSelectState, hotspots, hotspotMode = "off", evFriendliness, showScores = true }: { stateCounts: Record<string, number>; selectedState?: string; zip?: { lat: number; lng: number; zip: string }; onSelectState: (abbr: string | undefined) => void; hotspots?: HotspotData; hotspotMode?: HotspotView; evFriendliness?: EvFriendlyData; showScores?: boolean }) {
   const [paths, setPaths] = useState<Paths | null>(null);
   useEffect(() => {
     fetch("/geo/state-paths.json").then((r) => r.json()).then(setPaths).catch(() => setPaths({}));
@@ -59,16 +58,18 @@ export function UsMapFallback({ stateCounts, selectedState, zip, onSelectState, 
           <text x={paths.DC.cx + 18} y={paths.DC.cy + 13} className="state-label" style={{ fontSize: 8, fontWeight: 700 }}>DC</text>
         </g>
       )}
-      {showBars &&
+      {showScores &&
         evFriendliness &&
         Object.entries(paths).map(([abbr, s]) => {
           const r = evFriendliness.rows[abbr];
           if (!r || r.score == null || abbr === "DC") return null;
-          const h = 4 + r.score * 0.32;
+          const c = scoreColor(r.score);
           return (
-            <rect key={`ev-${abbr}`} className="svg-ev-bar" x={s.cx + 9} y={s.cy + 4 - h} width={5} height={h} rx={1} fill={barColor(r.score)}>
+            <g key={`ev-${abbr}`} className="svg-ev-score">
               <title>{`${s.name}: EV-friendliness ${r.score}/100 (${r.portsPer100k} charging ports per 100k people, ${fmtCost(evFriendliness, r.cost)} home electricity)`}</title>
-            </rect>
+              <rect x={s.cx - 10} y={s.cy - 17} width={20} height={13} rx={6.5} fill={c.fill} />
+              <text x={s.cx} y={s.cy - 7.3} fill={c.ink}>{r.score}</text>
+            </g>
           );
         })}
       {top.map((h, i) => {
@@ -77,8 +78,8 @@ export function UsMapFallback({ stateCounts, selectedState, zip, onSelectState, 
         return (
           <g key={`hs-${h.key}`} className="svg-hotspot" role="button" tabIndex={0} aria-label={`Hotspot ${i + 1}: ${hotspotLabel(h)}. ${hotspotSummary(h)}.`} onClick={() => onSelectState(h.state)} onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); onSelectState(h.state); } }}>
             <title>{`#${i + 1} ${hotspotLabel(h)}: ${hotspotSummary(h)}`}</title>
-            <circle cx={s.cx} cy={s.cy - 14} r={9} />
-            <text x={s.cx} y={s.cy - 10.5} textAnchor="middle">{i + 1}</text>
+            <circle cx={s.cx - 22} cy={s.cy - 8} r={9} />
+            <text x={s.cx - 22} y={s.cy - 4.5} textAnchor="middle">{i + 1}</text>
           </g>
         );
       })}

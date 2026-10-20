@@ -58,9 +58,9 @@ ClearEV shows only what connected, traceable sources publish. This page states w
 
 The map highlights the states and counties with the most open state and local programs, or with the largest single dollar figure one program states. Nationwide programs are left out because they apply everywhere. Closed and exhausted programs are left out. Percentages count only through their stated dollar cap, and amounts from different programs are never added together. Hotspots reflect only loaded data, so they change as sources are connected. City and utility programs count toward a county only when their page names that county.
 
-## EV-friendliness bars
+## EV-friendliness scores
 
-Each state gets a bar whose height is a 0–100 score: the average of its rank among states on charging ports per 100,000 residents and on average home electricity price (cheaper is better). It does not include public charging prices, which are not published by state, and the charger count includes every port the DOE station locator lists. Sources and dates are in DATA-SOURCES.md.
+Each state shows a 0–100 score above its name on the map, colored from red (low) to green (high). The score is the average of its rank among states on charging ports per 100,000 residents and on average home electricity price (cheaper is better). It does not include public charging prices, which are not published by state, and the charger count includes every port the DOE station locator lists. Sources and dates are in DATA-SOURCES.md.
 
 ## Solar installers
 
