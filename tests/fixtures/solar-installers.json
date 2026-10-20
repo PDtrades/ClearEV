@@ -1,0 +1,27 @@
+{
+  "$comment": "TEST FIXTURE: synthetic installer data for unit tests. Company names and numbers are invented.",
+  "isFixture": true,
+  "meta": {
+    "source": "Test source",
+    "release": "test",
+    "homepage": "https://example.test/",
+    "dataUrl": "https://example.test/data",
+    "license": "Test license",
+    "licenseUrl": "https://example.test/license",
+    "builtAt": "2026-01-01T00:00:00.000Z",
+    "window": { "from": "2021-01-01", "to": "2025-02-28" },
+    "method": "Test"
+  },
+  "names": ["Fixture Solar Co", "Example Rooftops", "Sample Energy"],
+  "states": {
+    "ZZ": {
+      "dataThrough": "2024-01",
+      "systems": 120,
+      "installers": 3,
+      "rebateReportedBy": ["Test Agency"],
+      "top": [[0, 80, "2024-01", 80, 60, 1000, 80, 10, 3.5], [1, 30, "2023-11", 0, 0, null, 0, 0, null], [2, 10, "2023-06", 10, 0, null, 10, 0, 4.25]],
+      "counties": { "99001": [[1, 25, "2023-11", 0, 0, null, 0, 0, null]] }
+    }
+  },
+  "withoutNames": { "YY": "installer names are withheld or missing in this state's records" }
+}

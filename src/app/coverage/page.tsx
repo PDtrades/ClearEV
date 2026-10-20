@@ -77,6 +77,11 @@ export default async function CoveragePage() {
         ZIP codes resolve through {geo.pointsSource ?? "Census ZCTA data"} ({geo.stats?.total?.toLocaleString() ?? "?"} ZIP Code Tabulation Areas). ZCTAs approximate USPS ZIP codes; PO-box-only ZIPs may be missing. State and county are assigned from Census boundary files. Utility service territories are not drawn; utility programs are matched by the utilities a source associates with a ZIP, and each such program carries a coverage note.
       </p>
 
+      <h2>Solar installers</h2>
+      <p className="small">
+        The solar installer table comes from <a href="https://emp.lbl.gov/tracking-the-sun" rel="noopener noreferrer">Berkeley Lab&apos;s Tracking the Sun</a> records of home systems installed from 2021 to early 2024 (CC BY 3.0 US). It covers 13 states with published company names: AZ, CA, CT, FL, MA, NH, NJ, NM, NY, RI, TX, VT and WI. It is not a recommendation. Installers&apos; own discounts are not published in any source ClearEV can cite, so the table shows only the state or utility rebates recorded for each company&apos;s customers.
+      </p>
+
       <h2>What is still needed for full coverage</h2>
       <ul className="small">
         <li>API keys: an api.data.gov key (NREL_API_KEY, used for AFDC and OpenEI) and a Rewiring America key (REWIRING_AMERICA_API_KEY).</li>

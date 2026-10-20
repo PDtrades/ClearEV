@@ -14,6 +14,7 @@ import { HotspotPanel, type HotspotView } from "./HotspotPanel";
 import type { HotspotData } from "@/lib/search/hotspots";
 import { EV_FRIENDLINESS } from "@/lib/geo/ev-friendliness";
 import { EvFriendlyPanel } from "./EvFriendlyPanel";
+import { SolarInstallers } from "./SolarInstallers";
 import { webglInfo } from "@/lib/webgl";
 
 const UsMap = dynamic(() => import("./UsMap"), { ssr: false, loading: () => <p className="muted small" style={{ padding: 16 }}>Loading 3D map…</p> });
@@ -242,6 +243,9 @@ export function Explorer({ initialParams, initialResult, stateCounts, hotspots =
               ))
             )}
           </div>
+          {loc?.state && (!params.cat.length || params.cat.includes("solar")) && (
+            <SolarInstallers state={loc.state.abbr} stateName={loc.state.name} countyFips={loc.zip?.countyFips} countyName={loc.zip?.countyName} />
+          )}
           <SourcesStatus result={result} />
         </section>
       </div>

@@ -53,6 +53,14 @@ Reviewed 2026-10-19. Before adding a source, record here: access method, terms, 
 - Resident population, July 2025 estimates, U.S. Census Bureau (NST-EST2025-POP).
 - The score is the average of each state's percentile rank on ports per 100,000 residents (higher is better) and on electricity price (lower is better). Public charging prices are set by each network and are not published by state, so they are not part of the score.
 
+### Solar installers (`public/geo/solar-installers.json`, no credentials)
+- Lawrence Berkeley National Laboratory, Tracking the Sun public data file, 2024 release (installs through early 2024), from the Open Energy Data Initiative data lake (`s3://oedi-data-lake/tracking-the-sun/2024/`, Creative Commons Attribution 3.0 US per https://registry.opendata.aws/oedi-data-lake/). Field definitions are in LBNL's public data file user guide.
+- `scripts/build-solar-installers.ts <dir>` reads the per-state parquet files and keeps home (RES) systems installed 2021-01-01 to 2025-02-28, excluding self-installs and records without a company name. Counties list up to 8 companies with at least 3 systems; states list the top 10.
+- Per company it stores counts, the latest install month, how many systems the records give a rebate amount for and how many got one (with the median), the leased/PPA share, and the median price per watt before incentives for home-owned systems (at least 5).
+- 13 states have usable company names (AZ, CA, CT, FL, MA, NH, NJ, NM, NY, RI, TX, VT, WI). The others in the file withhold names (CO, MD and MN say "redacted") or have no installs since 2021; the site says so for those states.
+- No public source lists installers' own promotions, so ClearEV shows none. The rebate figures are program payments the reporting agency recorded.
+- LBNL published a 2026 release (installs through 2025) as a CSV on Google Drive, which this build environment cannot reach; rebuilding from it needs only a download.
+
 ## Credentials, approvals and agreements still required
 
 | Item | Needed for | Who | Cost |
